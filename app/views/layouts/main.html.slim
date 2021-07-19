@@ -1,0 +1,17 @@
+doctype html
+html lang='en'
+  head
+    title = content_for?(:title) ? yield(:title) : 'Candid teams'
+    = csrf_meta_tags
+    = csp_meta_tag
+    meta content="width=device-width, initial-scale=1.0" name="viewport" /
+    = yield :meta_data
+    / = favicon_link_tag 'logo/v1/logo-32.png'
+    / = favicon_link_tag 'logo/v1/logo-180.png', rel: 'apple-touch-icon'
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'app'
+    = yield :head_scripts
+  
+  body
+    script
