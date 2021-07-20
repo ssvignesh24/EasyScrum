@@ -6,10 +6,18 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "./session";
+
 $bg: #f0f3f7;
 
 html,
 body {
   background-color: $bg;
   font-family: "Roboto", sans-serif;
+}
+
+#stage {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 60px;
 }

@@ -1,0 +1,27 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col
+  .text-2xl.font-bold.inline-block Create a new account
+  .session-container.shadow.p-7.mt-5
+    - if flash[:alert].present?
+      .w-full.rounded.bg-red-300.p-3.mb-2
+        p.m-0 = flash[:alert]
+    = form_tag signup_path, method: :post do
+      .w-full
+        p.mb-1 Your name
+        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[name]' type='text' value=@data[:user_name] placeholder=t('name_hint')
+        - if @errors[:name].present?
+          small.text-red-500 = @errors[:name]
+      .w-full.mt-2
+        p.mb-1 Email
+        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[email]' type='email' value=@data[:user_email] placeholder=t('email_hint')
+        - if @errors[:email].present?
+          small.text-red-500 = @errors[:email]
+      .w-full.mt-2
+        p.mb-1 Password
+        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[password]' type='password' placeholder=t('password_hint')
+        - if @errors[:password].present?
+          small.text-red-500 = @errors[:password]
+      .w-full.mt-5
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Create account
+    .w-full.mt-5.border-t.border-gray-300.pt-5.text-center
+      span.m-0 Already have an account? 
+      = link_to 'Sign in here', new_user_session_path, class: "text-green-500"

@@ -1,0 +1,18 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col style="top: 10vh"
+  .text-2xl.font-bold.inline-block Sign in to your account
+  .session-container.shadow.p-7.mt-5
+    - if flash[:alert].present?
+      .w-full.rounded.bg-red-100.p-3.mb-2.border.border-red-400
+        p.m-0 = flash[:alert]
+    = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+      .w-full.mt-2
+        p.mb-1 Email
+        = f.email_field :email, autofocus: true, autocomplete: "email", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none', placeholder: t('email_hint')
+      .w-full.mt-2
+        p.mb-1 Password
+        = f.password_field :password, autocomplete: "current-password", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none', placeholder: t('password_hint')
+      .w-full.mt-5
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Login
+    .w-full.mt-5.border-t.border-gray-300.pt-5.text-center
+      span.m-0 Don't have an account? 
+      = link_to 'Create one here', signup_path, class: "text-green-500"

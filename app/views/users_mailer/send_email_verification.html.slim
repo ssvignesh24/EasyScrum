@@ -1,0 +1,10 @@
+.box.mx-auto.w-full style="max-width: 640px;position: relative; top: 20px; margin-bottom: 60px"
+  .w-full.flex.justify-center
+    = image_tag ENV['HOST'] + "images/welcome-1.png", style: "width: 80%; margin: auto"
+
+  .p-30
+    p style="font-weight: bold; margin-top: 10px; margin-bottom: 2px; font-size: 20px;" = "Hi #{@user.name},"
+    p.mt-10 Thanks for choosing Candid teams! Please click the below button to confirm your email.
+    = link_to ENV['HOST'] + "verify_email?token=#{@token}&email=#{@user.email}", style: "text-decoration: none" do
+      button.w-full.btn-primary  style="border: 0; padding: 12px 0; font-weight: 500; font-size: 16px; cursor: pointer"
+        span Verify email address

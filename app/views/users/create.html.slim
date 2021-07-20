@@ -1,0 +1,9 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col
+  .text-2xl.font-bold.inline-block Thank you for creating the account
+  .session-container.shadow.p-7.mt-5
+    span We have sent you an verification email to 
+    b = @user.email
+    span . Please follow the link in the email to complete setup
+    .w-full.mt-5
+      = link_to root_path do
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Back to home page
