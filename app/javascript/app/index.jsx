@@ -10,6 +10,7 @@ import AppLayout from "./containers/app_layout";
 
 import DashboardContainer from "./containers/dashboard/container";
 import RetroContainer from "./containers/retros/container";
+import RetroBoard from "./containers/retros/board";
 import PokerContainer from "./containers/poker/container";
 
 export default function () {
@@ -18,7 +19,9 @@ export default function () {
       <Router primary={false}>
         <AppLayout path="/">
           <DashboardContainer path="/dashboard"></DashboardContainer>
-          <RetroContainer path="/retro"></RetroContainer>
+          <RetroContainer path="/retro">
+            <RetroBoard path="board/:board_id"></RetroBoard>
+          </RetroContainer>
           <PokerContainer path="/poker"></PokerContainer>
         </AppLayout>
       </Router>
