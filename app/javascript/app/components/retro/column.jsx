@@ -24,7 +24,7 @@ export default function ({ children }) {
               <p className="text-gray-500 text-sm">4 Cards</p>
             </div>
             <div className="w-1/12 flex items-center h-full flex-row-reverse">
-              <Menu as="div" className="relative">
+              <Menu as="div" className="relative z-30">
                 {({ open }) => (
                   <>
                     <Menu.Button>
@@ -74,7 +74,7 @@ export default function ({ children }) {
               </Menu>
             </div>
           </div>
-          <div className="w-full overflow-hidden" style={{ height: "calc(100% - 60px)" }}>
+          <div className="w-full overflow-hidden relative z-20" style={{ height: "calc(100% - 60px)" }}>
             <Scrollbars autoHide autoHideTimeout={1000}>
               <div className="w-full">
                 <CreateCard />
