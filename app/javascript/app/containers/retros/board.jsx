@@ -41,27 +41,12 @@ export default function ({ children }) {
             <Card></Card>
             <Card></Card>
             <Card></Card>
-            <Card></Card>
-            <Card></Card>
+          </Column>
+          <Column>
             <Card></Card>
           </Column>
           <Column>
             <Card></Card>
-            <Card></Card>
-          </Column>
-          <Column>
-            <Card></Card>
-            <Card></Card>
-          </Column>
-          <Column>
-            <Card></Card>
-            <Card></Card>
-          </Column>
-          <Column>
-            <Card></Card>
-            <Card></Card>
-          </Column>
-          <Column>
             <Card></Card>
             <Card></Card>
           </Column>

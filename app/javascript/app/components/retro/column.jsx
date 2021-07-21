@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { DotsVerticalIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
+import { Scrollbars } from "react-custom-scrollbars";
 
 import CreateCard from "./create_card";
 
@@ -73,11 +74,13 @@ export default function ({ children }) {
               </Menu>
             </div>
           </div>
-          <div className="w-full overflow-x-hidden overflow-y-auto" style={{ height: "calc(100% - 60px)" }}>
-            <div className="w-full">
-              <CreateCard />
-            </div>
-            {children}
+          <div className="w-full overflow-hidden" style={{ height: "calc(100% - 60px)" }}>
+            <Scrollbars autoHide autoHideTimeout={1000}>
+              <div className="w-full">
+                <CreateCard />
+              </div>
+              {children}
+            </Scrollbars>
           </div>
         </div>
       </div>
