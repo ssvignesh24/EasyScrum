@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   get 'signup' => "users#new"
   post 'signup' => "users#create"
   get 'verify_email' => 'users#verify_email'
+  get 'retro/board/invite/:token' => "retro/board#accept_invitation", as: :retro_board_invitation
+  post 'retro/board/invite/:token' => "retro/board#add_participant"
 
   constraints lambda { |req| req.format == :json } do
     namespace :retro do

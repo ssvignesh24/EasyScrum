@@ -31,4 +31,9 @@ class ApplicationController < ActionController::Base
   def can_modify_retro_board?(board)
     board.created_by == current_resource
   end
+
+  def ensure_resource!
+    return if current_resource.present?
+    redirect_to new_user_session_path
+  end
 end

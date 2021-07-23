@@ -74,15 +74,15 @@ function InviteUsers(props) {
                     <input
                       className="w-full bg-gray-100 border border-gray-400 w-full rounded p-3 outline-none "
                       disabled={true}
-                      value="https://google.com/search?q=hgbdshsdf"
+                      value={props.board.inviteURL}
                     />
-                    <p className="mb-1 mt-3">Emails</p>
+                    {/* <p className="mb-1 mt-3">Emails</p>
                     <textarea
                       className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
                       placeholder="Eg. smith@candidteams.com, sophie@candidteams.com"
                       value={name}
                       ref={nameField}
-                      onChange={(event) => setName(event.target.value)}></textarea>
+                      onChange={(event) => setName(event.target.value)}></textarea> */}
                   </div>
                 </div>
               </div>
@@ -104,6 +104,7 @@ InviteUsers.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterInvite: PropTypes.func,
+  board: PropTypes.object.isRequired,
 };
 
 export default InviteUsers;

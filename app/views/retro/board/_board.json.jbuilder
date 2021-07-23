@@ -3,6 +3,8 @@ full_board ||= false
 json.id retro.id
 json.name retro.name
 json.context retro.context
+json.inviteURL "#{ENV['HOST']}retro/board/invite/#{retro.get_invitation_token}"
+json.canManageBoard retro.created_by_id == current_user&.id
 if retro.template.present?
   json.template do
     json.id retro.template.id

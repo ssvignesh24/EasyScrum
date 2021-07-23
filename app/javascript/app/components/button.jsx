@@ -37,33 +37,51 @@ Muted.propTypes = {
   size: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  as: PropTypes.string,
 };
 
 Muted.defaultProps = {
   size: "md",
   className: "",
   disabled: false,
+  as: "button",
 };
 
-function Primary({ children, onClick, size, className, disabled }) {
+function Primary({ children, onClick, size, className, disabled, as }) {
   const handleClick = () => {
     if (!onClick) return;
     onClick();
   };
   return (
     <>
-      <button
-        onClick={handleClick}
-        disabled={disabled}
-        className={
-          commonClasses +
-          "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
-          sizeClasses(size) +
-          " " +
-          className
-        }>
-        {children}
-      </button>
+      {as == "button" && (
+        <button
+          onClick={handleClick}
+          disabled={disabled}
+          className={
+            commonClasses +
+            "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
+            sizeClasses(size) +
+            " " +
+            className
+          }>
+          {children}
+        </button>
+      )}
+      {as == "div" && (
+        <div
+          onClick={handleClick}
+          disabled={disabled}
+          className={
+            commonClasses +
+            "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
+            sizeClasses(size) +
+            " " +
+            className
+          }>
+          {children}
+        </div>
+      )}
     </>
   );
 }
@@ -73,12 +91,14 @@ Primary.propTypes = {
   size: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  as: PropTypes.string,
 };
 
 Primary.defaultProps = {
   size: "md",
   className: "",
   disabled: false,
+  as: "button",
 };
 
 export { Primary, Muted };

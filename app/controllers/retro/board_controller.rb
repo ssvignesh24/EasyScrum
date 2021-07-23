@@ -27,9 +27,45 @@ class Retro::BoardController < ApiController
   def show
   end
 
+  def accept_invitation
+    @token = params[:token]
+    return unless @token.present?
+    @board = Retro::Board.get_board_by_invitation_token(@token)
+  end
+
+  def add_participant
+    token = params[:token]
+    retro_board_invitation_path("Invalid token") and return unless token.present?
+    if guest_params[:email].blank? && guest_params[:name].blank?
+      show_invitation_error("Both name and email are empty") and return
+    elsif guest_params[:email].blank?
+      show_invitation_error("Email is empty") and return
+    elsif guest_params[:name].blank?
+      show_invitation_error("Name is empty") and return
+    elsif !Mail::Address.new(guest_params[:email]).domain.present?
+      show_invitation_error("Invalid email address") and return
+    end
+    board = Retro::Board.get_board_by_invitation_token(token)
+    guest = Guest.where(email: guest_params[:email], parent_user_id: board.created_by_id).first_or_initialize
+    guest.name = guest_params[:name].strip
+    guest.save!
+    Retro::Participant.where(board: board, participant: guest).first_or_create!
+    session[:guest_id] = guest.id
+    redirect_to retro_board_path(board.id)
+  end
+
   private
 
   def retro_params
     params.require(:retro).permit(:name, :template_id, :context)
+  end
+
+  def guest_params
+    params.require(:guest).permit(:name, :email)
+  end
+
+  def show_invitation_error(error)
+    flash[:alert] = error
+    redirect_to retro_board_invitation_path(params[:token])
   end
 end
