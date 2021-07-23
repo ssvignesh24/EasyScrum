@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   belongs_to :account, optional: true
   has_many :guests, foreign_key: :parent_user_id
+  has_many :created_retro_boards, class_name: "Retro::Board", foreign_key: :created_by_id
   
   scope :active, -> { where(active: true) }
 

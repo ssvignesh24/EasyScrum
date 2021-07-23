@@ -6,12 +6,12 @@ class CreateRetroBoards < ActiveRecord::Migration[6.1]
       t.text :context
       t.string :status, null: false
       t.references :retro_template, foreign_key: { to_table: :retro_templates, name: :retro_boards_retro_template_id_fkey }
-      t.string :board_uuid, null: false
+      t.text :board_unique_string, null: false
       t.boolean :archived, null: false
 
       t.index :archived
-      t.index :board_uuid, unique: true
       t.index :status
+      t.index :board_unique_string, unique: true
 
       t.timestamps
     end

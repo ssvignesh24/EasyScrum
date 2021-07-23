@@ -11,6 +11,7 @@ import AppLayout from "./containers/app_layout";
 import DashboardContainer from "./containers/dashboard/container";
 import RetroContainer from "./containers/retros/container";
 import RetroBoard from "./containers/retros/board";
+import RetroList from "./containers/retros/list";
 import PokerContainer from "./containers/poker/container";
 import PokerBoard from "./containers/poker/board";
 
@@ -21,10 +22,11 @@ export default function () {
         <AppLayout path="/">
           <DashboardContainer path="/dashboard"></DashboardContainer>
           <RetroContainer path="/retro">
-            <RetroBoard path="board/:board_id"></RetroBoard>
+            <RetroList path="/" default></RetroList>
+            <RetroBoard path="board/:boardId"></RetroBoard>
           </RetroContainer>
           <PokerContainer path="/poker">
-            <PokerBoard path="board/:board_id"></PokerBoard>
+            <PokerBoard path="board/:boardId"></PokerBoard>
           </PokerContainer>
         </AppLayout>
       </Router>

@@ -1,13 +1,16 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext } from "react";
+import React, { Fragment, useState, useRef, useContext, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
-import { Primary as PrimaryButton, Muted as MutedButton } from "../../components/button";
+import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
+
+import Retro from "../../../services/retro";
 
 function CreateColumn(props) {
   const nameField = useRef();
+  const retroClient = new Retro(props.boardId);
 
   const [name, setName] = useState("");
   const [state, setState] = useState("init");
@@ -16,9 +19,30 @@ function CreateColumn(props) {
   const closeModal = () => {
     props.setOpen(false);
     setName("");
-    setUsers([]);
     setState("init");
     setError(false);
+  };
+
+  useEffect(() => () => retroClient.cancel(), []);
+
+  const createColumn = () => {
+    setError(false);
+    const payload = {
+      name,
+    };
+    retroClient
+      .createColumn({ column: payload })
+      .then(({ data }) => {
+        if (!data.status) return;
+        closeModal();
+        props.afterCreate(data.column);
+      })
+      .catch((r) =>
+        retroClient.handleError(r, ({ response }) => {
+          if (response?.data?.errors?.name) setError(response.data.errors.name);
+          else if (response?.data?.error) setError(response.data.error);
+        })
+      );
   };
 
   return (
@@ -78,7 +102,7 @@ function CreateColumn(props) {
               </div>
 
               <div className="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
-                <PrimaryButton onClick={() => {}} disabled={name.trim() == "" || state == "creating"}>
+                <PrimaryButton onClick={createColumn} disabled={name.trim() == "" || state == "creating"}>
                   {state == "creating" ? "Adding..." : "Add"}
                 </PrimaryButton>
                 <MutedButton className="mr-3" onClick={() => closeModal()}>
@@ -97,6 +121,7 @@ CreateColumn.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterCreate: PropTypes.func,
+  boardId: PropTypes.any.isRequired,
 };
 
 export default CreateColumn;
