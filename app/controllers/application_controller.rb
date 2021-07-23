@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_board
-    @board = Retro::Board.where(id: params[:board_id]).take
+    @board = current_resource.retro_boards.where(id: params[:board_id]).take
     raise ApiError::NotFound.new("Invalid retrospective board") unless @board.present?
   end
 
@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
     @column = @board.columns.where(id: params[:column_id]).take
     raise ApiError::NotFound.new("Invalid retrospective column") unless @column.present?
   end
+  
 
   def current_retro_participant(board)
     board.target_participants.where(participant: current_resource).take
@@ -30,6 +31,15 @@ class ApplicationController < ActionController::Base
 
   def can_modify_retro_board?(board)
     board.created_by == current_resource
+  end
+
+  def can_modify_poker_board?(board)
+    board.created_by == current_resource
+  end
+
+  def set_poker_board
+    @board = current_resource.poker_boards.where(id: params[:board_id]).take
+    raise ApiError::NotFound.new("Invalid planning poker board") unless @board.present?
   end
 
   def ensure_resource!

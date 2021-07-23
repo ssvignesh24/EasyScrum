@@ -1,8 +1,9 @@
 class Retro::BoardController < ApiController
   before_action :set_board, only: [:show, :destroy]
+  before_action :authenticate_user!, only: [:create]
 
   def index
-    @retro_boards = current_user.created_retro_boards
+    @retro_boards = current_resource.retro_boards
   end
 
   def create
@@ -35,7 +36,7 @@ class Retro::BoardController < ApiController
 
   def add_participant
     token = params[:token]
-    retro_board_invitation_path("Invalid token") and return unless token.present?
+    show_invitation_error("Invalid token") and return unless token.present?
     if guest_params[:email].blank? && guest_params[:name].blank?
       show_invitation_error("Both name and email are empty") and return
     elsif guest_params[:email].blank?
