@@ -3,8 +3,8 @@ class Poker::Board < ApplicationRecord
 
   belongs_to :created_by, class_name: "::User"
   belongs_to :card_template, class_name: "Poker::CardTemplate", foreign_key: :poker_card_template_id, optional: true
-  has_many :issues, class_name: "Poker::Issue", foreign_key: :poker_board_id
-  has_many :target_participants, class_name: "Poker::Participant", foreign_key: :poker_board_id
+  has_many :issues, class_name: "Poker::Issue", foreign_key: :poker_board_id, dependent: :destroy
+  has_many :target_participants, class_name: "Poker::Participant", foreign_key: :poker_board_id, dependent: :destroy
 
   def get_invitation_token
     Base64.encode64("#{id}:#{created_by_id}:#{board_unique_string}")

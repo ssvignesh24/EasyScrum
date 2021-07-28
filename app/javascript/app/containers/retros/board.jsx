@@ -10,7 +10,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
 import CreateColumnModal from "./modals/create_column";
-import InviteUsersModal from "./invite_users";
+import InviteUsersModal from "../../components/invite_users";
 
 import Retro from "../../services/retro";
 

@@ -3,13 +3,34 @@ class Poker::BoardsController < ApiController
   before_action :authenticate_user!, only: [:create, :update, :archive, :destroy]
 
   def index
-    @boards = current_resource.poker_boards
+    @boards = current_resource.poker_boards.includes(:target_participants)
   end
 
   def show
+    @current_participant = @board.target_participants.where(participant: current_resource).take
   end
 
   def create
+    raise ApiError::InvalidParameters.new("Name is empty", { name: "Board name is empty"}) if board_params[:name].blank?
+    @board = Poker::Board.new(created_by: current_user, name: board_params[:name].strip, status: Poker::Board::STATUS.CREATED).tap do |b|
+      b.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
+      if board_params[:template_id].present? && !board_params[:template_id].zero?
+        template = Poker::CardTemplate.where(id: board_params[:template_id]).take
+        if template
+          b.card_template = template
+          b.available_votes = template.cards
+        end
+      elsif board_params[:custom_votes].present?
+        b.available_votes = board_params[:custom_votes].split(",").reject(&:blank?)
+      end
+      b.archived = false
+      b.active = true
+    end
+    Poker::Board.transaction do
+      @board.save!
+      Poker::Participant.create!(board: @board, participant: current_user, is_spectator: board_params[:is_spectator])
+      @board.issues.create!(summary: 'ghost', is_ghost: true, status: Poker::Issue::STATUS.ADDED)
+    end
   end
 
   def update
@@ -39,7 +60,7 @@ class Poker::BoardsController < ApiController
     guest.save!
     Poker::Participant.where(board: board, participant: guest, is_spectator: false).first_or_create!
     session[:guest_id] = guest.id
-    redirect_to poker_board_path(board.id)
+    redirect_to "/poker/board/#{board.id}"
   end
 
   def archive
@@ -49,9 +70,17 @@ class Poker::BoardsController < ApiController
   end
 
   private
+  
+  def board_params
+    params.require(:board).permit(:name, :template_id, :custom_votes, :is_spectator)
+  end
 
   def show_invitation_error(error)
     flash[:alert] = error
     redirect_to poker_board_invitation_path(params[:token])
+  end
+
+  def guest_params
+    params.require(:guest).permit(:name, :email)
   end
 end

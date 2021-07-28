@@ -16,10 +16,12 @@ class Retro::BoardController < ApiController
         template = Retro::Template.where(id: retro_params[:template_id]).take
         r.template = template if template.present?
       end
-      r.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], "#{current_user.id}:#{current_user_type}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
+      r.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
     end
-    @retro_board.save!
-    @retro_board.target_participants.create!(participant: current_user)
+    Retro::Board.transaction do
+      @retro_board.save!
+      @retro_board.target_participants.create!(participant: current_user)
+    end
   rescue => e
     ErrorReporter.send(e)
     raise ApiError::BadRequest.new("Something went wrong")

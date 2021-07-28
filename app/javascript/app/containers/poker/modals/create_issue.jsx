@@ -3,20 +3,56 @@
 import React, { Fragment, useState, useRef, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
+import { Listbox } from "@headlessui/react";
+import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
-import { Primary as PrimaryButton, Muted as MutedButton } from "../../components/button";
+import Toggle from "../../../components/toggle";
+import Poker from "../../../services/poker";
 
-function InviteUsers(props) {
-  const nameField = useRef();
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
 
-  const [name, setName] = useState("");
+import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
+
+function CreateColumn(props) {
+  const summaryField = useRef();
+  const pokerClient = new Poker(props.board.id);
+
+  const [summary, setSummary] = useState("");
+  const [description, setDescription] = useState("");
+  const [link, setLink] = useState("");
   const [state, setState] = useState("init");
   const [error, setError] = useState(false);
 
+  const createIssue = () => {
+    setState("adding");
+    const payload = {
+      summary,
+      description,
+      link,
+    };
+    pokerClient
+      .createIssue({ issue: payload })
+      .then(({ data }) => {
+        console.log(data);
+        if (!data.status) return;
+        props.afterCreate(data.issue);
+        closeModal();
+      })
+      .catch((r) =>
+        pokerClient.handleError(r, ({ response }) => {
+          if (response?.data?.errors?.summary) setError(response.data.errors.summary);
+          else if (response?.data?.error) setError(response.data.error);
+        })
+      );
+  };
+
   const closeModal = () => {
     props.setOpen(false);
-    setName("");
-    setUsers([]);
+    setSummary("");
+    setDescription("");
+    setLink("");
     setState("init");
     setError(false);
   };
@@ -27,7 +63,7 @@ function InviteUsers(props) {
         as="div"
         static
         className="fixed z-40 inset-0 overflow-y-auto"
-        initialFocus={nameField}
+        initialFocus={summaryField}
         open={props.open}
         onClose={props.setOpen}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -58,38 +94,44 @@ function InviteUsers(props) {
                 <div className="">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      Invite users
+                      Add an issue
                     </Dialog.Title>
                     {error && (
                       <div className="w-full rounded border border-red-300 bg-red-100 text-center p-3 mt-3">
                         <p>{error}</p>
                       </div>
                     )}
-                    <p className="my-2 text-gray-600">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quos ad, nisi soluta, molestias modi
-                      consequatur tenetur rem quam obcaecati repellendus accusantium quod veritatis. Soluta ratione
-                      aliquid tempora eius impedit voluptatibus!
-                    </p>
-                    <p className="mb-1 mt-3">Invite link</p>
+                    <p className="mb-1 mt-3">Summary</p>
                     <input
-                      className="w-full bg-gray-100 border border-gray-400 w-full rounded p-3 outline-none "
-                      disabled={true}
-                      value={props.board.inviteURL}
+                      className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
+                      placeholder="Eg. Upgrade angular"
+                      value={summary}
+                      ref={summaryField}
+                      onChange={(event) => setSummary(event.target.value)}
                     />
-                    {/* <p className="mb-1 mt-3">Emails</p>
+                    <p className="mb-1 mt-3">Description</p>
                     <textarea
                       className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
-                      placeholder="Eg. smith@candidteams.com, sophie@candidteams.com"
-                      value={name}
-                      ref={nameField}
-                      onChange={(event) => setName(event.target.value)}></textarea> */}
+                      placeholder="Eg. Upgrade angular to latest version."
+                      value={description}
+                      onChange={(event) => setDescription(event.target.value)}></textarea>
+                    <p className="mb-1 mt-1">Link</p>
+                    <input
+                      className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
+                      placeholder="Eg. https://demo.atlassian.com/demo/DEMO-123"
+                      value={link}
+                      onChange={(event) => setLink(event.target.value)}
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
-                <MutedButton className="" onClick={() => closeModal()}>
-                  Close
+                <PrimaryButton onClick={createIssue} disabled={summary.trim() == "" || state == "adding"}>
+                  {state == "adding" ? "Adding..." : "Add"}
+                </PrimaryButton>
+                <MutedButton className="mr-3" onClick={() => closeModal()}>
+                  Cancel
                 </MutedButton>
               </div>
             </div>
@@ -100,11 +142,10 @@ function InviteUsers(props) {
   );
 }
 
-InviteUsers.propTypes = {
+CreateColumn.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  afterInvite: PropTypes.func,
-  board: PropTypes.object.isRequired,
+  afterCreate: PropTypes.func,
 };
 
-export default InviteUsers;
+export default CreateColumn;

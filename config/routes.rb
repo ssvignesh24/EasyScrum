@@ -15,9 +15,12 @@ Rails.application.routes.draw do
       resources :boards, only: [:index, :show, :create, :update, :destroy], param: :board_id do
         member do
           post 'archive'
-          resources :issues, only: [:create, :update, :destroy] do
+          resources :issues, only: [:create, :destroy], param: :issue_id do
             member do
               put 'vote'
+              put 'update_status'
+              put 'clear_votes'
+              post 'assign'
             end
           end
         end
