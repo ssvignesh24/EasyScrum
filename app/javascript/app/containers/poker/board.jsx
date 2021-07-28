@@ -51,7 +51,7 @@ export default function ({ children, boardId }) {
       .then(({ data }) => {
         if (!data.status) return;
         setBoard(data.board);
-        const si = data.board.issues.find((i) => i.status == "selected" || i.status == "voting" || i.status == "voted");
+        const si = data.board.issues.find((i) => i.isSelected);
         if (si) {
           setSelectedIssue(si);
         }
@@ -106,6 +106,16 @@ export default function ({ children, boardId }) {
     }
   };
 
+  const updateIssuePoints = (issueId, points) => {
+    setBoard({
+      ...board,
+      issues: board.issues.map((i) => {
+        if (i.id == issueId) i.votes.finalStoryPoint = points;
+        return i;
+      }),
+    });
+  };
+
   const updateIssueStatus = (issueId, status) => {
     if (selectedIssue?.id == issueId) {
       setSelectedIssue({
@@ -133,14 +143,17 @@ export default function ({ children, boardId }) {
     if (selectedIssue?.id == issueId) {
       setSelectedIssue({
         ...selectedIssue,
-        status: STATUS.SELECTED,
+        status: STATUS.ADDED,
         votes: emptyVotes,
       });
     }
     setBoard({
       ...board,
       issues: board.issues.map((i) => {
-        if (i.id == issueId) i.votes = emptyVotes;
+        if (i.id == issueId) {
+          i.votes = emptyVotes;
+          i.status = STATUS.ADDED;
+        }
         return i;
       }),
     });
@@ -182,11 +195,12 @@ export default function ({ children, boardId }) {
   };
 
   const selectIssue = (issue) => {
+    if (!board?.canManageBoard) return;
     setBoard({
       ...board,
       issues: board.issues.map((i) => {
-        if (i.status == "selected" && i.id != issue.id) i.status = "added";
-        else if (i.id == issue.id) i.status = "selected";
+        if (i.id != issue.id && i.isSelected) i.isSelected = false;
+        else if (i.id == issue.id) i.isSelected = true;
         return i;
       }),
     });
@@ -234,6 +248,7 @@ export default function ({ children, boardId }) {
           setOpen={setShowAssignPointsModal}
           afterUpdate={(issue) => {
             updateIssueStatus(issue.id, issue.status);
+            updateIssuePoints(issue.id, issue.votes.finalStoryPoint);
           }}
         />
       )}
@@ -351,21 +366,25 @@ export default function ({ children, boardId }) {
                       <>
                         {board?.canManageBoard && (
                           <>
-                            {selectedIssue.status == STATUS.SELECTED && "Click 'Start voting' to begin voting"}
+                            {selectedIssue.status == STATUS.ADDED && "Click 'Start voting' to begin voting"}
                             {selectedIssue.status == STATUS.VOTING &&
                               "Voting in progress. Click 'Finish voting' after all participants voted to view results"}
                             {selectedIssue.status == STATUS.VOTED && !selectedIssue.isGhost && "Click 'Next issue'"}
                             {selectedIssue.status == STATUS.VOTED &&
                               selectedIssue.isGhost &&
                               "Click 'Reset votes' to begin voting again"}
+                            {selectedIssue.status == STATUS.FINISHED &&
+                              "You have assigned points to this issue. Please click next issue to start voting"}
                           </>
                         )}
                         {!board?.canManageBoard && (
                           <>
-                            {selectedIssue.status == STATUS.SELECTED && "Waiting for the facilitator to begin voting"}
+                            {selectedIssue.status == STATUS.ADDED && "Waiting for the facilitator to begin voting"}
                             {selectedIssue.status == STATUS.VOTING && "You can cast your vote for this issue now"}
                             {selectedIssue.status == STATUS.VOTED &&
                               "Waiting for the facilitator to select the next issue"}
+                            {selectedIssue.status == STATUS.FINISHED &&
+                              "Story points assigned to this issue. Waiting for the facilitator to select another issue"}
                           </>
                         )}
                       </>
@@ -390,6 +409,15 @@ export default function ({ children, boardId }) {
                             <span>Assign story points to issue</span>
                           </PrimaryButton>
                         )}
+                        {!selectedIssue.isGhost && selectedIssue.status == STATUS.FINISHED && (
+                          <PrimaryButton
+                            size="sm"
+                            className="text-sm mr-3 flex-grow-0"
+                            onClick={() => clearVotes(selectedIssue.id)}>
+                            <div className="inline-block h-5"></div>
+                            <span>Clear votes and revote</span>
+                          </PrimaryButton>
+                        )}
                         {selectedIssue.isGhost &&
                           (selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) && (
                             <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={restVotes}>
@@ -397,7 +425,7 @@ export default function ({ children, boardId }) {
                               <span>Reset votes</span>
                             </PrimaryButton>
                           )}
-                        {selectedIssue.status == STATUS.SELECTED && (
+                        {selectedIssue.status == STATUS.ADDED && (
                           <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={startVoting}>
                             <PlayIcon className="w-5 h-5 text-white mr-2"></PlayIcon>
                             <span>Start voting</span>
@@ -508,7 +536,7 @@ export default function ({ children, boardId }) {
                           <div className="w-3/12 h-full flex items-center flex-row-reverse">
                             {selectedIssue && (
                               <div className="h-10 w-10 rounded-full bg-purple-500 text-center flex items-center justify-center text-white">
-                                {selectedIssue.status == STATUS.SELECTED && (
+                                {selectedIssue.status == STATUS.ADDED && (
                                   <ClockIcon className="w-5 h-5 text-gray-100" />
                                 )}
 

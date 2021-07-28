@@ -1,9 +1,9 @@
 json.(issue, :id, :summary, :description, :status, :link)
 json.boardId issue.poker_board_id
 json.isGhost issue.is_ghost
+json.isSelected issue.is_selected
 json.votes do
   json.finalStoryPoint issue.final_story_point
-  json.avgStoryPoint issue.avg_story_point
   json.totalVotes issue.total_votes
   if @current_participant
     json.currentUserVote issue.votes.where(target_participant: @current_participant).take&.vote

@@ -6,10 +6,14 @@ class CreatePokerIssues < ActiveRecord::Migration[6.1]
       t.text :description
       t.text :link
       t.boolean :is_ghost, null: false
+      t.boolean :is_selected, null: false, default: false
       t.string :status, null: false
       t.string :final_story_point
-      t.string :avg_story_point
       t.string :total_votes
+      t.datetime :selected_at
+      t.datetime :voting_started_at
+      t.datetime :voting_completed_at
+      t.datetime :points_assigned_at
 
       t.index :status
 
