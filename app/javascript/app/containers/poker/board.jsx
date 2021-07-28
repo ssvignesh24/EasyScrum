@@ -7,6 +7,7 @@ import { PlayIcon, PauseIcon, CheckCircleIcon } from "@heroicons/react/solid";
 import { CheckIcon, ClockIcon } from "@heroicons/react/outline";
 import pluralize from "pluralize";
 import { Link } from "@reach/router";
+import _ from "lodash";
 import ConfirmDialog from "../../components/confirmdialog";
 import truncate from "../../lib/truncate";
 
@@ -238,6 +239,35 @@ export default function ({ children, boardId }) {
     })?.vote;
   };
 
+  const highestVote = () => {
+    for (const vote_ of board.availableVotes.concat([]).reverse()) {
+      const firstVote = selectedIssue.votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+      if (firstVote) return firstVote;
+    }
+    return "";
+  };
+
+  const lowestVote = () => {
+    for (const vote_ of board.availableVotes) {
+      const firstVote = selectedIssue.votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+      if (firstVote) return firstVote;
+    }
+    return "";
+  };
+
+  const mostVoted = () => {
+    let mostVote = [],
+      mostVoteCount = 0;
+    for (const vote_ of board.availableVotes) {
+      const count = selectedIssue.votes.participant_votes.filter((v) => v.vote == vote_).length || -1;
+      if (count > mostVoteCount) {
+        mostVote = [vote_];
+        mostVoteCount = count;
+      } else if (count == mostVoteCount) mostVote.push(vote_);
+    }
+    return mostVote;
+  };
+
   return (
     <>
       {selectedIssue && (
@@ -401,13 +431,22 @@ export default function ({ children, boardId }) {
                     {board?.canManageBoard && (
                       <div>
                         {!selectedIssue.isGhost && selectedIssue.status == STATUS.VOTED && (
-                          <PrimaryButton
-                            size="sm"
-                            className="text-sm mr-3 flex-grow-0"
-                            onClick={() => setShowAssignPointsModal(true)}>
-                            <div className="inline-block h-5"></div>
-                            <span>Assign story points to issue</span>
-                          </PrimaryButton>
+                          <>
+                            <PrimaryButton
+                              size="sm"
+                              className="text-sm mr-3 flex-grow-0"
+                              onClick={() => setShowAssignPointsModal(true)}>
+                              <div className="inline-block h-5"></div>
+                              <span>Assign story points</span>
+                            </PrimaryButton>
+                            <PrimaryButton
+                              size="sm"
+                              className="text-sm mr-3 flex-grow-0"
+                              onClick={() => clearVotes(selectedIssue.id)}>
+                              <div className="inline-block h-5"></div>
+                              <span>Clear votes</span>
+                            </PrimaryButton>
+                          </>
                         )}
                         {!selectedIssue.isGhost && selectedIssue.status == STATUS.FINISHED && (
                           <PrimaryButton
@@ -571,36 +610,36 @@ export default function ({ children, boardId }) {
                       <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Total votes</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">5</span>
+                          <span>&ensp;{pluralize("vote", selectedIssue.votes.participant_votes || 0)}</span>
+                          <span className="text-purple-500">{selectedIssue.votes.participant_votes.length || 0}</span>
                         </div>
                       </div>
-                      <div className="w-full flex items-center mb-2">
+                      {/* <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Average vote</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
                           <span className="text-purple-500">3.5</span>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Highest vote</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
-                          <span className="text-purple-500">8</span>
+                          <span className="text-purple-500">{highestVote()}</span>
                         </div>
                       </div>
                       <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Lowest vote</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
-                          <span className="text-purple-500">1</span>
+                          <span className="text-purple-500">{lowestVote()}</span>
                         </div>
                       </div>
                       <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Mean</div>
+                        <div className="w-8/12 text-gray-600">Most voted</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
-                          <span className="text-purple-500">3</span>
+                          <span className="text-purple-500">{mostVoted().join(", ")}</span>
                         </div>
                       </div>
                     </div>
