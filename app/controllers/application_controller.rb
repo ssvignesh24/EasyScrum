@@ -23,7 +23,6 @@ class ApplicationController < ActionController::Base
     @column = @board.columns.where(id: params[:column_id]).take
     raise ApiError::NotFound.new("Invalid retrospective column") unless @column.present?
   end
-  
 
   def current_retro_participant(board)
     board.target_participants.where(participant: current_resource).take

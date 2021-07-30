@@ -15,6 +15,10 @@ export default class Retro extends Network{
     return this.post("/retro/board.json", payload)
   }
 
+  deleteBoard(){
+    return this.delete(`/retro/board/${this.boardId}.json`)
+  }
+
   getBoard(){
     return this.get(`/retro/board/${this.boardId}.json`)
   }

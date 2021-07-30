@@ -1,10 +1,9 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext } from "react";
+import React, { Fragment, useState, useRef, useContext, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
-import Toggle from "../../../components/toggle";
 import Poker from "../../../services/poker";
 
 function classNames(...classes) {
@@ -20,6 +19,8 @@ function CreateColumn(props) {
   const [points, setPoints] = useState("");
   const [state, setState] = useState("init");
   const [error, setError] = useState(false);
+
+  useEffect(() => () => pokerClient.cancel(), []);
 
   const assignPoint = () => {
     setState("assigning");

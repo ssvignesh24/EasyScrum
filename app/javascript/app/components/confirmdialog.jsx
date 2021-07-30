@@ -7,7 +7,7 @@ import { Primary as PrimaryButton, Muted as MutedButton, Danger as DangerButton 
 
 function ConfirmDialog(props) {
   const cancelDelete = useRef();
-  const { okText, cancelText, onOk, onCancel, title, body, open } = props;
+  const { okText, cancelText, onOk, onCancel, title, body, open, disabled } = props;
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -56,7 +56,7 @@ function ConfirmDialog(props) {
               </div>
 
               <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
-                <DangerButton type="button" className="ml-3" onClick={() => onOk()}>
+                <DangerButton type="button" className="ml-3" onClick={() => onOk()} disabled={disabled}>
                   {okText}
                 </DangerButton>
                 {props.cancelText && (
@@ -81,6 +81,7 @@ ConfirmDialog.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onOk: PropTypes.func.isRequired,
   cancelText: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default ConfirmDialog;

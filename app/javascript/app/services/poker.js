@@ -15,6 +15,10 @@ export default class Poker extends Network{
     return this.post("/poker/boards.json", payload)
   }
 
+  deleteBoard(){
+    return this.delete(`/poker/boards/${this.boardId}.json`)
+  }
+
   getBoard(){
     return this.get(`/poker/boards/${this.boardId}.json`)
   }

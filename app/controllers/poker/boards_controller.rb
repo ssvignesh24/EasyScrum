@@ -67,6 +67,9 @@ class Poker::BoardsController < ApiController
   end
 
   def destroy
+    @board = current_user.created_poker_boards.where(id: params[:board_id]).take
+    raise ApiError::Forbidden.new("Action now allowed") if @board&.created_by != current_user
+    @board.destroy!
   end
 
   private

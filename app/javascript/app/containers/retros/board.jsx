@@ -2,16 +2,17 @@
 
 import React, { useEffect, useState, Fragment } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import pluralize from "pluralize";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
+import { Redirect } from "@reach/router";
 
 import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
 import CreateColumnModal from "./modals/create_column";
 import InviteUsersModal from "../../components/invite_users";
 import consumer from "../../lib/action_cable_consumer";
+import ConfirmDialog from "../../components/confirmdialog";
 
 import Retro from "../../services/retro";
 
@@ -25,6 +26,8 @@ export default function ({ children, boardId }) {
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
   const [state, setState] = useState("loading");
   const [board, setBoard] = useState();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteState, setDeleteState] = useState("init");
 
   useEffect(() => {
     retroClient
@@ -47,6 +50,17 @@ export default function ({ children, boardId }) {
     if (state != "loaded") return;
     subscribeToBoard();
   }, [state]);
+
+  const deleteBoard = () => {
+    setDeleteState("deleting");
+    retroClient
+      .deleteBoard()
+      .then(({ data }) => {
+        if (!data.status) return;
+        setTimeout(() => setDeleteState("deleted"), 1000);
+      })
+      .catch((r) => retroClient.handleError(r));
+  };
 
   const subscribeToBoard = () => {
     consumer.subscriptions.create(
@@ -208,12 +222,30 @@ export default function ({ children, boardId }) {
 
   return (
     <>
-      <CreateColumnModal
-        boardId={boardId}
-        open={showCreateColumn}
-        setOpen={setShowCreateColumn}
-        afterCreate={addColumn}
-      />
+      {deleteState == "deleted" && <Redirect to={"/retro"} noThrow />}
+      {state == "loaded" && board.canManageBoard && (
+        <>
+          <ConfirmDialog
+            open={confirmDelete}
+            title={() => `Delete ${board.name || ""}?`}
+            body="Deleting the board will delete all its cards and action items. Are you sure want to delete this board?"
+            okText={deleteState == "init" ? "Yes, Delete" : "Deleting board..."}
+            disabled={deleteState == "deleting"}
+            onCancel={() => {
+              setConfirmDelete(false);
+            }}
+            cancelText="Cancel"
+            onOk={deleteBoard}
+          />
+          <CreateColumnModal
+            boardId={boardId}
+            open={showCreateColumn}
+            setOpen={setShowCreateColumn}
+            afterCreate={addColumn}
+          />
+        </>
+      )}
+
       {state == "loaded" && (
         <InviteUsersModal
           board={board}
@@ -315,7 +347,8 @@ export default function ({ children, boardId }) {
                                   className={classNames(
                                     active ? "bg-red-100 text-gray-900" : "text-gray-700",
                                     "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
+                                  )}
+                                  onClick={() => setConfirmDelete(true)}>
                                   Delete board
                                 </button>
                               )}

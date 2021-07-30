@@ -1,12 +1,8 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
-import { Listbox } from "@headlessui/react";
-import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-
-import Toggle from "../../../components/toggle";
 import Poker from "../../../services/poker";
 
 function classNames(...classes) {
@@ -24,6 +20,8 @@ function CreateColumn(props) {
   const [link, setLink] = useState("");
   const [state, setState] = useState("init");
   const [error, setError] = useState(false);
+
+  useEffect(() => () => pokerClient.cancel(), []);
 
   const createIssue = () => {
     setState("adding");

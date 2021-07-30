@@ -1,13 +1,15 @@
 /** @format */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, Fragment, useState } from "react";
 import ReactDOM from "react-dom";
 import { Scrollbars } from "react-custom-scrollbars";
-import { PlayIcon, PauseIcon, CheckCircleIcon } from "@heroicons/react/solid";
+import { PlayIcon, PauseIcon, CheckCircleIcon, ChevronDownIcon } from "@heroicons/react/solid";
 import { CheckIcon, ClockIcon } from "@heroicons/react/outline";
 import pluralize from "pluralize";
-import { Link } from "@reach/router";
+import { Link, Redirect } from "@reach/router";
 import _ from "lodash";
+import { Menu, Transition } from "@headlessui/react";
+
 import ConfirmDialog from "../../components/confirmdialog";
 import truncate from "../../lib/truncate";
 
@@ -18,6 +20,10 @@ import AssignPointsModal from "./modals/assign_points";
 import consumer from "../../lib/action_cable_consumer";
 
 import { Primary as PrimaryButton } from "../../components/button";
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
 
 const STATUS = {
   ADDED: "added",
@@ -43,6 +49,8 @@ export default function ({ children, boardId }) {
   const [selectedIssueId, setSelectedIssueId] = useState();
   const [showIssueRemoveConfirmation, setShowIssueRemoveConfirmation] = useState(false);
   const [deletingIssue, setDeletingIssue] = useState();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteState, setDeleteState] = useState("init");
 
   useEffect(() => {
     pokerClient
@@ -60,15 +68,26 @@ export default function ({ children, boardId }) {
           setState("error");
         })
       );
+    return () => pokerClient.cancel();
   }, []);
-
-  const currentIssue = () => issues?.find((i) => i.id == selectedIssueId);
 
   useEffect(() => {
     if (state != "loaded") return;
     subscribeToBoard();
   }, [state]);
 
+  const currentIssue = () => issues?.find((i) => i.id == selectedIssueId);
+
+  const deleteBoard = () => {
+    setDeleteState("deleting");
+    pokerClient
+      .deleteBoard()
+      .then(({ data }) => {
+        if (!data.status) return;
+        setTimeout(() => setDeleteState("deleted"), 1000);
+      })
+      .catch((r) => pokerClient.handleError(r));
+  };
   const modifyBoard = (type, issue) => {
     switch (type) {
       case "add_issue":
@@ -330,6 +349,23 @@ export default function ({ children, boardId }) {
 
   return (
     <>
+      {deleteState == "deleted" && <Redirect to={"/poker"} noThrow />}
+      {state == "loaded" && board.canManageBoard && (
+        <>
+          <ConfirmDialog
+            open={confirmDelete}
+            title={() => `Delete ${board.name || ""}?`}
+            body="Deleting the board will delete all its issues and assgined story points. Are you sure want to delete this board?"
+            okText={deleteState == "init" ? "Yes, Delete" : "Deleting board..."}
+            disabled={deleteState == "deleting"}
+            onCancel={() => {
+              setConfirmDelete(false);
+            }}
+            cancelText="Cancel"
+            onOk={deleteBoard}
+          />
+        </>
+      )}
       {currentIssue() && (
         <AssignPointsModal
           board={board}
@@ -379,6 +415,74 @@ export default function ({ children, boardId }) {
           )}
         </div>
         <div className="w-3/12 flex items-center flex-row-reverse">
+          {board && (
+            <Menu as="div" className="relative z-30">
+              {({ open }) => (
+                <>
+                  <Menu.Button className="mr-3">
+                    <PrimaryButton as="div">
+                      Board options
+                      <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
+                    </PrimaryButton>
+                  </Menu.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95">
+                    <Menu.Items
+                      static
+                      className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={classNames(
+                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                "block w-full text-left px-4 py-2 text-sm"
+                              )}>
+                              Show participants
+                            </button>
+                          )}
+                        </Menu.Item>
+                        {board.canManageBoard && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                  "block w-full text-left px-4 py-2 text-sm"
+                                )}>
+                                Edit board
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )}
+                        {board.canManageBoard && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  active ? "bg-red-100 text-gray-900" : "text-gray-700",
+                                  "block w-full text-left px-4 py-2 text-sm"
+                                )}
+                                onClick={() => setConfirmDelete(true)}>
+                                Delete board
+                              </button>
+                            )}
+                          </Menu.Item>
+                        )}
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </>
+              )}
+            </Menu>
+          )}
           <PrimaryButton className="mr-3" onClick={() => setShowAddIssueModal(true)}>
             Add issue
           </PrimaryButton>

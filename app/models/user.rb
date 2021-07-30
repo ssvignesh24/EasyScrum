@@ -6,6 +6,7 @@ class User < ApplicationRecord
   belongs_to :account, optional: true
   has_many :guests, foreign_key: :parent_user_id
   has_many :created_retro_boards, class_name: "Retro::Board", foreign_key: :created_by_id
+  has_many :created_poker_boards, class_name: "Poker::Board", foreign_key: :created_by_id
   has_many :retro_board_participants, class_name: "Retro::Participant", as: :participant 
   has_many :retro_boards, through: :retro_board_participants,  source: :board 
   has_many :poker_board_participants, class_name: "Poker::Participant", as: :participant 

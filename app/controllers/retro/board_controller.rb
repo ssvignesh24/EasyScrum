@@ -1,6 +1,7 @@
 class Retro::BoardController < ApiController
   before_action :set_board, only: [:show, :destroy]
-  before_action :authenticate_user!, only: [:create]
+  before_action :authenticate_user!, except: [:index, :show, :add_participant, :accept_invitation]
+  before_action :enure_permission!, except: [:index, :create, :show, :accept_invitation, :add_participant]
 
   def index
     @retro_boards = current_resource.retro_boards
@@ -58,6 +59,10 @@ class Retro::BoardController < ApiController
     redirect_to retro_board_path(@board.id)
   end
 
+  def destroy
+    @board.destroy!
+  end
+
   private
 
   def retro_params
@@ -66,6 +71,10 @@ class Retro::BoardController < ApiController
 
   def guest_params
     params.require(:guest).permit(:name, :email)
+  end
+
+  def enure_permission!
+    raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
   end
 
   def show_invitation_error(error)
