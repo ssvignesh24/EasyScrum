@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext } from "react";
+import React, { Fragment, useState, useRef, useContext, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
@@ -29,6 +29,8 @@ function CreateColumn(props) {
   const [templateId, setTemplateId] = useState("");
   const [state, setState] = useState("init");
   const [error, setError] = useState(false);
+
+  useEffect(() => () => retroClient.cancel(), []);
 
   const createBoard = () => {
     setState("creating");

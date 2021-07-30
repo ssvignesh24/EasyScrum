@@ -7,25 +7,33 @@ import { TrashIcon, PencilIcon } from "@heroicons/react/solid";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
 
 import Retro from "../../services/retro";
-import { id } from "postcss-selector-parser";
 
-export default function ({ children, card, afterDelete, afterUpdate, boardId, columnId }) {
-  const retroClient = new Retro(boardId);
+const randId = () => {
+  return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
+};
+
+export default function ({ card, afterDelete, afterUpdate, addNewComment, removeComment, board, columnId }) {
+  const retroClient = new Retro(board.id);
   const editCardField = useRef();
 
   const [commentText, setCommentText] = useState("");
   const [updatedMessage, setUpdatedMessage] = useState(card.message);
   const [state, setState] = useState("ready");
-  const [comments, setComments] = useState(card.comments);
 
   const addComment = (value) => {
-    setComments(comments.concat({ message: value, loading: true, id: -1 }));
+    const tmpCommentId = randId();
+    addNewComment(columnId, card.id, {
+      message: value,
+      loading: true,
+      id: tmpCommentId,
+      author: board.currentParticipantName,
+      participant: { targetParticipantId: board.currentParticipantId },
+    });
     retroClient
       .addComment(card.id, columnId, value)
       .then(({ data }) => {
         if (!data.status) return;
-        const comments_ = comments.filter((c) => !c.loading).concat([data.comment]);
-        setComments(comments_);
+        addNewComment(columnId, card.id, data.comment, tmpCommentId);
       })
       .catch((r) => retroClient.handleError(r));
     setCommentText("");
@@ -73,12 +81,8 @@ export default function ({ children, card, afterDelete, afterUpdate, boardId, co
       .catch((r) => retroClient.handleError(r));
   };
 
-  const removeComment = (comment) => {
-    const comments_ = comments.map((c) => {
-      if (c.id == comment.id) c.loading = true;
-      return c;
-    });
-    setComments(comments_);
+  const removeCardComment = (comment) => {
+    removeComment(columnId, card.id, comment.id);
     retroClient
       .removeComment(card.id, columnId, comment.id)
       .then(({ data }) => {
@@ -126,9 +130,10 @@ export default function ({ children, card, afterDelete, afterUpdate, boardId, co
         )}
         <hr className="mt-3" />
         <div className="w-full mb-3">
-          {comments &&
-            comments.length > 0 &&
-            comments.map((comment) => {
+          {card.comments &&
+            card.comments.length > 0 &&
+            card.comments.map((comment) => {
+              if (!comment.id) return;
               return (
                 <div
                   className={"w-full text-sm py-3 border-b border-gray-200 " + (comment.loading && "opacity-50")}
@@ -138,12 +143,14 @@ export default function ({ children, card, afterDelete, afterUpdate, boardId, co
                   </div>
                   <p className="text-gray-700">{comment.message}</p>
                   <div className="w-full mt-1">
-                    {!comment.loading && (
-                      <button className="flex text-red-700 items-center" onClick={() => removeComment(comment)}>
-                        <TrashIcon className="w-3.5 h-3.5 mr-1" />
-                        <span>Delete comment</span>
-                      </button>
-                    )}
+                    {!comment.loading &&
+                      (board.canManageBoard ||
+                        comment.participant.targetParticipantId == board.currentParticipantId) && (
+                        <button className="flex text-red-700 items-center" onClick={() => removeCardComment(comment)}>
+                          <TrashIcon className="w-3.5 h-3.5 mr-1" />
+                          <span>Delete comment</span>
+                        </button>
+                      )}
                   </div>
                 </div>
               );

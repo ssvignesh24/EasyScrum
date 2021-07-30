@@ -11,6 +11,7 @@ class Retro::ColumnsController < ApiController
       col.position = last_position + 1
     end
     @column.save!
+    RetroBoardChannel.broadcast_to(@board,  JSON.parse(render_to_string).merge({type: "new_column"}).merge(default_broadcast_hash))
   end
 
   def update
@@ -19,12 +20,14 @@ class Retro::ColumnsController < ApiController
     raise ApiError::InvalidParameters.new("Column name is empty", { name: "Column name is empty" }) if column_params[:name].blank?
     raise ApiError::InvalidParameters.new("Column name already taken", { name: "Column name already taken"}) if @board.columns.where(name: column_params[:name].strip).exists?
     @column.update(name: column_params[:name])
+    RetroBoardChannel.broadcast_to(@board,  JSON.parse(render_to_string).merge({type: "update_column"}).merge(default_broadcast_hash))
   end
 
   def destroy
     @column = @board.columns.where(id: params[:column_id]).take
     raise ApiError::NotFound.new("Invalid column") unless @column.present?
     @column.destroy!
+    RetroBoardChannel.broadcast_to(@board,  {type: "remove_column", columnId: @column.id}.merge(default_broadcast_hash))
   end
 
   private
@@ -35,5 +38,12 @@ class Retro::ColumnsController < ApiController
 
   def enure_permission!
     raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
+  end
+
+  def default_broadcast_hash
+    {
+      status: true,
+      originParticipantId: @board.target_participants.where(participant: current_resource).take&.id
+    }
   end
 end

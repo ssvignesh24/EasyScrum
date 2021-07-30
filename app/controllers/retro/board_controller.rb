@@ -48,13 +48,14 @@ class Retro::BoardController < ApiController
     elsif !Mail::Address.new(guest_params[:email]).domain.present?
       show_invitation_error("Invalid email address") and return
     end
-    board = Retro::Board.get_board_by_invitation_token(token)
-    guest = Guest.where(email: guest_params[:email], parent_user_id: board.created_by_id).first_or_initialize
+    @board = Retro::Board.get_board_by_invitation_token(token)
+    guest = Guest.where(email: guest_params[:email], parent_user_id: @board.created_by_id).first_or_initialize
     guest.name = guest_params[:name].strip
     guest.save!
-    Retro::Participant.where(board: board, participant: guest).first_or_create!
+    participant = Retro::Participant.where(board: @board, participant: guest).first_or_create!
     cookies.encrypted[:guest_id] = guest.id
-    redirect_to retro_board_path(board.id)
+    RetroBoardChannel.broadcast_to(@board,  {type: "new_participant", name: guest.name, id: guest.id, participant_id: participant.id }.merge(default_broadcast_hash))
+    redirect_to retro_board_path(@board.id)
   end
 
   private
@@ -70,5 +71,12 @@ class Retro::BoardController < ApiController
   def show_invitation_error(error)
     flash[:alert] = error
     redirect_to retro_board_invitation_path(params[:token])
+  end
+
+  def default_broadcast_hash
+    {
+      status: true,
+      originParticipantId: @board.target_participants.where(participant: current_resource).take&.id
+    }
   end
 end

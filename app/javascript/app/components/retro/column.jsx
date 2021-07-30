@@ -48,7 +48,7 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
           <div className="w-full mb-3 flex">
             <div className="w-11/12">
               <h3 className="font-bold text-lg">{column.name}</h3>
-              <p className="text-gray-500 text-sm">{pluralize("Card", column.cardsCount, true)}</p>
+              <p className="text-gray-500 text-sm">{pluralize("Card", column.cards?.length || 0, true)}</p>
             </div>
             <div className="w-1/12 flex items-center h-full flex-row-reverse">
               <Menu as="div" className="relative z-30">

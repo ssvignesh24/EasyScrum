@@ -11,6 +11,7 @@ import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
 import CreateColumnModal from "./modals/create_column";
 import InviteUsersModal from "../../components/invite_users";
+import consumer from "../../lib/action_cable_consumer";
 
 import Retro from "../../services/retro";
 
@@ -38,54 +39,171 @@ export default function ({ children, boardId }) {
           setState("error");
         })
       );
+
+    return () => retroClient.cancel();
   }, []);
 
+  useEffect(() => {
+    if (state != "loaded") return;
+    subscribeToBoard();
+  }, [state]);
+
+  const subscribeToBoard = () => {
+    consumer.subscriptions.create(
+      { channel: "RetroBoardChannel", board_id: board.id },
+      {
+        received(data) {
+          const { status, originParticipantId, type } = data;
+          let card;
+          console.log(data);
+          if (!status) return;
+          if (board.currentParticipantId == originParticipantId) return;
+          switch (type) {
+            case "new_column":
+              addColumn(data.column);
+              break;
+            case "update_column":
+              updateColumn(data.column);
+            case "remove_column":
+              removeColumn({ id: data.columnId });
+              break;
+            case "new_card":
+              card = {
+                ...data.card,
+                canManageCard: board.canManageBoard,
+              };
+              addCard(data.columnId, card);
+              break;
+            case "update_card":
+              card = {
+                ...data.card,
+                canManageCard: board.canManageBoard,
+              };
+              updateCard(data.columnId, data.card);
+              break;
+            case "remove_card":
+              removeCard(data.columnId, { id: data.cardId });
+              break;
+            case "new_comment":
+              addNewComment(data.columnId, data.cardId, data.comment);
+              break;
+            case "remove_comment":
+              removeComment(data.columnId, data.cardId, data.commentId);
+              break;
+
+            default:
+              break;
+          }
+        },
+      }
+    );
+  };
+
   const addCard = (columnId, card) => {
-    const columns_ = board.columns.map((column) => {
-      if (column.id != columnId) return column;
-      column.cards = [card].concat(column.cards);
-      return column;
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (column.id != columnId) return column;
+          column.cards = [card].concat(column.cards);
+          return column;
+        }),
+      };
     });
-    setBoard({ ...board, columns: columns_ });
   };
 
   const removeCard = (columnId, card) => {
-    const columns_ = board.columns.map((column) => {
-      if (column.id != columnId) return column;
-      column.cards = column.cards.filter((c) => c.id != card.id);
-      return column;
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (column.id != columnId) return column;
+          column.cards = column.cards.filter((c) => c.id != card.id);
+          return column;
+        }),
+      };
     });
-    setBoard({ ...board, columns: columns_ });
   };
 
   const updateCard = (columnId, card) => {
-    const columns_ = board.columns.map((column) => {
-      if (column.id != columnId) return column;
-      column.cards = column.cards.map((c) => {
-        if (c.id != card.id) return c;
-        c.message = card.message;
-        return c;
-      });
-      return column;
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (column.id != columnId) return column;
+          column.cards = column.cards.map((c) => {
+            if (c.id != card.id) return c;
+            c.message = card.message;
+            return c;
+          });
+          return column;
+        }),
+      };
     });
-    setBoard({ ...board, columns: columns_ });
+  };
+
+  const addNewComment = (columnId, cardId, comment, oldId = false) => {
+    console.log(oldId);
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (column.id != columnId) return column;
+          column.cards = column.cards.map((c) => {
+            if (c.id != cardId) return c;
+            c.comments = c.comments.map((cmt) => {
+              if (cmt.id == oldId) return {};
+              return cmt;
+            });
+            c.comments = c.comments.concat(comment);
+            return c;
+          });
+          return column;
+        }),
+      };
+    });
+  };
+
+  const removeComment = (columnId, cardId, commentId) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (column.id != columnId) return column;
+          column.cards = column.cards.map((c) => {
+            if (c.id != cardId) return c;
+            c.comments = c.comments.filter((cmt) => cmt.id != commentId);
+            return c;
+          });
+          return column;
+        }),
+      };
+    });
   };
 
   const addColumn = (column) => {
-    setBoard({ ...board, columns: board.columns.concat(column) });
+    setBoard((board_) => {
+      return { ...board_, columns: board_.columns.concat(column) };
+    });
   };
 
   const updateColumn = (column) => {
-    const columns_ = board.columns.map((c) => {
-      if (column.id != c.id) return c;
-      c.name = column.name;
-      return c;
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((c) => {
+          if (column.id != c.id) return c;
+          c.name = column.name;
+          return c;
+        }),
+      };
     });
-    setBoard({ ...board, columns: columns_ });
   };
 
   const removeColumn = (column) => {
-    setBoard({ ...board, columns: board.columns.filter((c) => c.id != column.id) });
+    setBoard((board_) => {
+      return { ...board_, columns: board_.columns.filter((c) => c.id != column.id) };
+    });
   };
 
   return (
@@ -292,10 +410,12 @@ export default function ({ children, boardId }) {
                         <Card
                           card={card}
                           key={card.id}
-                          boardId={boardId}
+                          board={board}
                           columnId={column.id}
                           afterDelete={removeCard}
                           afterUpdate={updateCard}
+                          addNewComment={addNewComment}
+                          removeComment={removeComment}
                         />
                       );
                     })}

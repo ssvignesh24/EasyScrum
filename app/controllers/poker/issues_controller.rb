@@ -60,7 +60,6 @@ class Poker::IssuesController < ApiController
       @issue.votes.destroy_all
     end
     PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'clear_votes', issueId: @issue.id }))
-
   end
 
   private
