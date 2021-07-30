@@ -9,12 +9,14 @@ class Poker::IssuesController < ApiController
     @issue.description = issue_params[:description].strip unless issue_params[:description].blank?
     @issue.link = issue_params[:link] unless issue_params[:link].blank?
     @issue.save!
+    PokerBoardChannel.broadcast_to(@board,  JSON.parse(render_to_string).merge({type: 'add_issue'}).merge(default_broadcast_hash))
   end
 
   def assign
     raise ApiError::Forbidden.new("Action not allowed") unless current_user&.id == @board.created_by_id
     raise ApiError::InvalidParameters.new("Not a valid point", { points: "Invalid point. The point should be any of #{@board.available_votes.to_sentence}"}) unless @board.available_votes.include?(params[:points])
     @issue.update!(status: Poker::Issue::STATUS.FINISHED, final_story_point: params[:points], total_votes: @issue.votes.size)
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'assign_story_points', issueId: @issue.id, finalStoryPoint: params[:points], issueStatus: Poker::Issue::STATUS.FINISHED, total_votes: @issue.votes.size}))
   end
 
   def update_status
@@ -30,11 +32,13 @@ class Poker::IssuesController < ApiController
         @issue.update_status_time
       end
     end
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'update_status', issueId: @issue.id, issueStatus: @issue.status, isSelected: @issue.is_selected}))
   end
 
   def destroy
     raise ApiError::Forbidden.new("Action not allowed") unless current_user&.id == @board.created_by_id
     @issue.destroy
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'remove_issue', issueId: @issue.id}))
   end
 
   def vote
@@ -44,6 +48,7 @@ class Poker::IssuesController < ApiController
     vote_record = @issue.votes.where(target_participant: target_participant).first_or_initialize
     vote_record.vote = params[:vote] if @board.available_votes.include?(params[:vote])
     vote_record.save!
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'vote', issueId: @issue.id, voteId: vote_record.id, participantId: target_participant.id, vote: params[:vote]}))
   end
 
   def clear_votes
@@ -54,6 +59,8 @@ class Poker::IssuesController < ApiController
       @issue.update!(status: Poker::Issue::STATUS.ADDED, final_story_point: nil, total_votes: nil, voting_started_at: nil, voting_completed_at: nil, points_assigned_at: nil)
       @issue.votes.destroy_all
     end
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'clear_votes', issueId: @issue.id }))
+
   end
 
   private
@@ -69,5 +76,12 @@ class Poker::IssuesController < ApiController
 
   def enure_permission!
     raise ApiError::Forbidden.new("Action now allowed") unless @board.target_participants.where(participant: current_resource).present?
+  end
+
+  def default_broadcast_hash
+    {
+      status: true,
+      originParticipantId: @board.target_participants.where(participant: current_resource).take&.id
+    }
   end
 end

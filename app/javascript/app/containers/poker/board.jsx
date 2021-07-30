@@ -15,6 +15,7 @@ import Poker from "../../services/poker";
 import InviteUsersModal from "../../components/invite_users";
 import CreateIssueModal from "./modals/create_issue";
 import AssignPointsModal from "./modals/assign_points";
+import consumer from "../../lib/action_cable_consumer";
 
 import { Primary as PrimaryButton } from "../../components/button";
 
@@ -28,21 +29,18 @@ const STATUS = {
 
 const GHOST_ISSUE = {
   SUMMARY: "Ghost issue",
-  DESCRIPTION: "Use this issue to vote if you don't want to add issues",
+  DESCRIPTION: "Use this issue to vote if you don't want to add issues to the board",
 };
 export default function ({ children, boardId }) {
   const pokerClient = new Poker(boardId);
-  let timer;
 
-  const [manualCounterReset, setManualCounterReset] = useState(true);
-  const [pauseCounter, setPauseCounter] = useState(false);
-  const [counter, setCounter] = useState(0);
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
   const [showAssignPointsModal, setShowAssignPointsModal] = useState(false);
   const [showAddIssueModal, setShowAddIssueModal] = useState(false);
-  const [selectedIssue, setSelectedIssue] = useState();
   const [state, setState] = useState("loading");
   const [board, setBoard] = useState();
+  const [issues, setIssues] = useState([]);
+  const [selectedIssueId, setSelectedIssueId] = useState();
   const [showIssueRemoveConfirmation, setShowIssueRemoveConfirmation] = useState(false);
   const [deletingIssue, setDeletingIssue] = useState();
 
@@ -52,10 +50,9 @@ export default function ({ children, boardId }) {
       .then(({ data }) => {
         if (!data.status) return;
         setBoard(data.board);
+        setIssues(data.board.issues);
         const si = data.board.issues.find((i) => i.isSelected);
-        if (si) {
-          setSelectedIssue(si);
-        }
+        if (si) setSelectedIssueId(si.id);
         setState("loaded");
       })
       .catch((r) =>
@@ -65,75 +62,124 @@ export default function ({ children, boardId }) {
       );
   }, []);
 
-  useEffect(() => {
-    if (manualCounterReset) {
-      setManualCounterReset(false);
-      return;
-    }
-    if (timer) clearInterval(timer);
-    timer = setTimeout(() => {
-      if (pauseCounter) return;
-      setCounter(counter + 1);
-    }, 1000);
-  }, [counter]);
+  const currentIssue = () => issues?.find((i) => i.id == selectedIssueId);
 
-  const startCounter = () => {
-    if (counter == 0) setTimeout(() => setCounter(counter + 1), 1000);
-    else setTimeout(() => setCounter(0), 1000);
+  useEffect(() => {
+    if (state != "loaded") return;
+    subscribeToBoard();
+  }, [state]);
+
+  const modifyBoard = (type, issue) => {
+    switch (type) {
+      case "add_issue":
+        setIssues((issues_) => [issue].concat(issues_));
+        break;
+      case "remove_issue":
+        if (selectedIssueId == issue) setSelectedIssueId(false);
+        setIssues((issues_) => issues_.filter((i) => i.id != issue));
+        break;
+      default:
+        break;
+    }
   };
 
-  const stopCounter = () => {
-    if (timer) clearInterval(timer);
+  const updateIssue = (type, { issueId, issueStatus, isSelected }) => {
+    switch (type) {
+      case "update_status":
+        if (isSelected) setSelectedIssueId(issueId);
+        setIssues((issues) =>
+          issues.map((i) => {
+            if (i.id == issueId) {
+              i.isSelected = isSelected;
+              i.status = issueStatus;
+            }
+            return i;
+          })
+        );
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const subscribeToBoard = () => {
+    consumer.subscriptions.create(
+      { channel: "PokerBoardChannel", board_id: board.id },
+      {
+        received(data) {
+          const { status, originParticipantId } = data;
+          console.log(data);
+          if (!status) return;
+          switch (data.type) {
+            case "add_issue":
+              if (originParticipantId == board.currentParticipantId) return;
+              modifyBoard("add_issue", data.issue);
+              break;
+            case "remove_issue":
+              if (originParticipantId == board.currentParticipantId) return;
+              modifyBoard("remove_issue", data.issueId);
+              break;
+            case "update_status":
+              if (originParticipantId == board.currentParticipantId) return;
+              updateIssue("update_status", data);
+              break;
+            case "vote":
+              addVote(data.issueId, data.participantId, data.vote, data.voteId);
+              break;
+            case "clear_votes":
+              if (originParticipantId == board.currentParticipantId) return;
+              clearVotes(data.issueId, false);
+              break;
+            case "assign_story_points":
+              if (originParticipantId == board.currentParticipantId) return;
+              updateIssueStatus(data.issueId, data.issueStatus);
+              updateIssuePoints(data.issueId, data.finalStoryPoint);
+              break;
+            default:
+              break;
+          }
+        },
+      }
+    );
   };
 
   const startVoting = () => {
-    setSelectedIssue({ ...selectedIssue, status: STATUS.VOTING });
+    setIssues((issues_) =>
+      issues_.map((i) => {
+        if (i.id == selectedIssueId) {
+          i.status = STATUS.VOTING;
+        }
+        return i;
+      })
+    );
     pokerClient
-      .updateIssueStatus(selectedIssue.id, STATUS.VOTING)
+      .updateIssueStatus(selectedIssueId, STATUS.VOTING)
       .then(({ data }) => {
         if (!data.status) return;
       })
       .catch((r) => pokerClient.handleError(r));
-    startCounter();
-  };
-
-  const pauseVoting = () => {
-    let _pauseCounter = !pauseCounter;
-    setPauseCounter(_pauseCounter);
-    if (_pauseCounter) setSelectedIssue({ ...selectedIssue, status: "paused" });
-    else {
-      setSelectedIssue({ ...selectedIssue, status: STATUS.VOTING });
-      setTimeout(() => setCounter(counter + 1), 1000);
-    }
   };
 
   const updateIssuePoints = (issueId, points) => {
-    setBoard({
-      ...board,
-      issues: board.issues.map((i) => {
+    setIssues((issues_) =>
+      issues_.map((i) => {
         if (i.id == issueId) i.votes.finalStoryPoint = points;
         return i;
-      }),
-    });
+      })
+    );
   };
 
   const updateIssueStatus = (issueId, status) => {
-    if (selectedIssue?.id == issueId) {
-      setSelectedIssue({
-        ...selectedIssue,
-        status: status,
-      });
-    }
-    setBoard({
-      ...board,
-      issues: board.issues.map((i) => {
+    setIssues((issues_) =>
+      issues_.map((i) => {
         if (i.id == issueId) i.status = status;
         return i;
-      }),
-    });
+      })
+    );
   };
 
-  const clearVotes = (issueId) => {
+  const clearVotes = (issueId, sendReq = true) => {
     const emptyVotes = {
       finalStoryPoint: null,
       avgStoryPoint: null,
@@ -141,36 +187,33 @@ export default function ({ children, boardId }) {
       currentUserVote: null,
       participant_votes: [],
     };
-    if (selectedIssue?.id == issueId) {
-      setSelectedIssue({
-        ...selectedIssue,
-        status: STATUS.ADDED,
-        votes: emptyVotes,
-      });
-    }
-    setBoard({
-      ...board,
-      issues: board.issues.map((i) => {
+    setIssues((issues_) =>
+      issues_.map((i) => {
         if (i.id == issueId) {
           i.votes = emptyVotes;
           i.status = STATUS.ADDED;
         }
         return i;
-      }),
-    });
-    pokerClient.clearVotes(selectedIssue.id).catch((r) => pokerClient.handleError(r));
+      })
+    );
+    if (sendReq) pokerClient.clearVotes(selectedIssueId).catch((r) => pokerClient.handleError(r));
   };
 
   const restVotes = () => {
-    if (!selectedIssue.isGhost) return;
-    clearVotes(selectedIssue.id);
+    if (!currentIssue().isGhost) return;
+    clearVotes(selectedIssueId);
   };
 
   const finishVoting = () => {
-    stopCounter();
-    setSelectedIssue({ ...selectedIssue, status: STATUS.VOTED });
+    // stopCounter();
+    setIssues((issues_) =>
+      issues_.map((i) => {
+        if (i.id == selectedIssueId) i.status = STATUS.VOTED;
+        return i;
+      })
+    );
     pokerClient
-      .updateIssueStatus(selectedIssue.id, STATUS.VOTED)
+      .updateIssueStatus(selectedIssueId, STATUS.VOTED)
       .then(({ data }) => {
         if (!data.status) return;
       })
@@ -178,7 +221,7 @@ export default function ({ children, boardId }) {
   };
 
   const addIssue = (issue) => {
-    setBoard({ ...board, issues: [issue].concat(board.issues) });
+    setIssues((issues_) => [issue].concat(issues_));
   };
 
   const confirmRemoveIssue = (e, issue) => {
@@ -190,22 +233,14 @@ export default function ({ children, boardId }) {
   const removeIssue = () => {
     if (!deletingIssue) return;
     setShowIssueRemoveConfirmation(false);
-    if (deletingIssue.id == selectedIssue.id) setSelectedIssue(false);
-    setBoard({ ...board, issues: board.issues.filter((i) => i.id != deletingIssue.id) });
+    if (deletingIssue.id == selectedIssueId) setSelectedIssueId(false);
+    setIssues((issues_) => issues_.filter((i) => i.id != deletingIssue.id));
     pokerClient.removeIssue(deletingIssue.id).catch((r) => handleError(r));
   };
 
   const selectIssue = (issue) => {
     if (!board?.canManageBoard) return;
-    setBoard({
-      ...board,
-      issues: board.issues.map((i) => {
-        if (i.id != issue.id && i.isSelected) i.isSelected = false;
-        else if (i.id == issue.id) i.isSelected = true;
-        return i;
-      }),
-    });
-    setSelectedIssue(issue);
+    setSelectedIssueId(issue.id);
     pokerClient
       .updateIssueStatus(issue.id, "selected")
       .then(({ data }) => {
@@ -215,25 +250,50 @@ export default function ({ children, boardId }) {
   };
 
   const vote = (vote) => {
-    if (selectedIssue.status != "voting") return;
-    console.log({ ...selectedIssue, votes: { ...selectedIssue.votes, currentUserVote: vote } });
-    setSelectedIssue({ ...selectedIssue, votes: { ...selectedIssue.votes, currentUserVote: vote } });
-    setBoard({
-      ...board,
-      issues: board.issues.map((i) => {
-        if (i.id == selectedIssue.id) i.votes.currentUserVote = vote;
+    if (currentIssue().status != "voting") return;
+    setIssues((issues_) =>
+      issues_.map((i) => {
+        if (i.id == selectedIssueId) i.votes.currentUserVote = vote;
         return i;
-      }),
-    });
+      })
+    );
     pokerClient
-      .vote(selectedIssue.id, vote)
+      .vote(selectedIssueId, vote)
       .then(({ data }) => {})
       .catch((r) => pokerClient.handleError(r));
   };
 
+  const addVote = (issueId, participantId, vote, id) => {
+    setIssues((issues_) =>
+      issues_.map((i) => {
+        if (i.id == issueId) {
+          let found = false;
+          i.votes.participant_votes = i.votes.participant_votes.map((v) => {
+            if (v.targent_participant_id == participantId) {
+              found = true;
+              v.vote = vote;
+            }
+            return v;
+          });
+          if (!found) {
+            i.votes.participant_votes = i.votes.participant_votes || [];
+            i.votes.participant_votes = i.votes.participant_votes.concat([
+              {
+                id: id || -1,
+                vote: vote,
+                targent_participant_id: participantId,
+              },
+            ]);
+          }
+        }
+        return i;
+      })
+    );
+  };
+
   const getVoteOfParticipant = (participant_id) => {
-    if (!selectedIssue) return;
-    const participant_votes = selectedIssue.votes.participant_votes;
+    if (!currentIssue()) return;
+    const participant_votes = currentIssue().votes.participant_votes;
     return participant_votes.find((p) => {
       return p.targent_participant_id == participant_id;
     })?.vote;
@@ -241,7 +301,7 @@ export default function ({ children, boardId }) {
 
   const highestVote = () => {
     for (const vote_ of board.availableVotes.concat([]).reverse()) {
-      const firstVote = selectedIssue.votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+      const firstVote = currentIssue().votes.participant_votes.find((v) => v.vote == vote_)?.vote;
       if (firstVote) return firstVote;
     }
     return "";
@@ -249,7 +309,7 @@ export default function ({ children, boardId }) {
 
   const lowestVote = () => {
     for (const vote_ of board.availableVotes) {
-      const firstVote = selectedIssue.votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+      const firstVote = currentIssue().votes.participant_votes.find((v) => v.vote == vote_)?.vote;
       if (firstVote) return firstVote;
     }
     return "";
@@ -259,7 +319,7 @@ export default function ({ children, boardId }) {
     let mostVote = [],
       mostVoteCount = 0;
     for (const vote_ of board.availableVotes) {
-      const count = selectedIssue.votes.participant_votes.filter((v) => v.vote == vote_).length || -1;
+      const count = currentIssue().votes.participant_votes.filter((v) => v.vote == vote_).length || -1;
       if (count > mostVoteCount) {
         mostVote = [vote_];
         mostVoteCount = count;
@@ -270,10 +330,10 @@ export default function ({ children, boardId }) {
 
   return (
     <>
-      {selectedIssue && (
+      {currentIssue() && (
         <AssignPointsModal
           board={board}
-          issue={selectedIssue}
+          issue={currentIssue()}
           open={showAssignPointsModal}
           setOpen={setShowAssignPointsModal}
           afterUpdate={(issue) => {
@@ -333,16 +393,14 @@ export default function ({ children, boardId }) {
             <Scrollbars>
               <div className="p-5">
                 <p className="text-lg font-medium mb-2">Issues</p>
-                {state == "loaded" &&
-                  board.issues &&
-                  board.issues.length > 0 &&
-                  board.issues.map((issue) => {
+                {issues?.length > 0 &&
+                  issues.map((issue) => {
                     return (
                       <div
                         key={issue.id}
                         className={
                           "w-full p-3 bg-white shadow rounded mb-4 cursor-pointer border-l-4 flex " +
-                          (issue.id == selectedIssue?.id ? "border-green-500" : "border-white")
+                          (issue.id == selectedIssueId ? "border-green-500" : "border-white")
                         }
                         onClick={() => selectIssue(issue)}>
                         <div className="w-full pr-1">
@@ -381,39 +439,45 @@ export default function ({ children, boardId }) {
           <div className="w-6/12 h-full border-r border-gray-200 bg-white shadow">
             <div className="w-full h-3/5">
               <div className="pmx-5 w-full">
-                <div className="p-3 text-black bg-purple-200 w-full border-b border-purple-400">
-                  <p className="">
+                <div
+                  className={
+                    "p-3 text-black  w-full border-b " +
+                    (currentIssue()?.status == STATUS.VOTING
+                      ? "bg-green-200 border-green-400"
+                      : "bg-purple-200 border-purple-400")
+                  }>
+                  <p>
                     {state == "loading" && "Loading board data..."}
                     {state == "loaded" &&
-                      !selectedIssue &&
+                      !currentIssue() &&
                       board?.canManageBoard &&
                       "Please select an issue to start voting"}
                     {state == "loaded" &&
-                      !selectedIssue &&
+                      !currentIssue() &&
                       !board?.canManageBoard &&
                       "Waiting for the facilitator to select an issue"}
-                    {state == "loaded" && selectedIssue && (
+                    {state == "loaded" && currentIssue() && (
                       <>
                         {board?.canManageBoard && (
                           <>
-                            {selectedIssue.status == STATUS.ADDED && "Click 'Start voting' to begin voting"}
-                            {selectedIssue.status == STATUS.VOTING &&
+                            {currentIssue().status == STATUS.ADDED && "Click 'Start voting' to begin voting"}
+                            {currentIssue().status == STATUS.VOTING &&
                               "Voting in progress. Click 'Finish voting' after all participants voted to view results"}
-                            {selectedIssue.status == STATUS.VOTED && !selectedIssue.isGhost && "Click 'Next issue'"}
-                            {selectedIssue.status == STATUS.VOTED &&
-                              selectedIssue.isGhost &&
+                            {currentIssue().status == STATUS.VOTED && !currentIssue().isGhost && "Click 'Next issue'"}
+                            {currentIssue().status == STATUS.VOTED &&
+                              currentIssue().isGhost &&
                               "Click 'Reset votes' to begin voting again"}
-                            {selectedIssue.status == STATUS.FINISHED &&
+                            {currentIssue().status == STATUS.FINISHED &&
                               "You have assigned points to this issue. Please click next issue to start voting"}
                           </>
                         )}
                         {!board?.canManageBoard && (
                           <>
-                            {selectedIssue.status == STATUS.ADDED && "Waiting for the facilitator to begin voting"}
-                            {selectedIssue.status == STATUS.VOTING && "You can cast your vote for this issue now"}
-                            {selectedIssue.status == STATUS.VOTED &&
+                            {currentIssue().status == STATUS.ADDED && "Waiting for the facilitator to begin voting"}
+                            {currentIssue().status == STATUS.VOTING && "You can cast your vote for this issue now"}
+                            {currentIssue().status == STATUS.VOTED &&
                               "Waiting for the facilitator to select the next issue"}
-                            {selectedIssue.status == STATUS.FINISHED &&
+                            {currentIssue().status == STATUS.FINISHED &&
                               "Story points assigned to this issue. Waiting for the facilitator to select another issue"}
                           </>
                         )}
@@ -426,11 +490,11 @@ export default function ({ children, boardId }) {
                 <div className="w-8/12 flex justify-center flex-col">
                   <p className="font-medium px-5 text-lg">Current issue</p>
                 </div>
-                {selectedIssue && (
+                {currentIssue() && (
                   <div className="w-4/12 flex flex-row-reverse items-center">
                     {board?.canManageBoard && (
                       <div>
-                        {!selectedIssue.isGhost && selectedIssue.status == STATUS.VOTED && (
+                        {!currentIssue().isGhost && currentIssue().status == STATUS.VOTED && (
                           <>
                             <PrimaryButton
                               size="sm"
@@ -442,45 +506,36 @@ export default function ({ children, boardId }) {
                             <PrimaryButton
                               size="sm"
                               className="text-sm mr-3 flex-grow-0"
-                              onClick={() => clearVotes(selectedIssue.id)}>
+                              onClick={() => clearVotes(selectedIssueId)}>
                               <div className="inline-block h-5"></div>
                               <span>Clear votes</span>
                             </PrimaryButton>
                           </>
                         )}
-                        {!selectedIssue.isGhost && selectedIssue.status == STATUS.FINISHED && (
+                        {!currentIssue().isGhost && currentIssue().status == STATUS.FINISHED && (
                           <PrimaryButton
                             size="sm"
                             className="text-sm mr-3 flex-grow-0"
-                            onClick={() => clearVotes(selectedIssue.id)}>
+                            onClick={() => clearVotes(selectedIssueId)}>
                             <div className="inline-block h-5"></div>
                             <span>Clear votes and revote</span>
                           </PrimaryButton>
                         )}
-                        {selectedIssue.isGhost &&
-                          (selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) && (
+                        {currentIssue().isGhost &&
+                          (currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
                             <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={restVotes}>
                               <div className="inline-block h-5"></div>
                               <span>Reset votes</span>
                             </PrimaryButton>
                           )}
-                        {selectedIssue.status == STATUS.ADDED && (
+                        {currentIssue().status == STATUS.ADDED && (
                           <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={startVoting}>
                             <PlayIcon className="w-5 h-5 text-white mr-2"></PlayIcon>
                             <span>Start voting</span>
                           </PrimaryButton>
                         )}
-                        {(selectedIssue.status == STATUS.VOTING || selectedIssue.status == "paused") && (
+                        {(currentIssue().status == STATUS.VOTING || currentIssue().status == "paused") && (
                           <>
-                            {/* <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={pauseVoting}>
-                              {selectedIssue.status == "voting" && (
-                                <PauseIcon className="w-5 h-5 text-white mr-2"></PauseIcon>
-                              )}
-                              {selectedIssue.status == "paused" && (
-                                <PlayIcon className="w-5 h-5 text-white mr-2"></PlayIcon>
-                              )}
-                              {counter}
-                            </PrimaryButton> */}
                             <PrimaryButton size="sm" className="text-sm mr-3 flex-grow-0" onClick={finishVoting}>
                               <CheckCircleIcon className="w-5 h-5 text-white mr-2"></CheckCircleIcon>
                               Finish voting
@@ -493,29 +548,29 @@ export default function ({ children, boardId }) {
                 )}
               </div>
               <div className="w-full">
-                {!selectedIssue && (
+                {!currentIssue() && (
                   <>
                     <div className="w-full h-full flex items-center justify-center">
                       <p className="text-gray-500 px-5 mt-2">No issue selected</p>
                     </div>
                   </>
                 )}
-                {selectedIssue && (
+                {currentIssue() && (
                   <>
-                    {!selectedIssue.isGhost && (
+                    {!currentIssue().isGhost && (
                       <>
                         <div className="px-5">
-                          <p className="pt-2 font-medium">{selectedIssue.summary}</p>
-                          {selectedIssue.link && (
-                            <Link to={selectedIssue.link} className="text-sm mb-2 text-green-500">
+                          <p className="pt-2 font-medium">{currentIssue().summary}</p>
+                          {currentIssue().link && (
+                            <Link to={currentIssue().link} className="text-sm mb-2 text-green-500">
                               View issue
                             </Link>
                           )}
-                          <p className="pb-2 mt-1">{selectedIssue.description}</p>
+                          <p className="pb-2 mt-1">{currentIssue().description}</p>
                         </div>
                       </>
                     )}
-                    {selectedIssue.isGhost && (
+                    {currentIssue().isGhost && (
                       <>
                         <div className="px-5">
                           <p className="pt-2 mb-1 font-medium text-indigo-500">{GHOST_ISSUE.SUMMARY}</p>
@@ -540,10 +595,10 @@ export default function ({ children, boardId }) {
                           onClick={() => vote(v)}
                           className={
                             "shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium " +
-                            (selectedIssue && selectedIssue.votes.currentUserVote == v
+                            (currentIssue() && currentIssue().votes.currentUserVote == v
                               ? "bg-green-500 hover:bg-green-500 text-white"
                               : "bg-white") +
-                            (selectedIssue?.status != "voting"
+                            (currentIssue()?.status != "voting"
                               ? " cursor-not-allowed opacity-60 "
                               : " cursor-normal hover:bg-green-50")
                           }>
@@ -558,7 +613,7 @@ export default function ({ children, boardId }) {
           <div className="w-3/12 h-full bg-white">
             <div className="w-full h-3/5">
               <p className="font-medium pt-5 pb-2 px-5 text-lg">Players</p>
-              {selectedIssue && (
+              {currentIssue() && (
                 <ul>
                   {state == "loaded" &&
                     board.participants?.length > 0 &&
@@ -573,24 +628,24 @@ export default function ({ children, boardId }) {
                             <p className="text-sm text-gray-500">{participant.email}</p>
                           </div>
                           <div className="w-3/12 h-full flex items-center flex-row-reverse">
-                            {selectedIssue && (
+                            {currentIssue() && (
                               <div className="h-10 w-10 rounded-full bg-purple-500 text-center flex items-center justify-center text-white">
-                                {selectedIssue.status == STATUS.ADDED && (
+                                {currentIssue().status == STATUS.ADDED && (
                                   <ClockIcon className="w-5 h-5 text-gray-100" />
                                 )}
 
-                                {selectedIssue.status == STATUS.VOTING && !participant_vote && (
+                                {currentIssue().status == STATUS.VOTING && !participant_vote && (
                                   <ClockIcon className="w-5 h-5 text-gray-100" />
                                 )}
 
-                                {selectedIssue.status == STATUS.VOTING && participant_vote && (
+                                {currentIssue().status == STATUS.VOTING && participant_vote && (
                                   <CheckIcon className="w-5 h-5 text-white" />
                                 )}
 
-                                {(selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) &&
+                                {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) &&
                                   participant_vote && <span className="font-medium">{participant_vote}</span>}
 
-                                {(selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) &&
+                                {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) &&
                                   !participant_vote && <ClockIcon className="w-5 h-5 text-gray-100" />}
                               </div>
                             )}
@@ -602,25 +657,18 @@ export default function ({ children, boardId }) {
               )}
             </div>
             <div className="w-full h-2/5 border-t border-gray-200">
-              {selectedIssue && (
+              {currentIssue() && (
                 <>
                   <p className="font-medium pt-5 pb-2 px-5 text-lg">Results</p>
-                  {(selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) && (
+                  {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
                     <div className="w-full px-5">
                       <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Total votes</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;{pluralize("vote", selectedIssue.votes.participant_votes || 0)}</span>
-                          <span className="text-purple-500">{selectedIssue.votes.participant_votes.length || 0}</span>
+                          <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
+                          <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
                         </div>
                       </div>
-                      {/* <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Average vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">3.5</span>
-                        </div>
-                      </div> */}
                       <div className="w-full flex items-center mb-2">
                         <div className="w-8/12 text-gray-600">Highest vote</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
@@ -644,7 +692,7 @@ export default function ({ children, boardId }) {
                       </div>
                     </div>
                   )}
-                  {!(selectedIssue.status == STATUS.VOTED || selectedIssue.status == STATUS.FINISHED) && (
+                  {!(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
                     <p className="mt-2 text-gray-500 px-5">Waiting for voting to be completed</p>
                   )}
                 </>

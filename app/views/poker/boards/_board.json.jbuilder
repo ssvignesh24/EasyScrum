@@ -5,6 +5,7 @@ json.inviteURL "#{ENV['HOST']}poker/board/invite/#{board.get_invitation_token}"
 json.canManageBoard board.created_by_id == current_user&.id
 json.availableVotesString board.available_votes.join(", ")
 json.availableVotes board.available_votes
+json.currentParticipantId board.target_participants.where(participant: current_resource).take&.id
 if board.card_template.present?
   json.card_template do
     json.(board.card_template, :id, :name)

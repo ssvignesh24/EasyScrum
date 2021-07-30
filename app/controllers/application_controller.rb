@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
 
   def current_resource
     return current_user if user_signed_in?
-    Guest.where(id: session[:guest_id]).take if session[:guest_id].present?
+    Guest.where(id: cookies.encrypted[:guest_id]).take if cookies.encrypted[:guest_id].present?
   end
 
   def current_user_type

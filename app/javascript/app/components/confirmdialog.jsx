@@ -60,7 +60,7 @@ function ConfirmDialog(props) {
                   {okText}
                 </DangerButton>
                 {props.cancelText && (
-                  <MutedButton type="button" ref={cancelDelete} onClick={() => onCancel()}>
+                  <MutedButton type="button" innerRef={cancelDelete} onClick={() => onCancel()}>
                     {cancelText}
                   </MutedButton>
                 )}

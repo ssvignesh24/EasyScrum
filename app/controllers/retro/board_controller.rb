@@ -53,7 +53,7 @@ class Retro::BoardController < ApiController
     guest.name = guest_params[:name].strip
     guest.save!
     Retro::Participant.where(board: board, participant: guest).first_or_create!
-    session[:guest_id] = guest.id
+    cookies.encrypted[:guest_id] = guest.id
     redirect_to retro_board_path(board.id)
   end
 

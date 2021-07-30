@@ -59,7 +59,7 @@ class Poker::BoardsController < ApiController
     guest.name = guest_params[:name].strip
     guest.save!
     Poker::Participant.where(board: board, participant: guest, is_spectator: false).first_or_create!
-    session[:guest_id] = guest.id
+    cookies.encrypted[:guest_id] = guest.id
     redirect_to "/poker/board/#{board.id}"
   end
 
