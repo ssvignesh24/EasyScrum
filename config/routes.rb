@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   post 'poker/board/invite/:token' => "poker/boards#add_participant"
 
   constraints lambda { |req| req.format == :json } do
+    # resources :users, only: [:update, :destroy]
+    put "profile" => "users#update"
+
     namespace :poker do
       resources :boards, only: [:index, :show, :create, :update, :destroy], param: :board_id do
         member do

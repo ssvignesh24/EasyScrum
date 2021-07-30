@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :validate_user_params, only: :create
+  before_action :authenticate_user!, except: [:new, :create, :verify_email]
   
   def new
     @errors = {}
@@ -31,6 +32,26 @@ class UsersController < ApplicationController
       redirect_to root_path
     else
       show_error("Either the token is not valid or the link has expired") and return
+    end
+  end
+
+  def update
+    as_api do
+      name = params[:user].try(:[], :name)
+      email = params[:user].try(:[], :email)
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name and email are empty"}) unless name.present? && email.present?
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name is empty"}) unless name.present?
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name is too small"}) if name.size <= 1
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Email is empty"}) unless email.present?
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Invalid email"}) if !Mail::Address.new(email).domain.present?
+      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Email already take"}) if User.where(email: email).where.not(id: current_user.id).take.present? || Guest.where(email: email).take.present?
+      User.transaction do
+        current_user.update!(name: name, email: email)
+        if params[:user].try(:[], :display_picture).present?
+          current_user.avatar = params[:user][:display_picture]
+          current_user.save!
+        end
+      end
     end
   end
 
