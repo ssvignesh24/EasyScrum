@@ -95,7 +95,7 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
 
   return (
     <>
-      <div className="w-full p-3 bg-white shadow rounded mb-3">
+      <div className="w-full p-3 bg-white shadow rounded mb-3 retro-card">
         {(state == "editing" || state == "updating") && (
           <>
             <textarea
@@ -115,7 +115,7 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
             </div>
           </>
         )}
-        {state == "ready" && <p className="text-sm">{card.message}</p>}
+        {state == "ready" && <pre className="text-sm">{card.message}</pre>}
         {card.canManageCard && state == "ready" && (
           <div className="flex mt-3">
             <button className="flex text-green-500 items-center mr-4" onClick={editCard}>

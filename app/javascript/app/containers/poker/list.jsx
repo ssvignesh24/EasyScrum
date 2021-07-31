@@ -69,7 +69,8 @@ export default function ({ children }) {
 
           <div className="w-full">
             <div className="grid grid-cols-2 grid-gap-3">
-              {data.boards &&
+              {data.state == "loaded" &&
+                data.boards &&
                 data.boards.length > 0 &&
                 data.boards.map((board) => {
                   return (
@@ -78,7 +79,7 @@ export default function ({ children }) {
                         <div className="p-5 bg-white rounded shadow">
                           <p className="text-lg font-medium">{board.name}</p>
                           <div className="flex text-gray-500 items-center">
-                            <span className="text-sm ">2 days ago</span>
+                            <span className="text-sm ">{board.createdAt}</span>
                             <div className="middot bg-gray-500"></div>
                             <span className="text-sm">{pluralize("player", board.participantsCount, true)}</span>
                             <div className="middot bg-gray-500"></div>
@@ -89,6 +90,20 @@ export default function ({ children }) {
                     </div>
                   );
                 })}
+              {data.state == "loading" && (
+                <>
+                  {_.times(6, (n) => {
+                    return (
+                      <div className="p-3" key={n}>
+                        <div className="p-5 bg-white rounded shadow">
+                          <div class="w-10/12 h-3 mb-3.5 bg-gray-200 rounded-xl animate-pulse"></div>
+                          <div class="w-9/12 h-2 bg-gray-200 rounded-xl animate-pulse"></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
             </div>
           </div>
         </div>

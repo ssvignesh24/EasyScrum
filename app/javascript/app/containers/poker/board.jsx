@@ -431,7 +431,7 @@ export default function ({ children, boardId }) {
           />
         </>
       )}
-      {currentIssue() && (
+      {state == "loaded" && currentIssue() && (
         <AssignPointsModal
           board={board}
           issue={currentIssue()}
@@ -480,7 +480,7 @@ export default function ({ children, boardId }) {
           )}
         </div>
         <div className="w-3/12 flex items-center flex-row-reverse">
-          {board && (
+          {state == "loaded" && board && (
             <Menu as="div" className="relative z-30">
               {({ open }) => (
                 <>
@@ -562,7 +562,8 @@ export default function ({ children, boardId }) {
             <Scrollbars>
               <div className="p-5">
                 <p className="text-lg font-medium mb-2">Issues</p>
-                {issues?.length > 0 &&
+                {state == "loaded" &&
+                  issues?.length > 0 &&
                   issues.map((issue) => {
                     return (
                       <div
@@ -602,6 +603,20 @@ export default function ({ children, boardId }) {
                       </div>
                     );
                   })}
+                {state == "loading" && (
+                  <>
+                    {_.times(4, (m) => {
+                      return (
+                        <div key={m} className="bg-white p-3 shadow rounded mb-5 ">
+                          <div className="w-6/12 h-2.5 mb-3.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                          <div className="w-full h-1.5 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                          <div className="w-full h-1.5 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                          <div className="w-8/12 h-1.5 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
               </div>
             </Scrollbars>
           </div>
@@ -659,7 +674,7 @@ export default function ({ children, boardId }) {
                 <div className="w-8/12 flex justify-center flex-col">
                   <p className="font-medium px-5 text-lg">Current issue</p>
                 </div>
-                {currentIssue() && (
+                {state == "loaded" && currentIssue() && (
                   <div className="w-4/12 flex flex-row-reverse items-center">
                     {board?.canManageBoard && (
                       <div>
@@ -717,14 +732,14 @@ export default function ({ children, boardId }) {
                 )}
               </div>
               <div className="w-full">
-                {!currentIssue() && (
+                {state == "loaded" && !currentIssue() && (
                   <>
                     <div className="w-full h-full flex items-center justify-center">
                       <p className="text-gray-500 px-5 mt-2">No issue selected</p>
                     </div>
                   </>
                 )}
-                {currentIssue() && (
+                {state == "loaded" && currentIssue() && (
                   <>
                     {!currentIssue().isGhost && (
                       <>
@@ -748,6 +763,14 @@ export default function ({ children, boardId }) {
                       </>
                     )}
                   </>
+                )}
+                {state == "loading" && (
+                  <div className="px-5">
+                    <div className="w-6/12 h-2.5 mb-3.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                    <div className="w-full h-2 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                    <div className="w-full h-2 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                    <div className="w-8/12 h-2 mb-3 rounded-xl bg-gray-200 animate-pulse"></div>
+                  </div>
                 )}
               </div>
             </div>
@@ -776,6 +799,19 @@ export default function ({ children, boardId }) {
                       </div>
                     );
                   })}
+                {state == "loading" && (
+                  <>
+                    {_.times(12, (n) => {
+                      return (
+                        <div className="p-3 w-32 h-32" key={n}>
+                          <div className="animate-pulse shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium ">
+                            <div className="w-0 h-3 bg-gray-300 rounded"></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -826,49 +862,62 @@ export default function ({ children, boardId }) {
                           </li>
                         );
                       })}
+                    {state == "loading" && (
+                      <>
+                        {_.times(5, (n) => {
+                          return (
+                            <div className="py-3 px-5 mb-3 w-full">
+                              <div class="w-10/12 h-3 mb-2.5 bg-gray-200 rounded animate-pulse"></div>
+                              <div class="w-9/12 h-2 bg-gray-200 rounded animate-pulse"></div>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
                   </ul>
                 )}
               </Scrollbars>
             </div>
             <div className="w-full h-2/5 border-t border-gray-200">
-              {currentIssue() && (
+              {state == "loaded" && currentIssue() && (
                 <>
                   <p className="font-medium pt-5 pb-2 px-5 text-lg">Results</p>
-                  {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
-                    <div className="w-full px-5">
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Total votes</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
-                          <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Highest vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{highestVote()}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Lowest vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{lowestVote()}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Most voted</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{mostVoted().join(", ")}</span>
-                        </div>
+                  (currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
+                  <div className="w-full px-5">
+                    <div className="w-full flex items-center mb-2">
+                      <div className="w-8/12 text-gray-600">Total votes</div>
+                      <div className="w-4/12 flex flex-row-reverse font-medium">
+                        <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
+                        <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
                       </div>
                     </div>
-                  )}
-                  {!(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
-                    <p className="mt-2 text-gray-500 px-5">Waiting for voting to be completed</p>
-                  )}
+                    <div className="w-full flex items-center mb-2">
+                      <div className="w-8/12 text-gray-600">Highest vote</div>
+                      <div className="w-4/12 flex flex-row-reverse font-medium">
+                        <span>&ensp;points</span>
+                        <span className="text-purple-500">{highestVote()}</span>
+                      </div>
+                    </div>
+                    <div className="w-full flex items-center mb-2">
+                      <div className="w-8/12 text-gray-600">Lowest vote</div>
+                      <div className="w-4/12 flex flex-row-reverse font-medium">
+                        <span>&ensp;points</span>
+                        <span className="text-purple-500">{lowestVote()}</span>
+                      </div>
+                    </div>
+                    <div className="w-full flex items-center mb-2">
+                      <div className="w-8/12 text-gray-600">Most voted</div>
+                      <div className="w-4/12 flex flex-row-reverse font-medium">
+                        <span>&ensp;points</span>
+                        <span className="text-purple-500">{mostVoted().join(", ")}</span>
+                      </div>
+                    </div>
+                  </div>
+                  )
+                  {state == "loaded" &&
+                    !(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
+                      <p className="mt-2 text-gray-500 px-5">Waiting for voting to be completed</p>
+                    )}
                 </>
               )}
             </div>

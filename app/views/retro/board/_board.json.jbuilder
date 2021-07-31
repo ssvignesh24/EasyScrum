@@ -7,6 +7,7 @@ json.inviteURL "#{ENV['HOST']}retro/board/invite/#{retro.get_invitation_token}"
 json.canManageBoard retro.created_by_id == current_user&.id
 json.currentParticipantId retro.target_participants.where(participant: current_resource).take&.id
 json.currentParticipantName retro.target_participants.where(participant: current_resource).take&.participant&.name
+json.createdAt readable_datetime(retro.created_at)
 if retro.template.present?
   json.template do
     json.id retro.template.id

@@ -6,6 +6,7 @@ json.canManageBoard board.created_by_id == current_user&.id
 json.availableVotesString board.available_votes.join(", ")
 json.availableVotes board.available_votes
 json.currentParticipantId board.target_participants.where(participant: current_resource).take&.id
+json.createdAt readable_datetime(board.created_at)
 if board.card_template.present?
   json.card_template do
     json.(board.card_template, :id, :name)

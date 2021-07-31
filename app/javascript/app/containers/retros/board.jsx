@@ -262,16 +262,114 @@ export default function ({ children, boardId }) {
             {state == "loaded" && pluralize("Participants", board.participantsCount, true)}
           </p>
         </div>
-        <div className="w-3/12 flex items-center flex-row-reverse">
-          {/* <PrimaryButton className="mr-3">Add column</PrimaryButton> */}
-          <div className="flex-shrink-0">
-            {state == "loaded" && (
+        {state == "loaded" && (
+          <div className="w-3/12 flex items-center flex-row-reverse">
+            {/* <PrimaryButton className="mr-3">Add column</PrimaryButton> */}
+            <div className="flex-shrink-0">
+              {state == "loaded" && (
+                <Menu as="div" className="relative z-30">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="mr-3">
+                        <PrimaryButton as="div">
+                          Board options
+                          <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
+                        </PrimaryButton>
+                      </Menu.Button>
+
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95">
+                        <Menu.Items
+                          static
+                          className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => setShowCreateColumn(true)}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Add column
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={classNames(
+                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                    "block w-full text-left px-4 py-2 text-sm"
+                                  )}>
+                                  Show participants
+                                </button>
+                              )}
+                            </Menu.Item>
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Edit board
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Archive board
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      active ? "bg-red-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}
+                                    onClick={() => setConfirmDelete(true)}>
+                                    Delete board
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
+              )}
+            </div>
+            <div className="flex-shrink-0">
               <Menu as="div" className="relative z-30">
                 {({ open }) => (
                   <>
                     <Menu.Button className="mr-3">
                       <PrimaryButton as="div">
-                        Board options
+                        Action items
                         <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
                       </PrimaryButton>
                     </Menu.Button>
@@ -289,20 +387,6 @@ export default function ({ children, boardId }) {
                         static
                         className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="py-1">
-                          {board.canManageBoard && (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={() => setShowCreateColumn(true)}
-                                  className={classNames(
-                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  Add column
-                                </button>
-                              )}
-                            </Menu.Item>
-                          )}
                           <Menu.Item>
                             {({ active }) => (
                               <button
@@ -310,117 +394,35 @@ export default function ({ children, boardId }) {
                                   active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                                   "block w-full text-left px-4 py-2 text-sm"
                                 )}>
-                                Show participants
+                                Show action items
                               </button>
                             )}
                           </Menu.Item>
-                          {board.canManageBoard && (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={classNames(
-                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  Edit board
-                                </button>
-                              )}
-                            </Menu.Item>
-                          )}
-                          {board.canManageBoard && (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={classNames(
-                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  Archive board
-                                </button>
-                              )}
-                            </Menu.Item>
-                          )}
-                          {board.canManageBoard && (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={classNames(
-                                    active ? "bg-red-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}
-                                  onClick={() => setConfirmDelete(true)}>
-                                  Delete board
-                                </button>
-                              )}
-                            </Menu.Item>
-                          )}
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                  "block w-full text-left px-4 py-2 text-sm"
+                                )}>
+                                Previous retro action items
+                              </button>
+                            )}
+                          </Menu.Item>
                         </div>
                       </Menu.Items>
                     </Transition>
                   </>
                 )}
               </Menu>
-            )}
+            </div>
+            <div className="flex-shrink-0">
+              <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
+                Invite users
+              </PrimaryButton>
+            </div>
           </div>
-          <div className="flex-shrink-0">
-            <Menu as="div" className="relative z-30">
-              {({ open }) => (
-                <>
-                  <Menu.Button className="mr-3">
-                    <PrimaryButton as="div">
-                      Action items
-                      <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
-                    </PrimaryButton>
-                  </Menu.Button>
-
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95">
-                    <Menu.Items
-                      static
-                      className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block w-full text-left px-4 py-2 text-sm"
-                              )}>
-                              Show action items
-                            </button>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block w-full text-left px-4 py-2 text-sm"
-                              )}>
-                              Previous retro action items
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </>
-              )}
-            </Menu>
-          </div>
-          <div className="flex-shrink-0">
-            <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
-              Invite users
-            </PrimaryButton>
-          </div>
-        </div>
+        )}
       </div>
       <div
         className="w-full pt-3 pl-3"
@@ -455,6 +457,31 @@ export default function ({ children, boardId }) {
                 </Column>
               );
             })}
+          {state == "loading" && (
+            <>
+              <div className="flex">
+                {_.times(4, (n) => {
+                  return (
+                    <div key={n} className="p-3" style={{ width: "400px" }}>
+                      <div className="w-8/12 h-3 mb-5 mb-4 rounded-xl bg-gray-300"></div>
+                      <div className="bg-white py-5 shadow rounded mb-5 flex justify-center items-center">
+                        <div className="w-5/12 h-2.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                      </div>
+                      {_.times(4 - n, (m) => {
+                        return (
+                          <div key={m} className="bg-white p-3 shadow rounded mb-5 ">
+                            <div className="w-full h-2.5 mb-3.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                            <div className="w-full h-2.5 mb-3.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                            <div className="w-8/12 h-2.5 mb-3.5 rounded-xl bg-gray-200 animate-pulse"></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
