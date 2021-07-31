@@ -40,16 +40,24 @@ export default function ({ children }) {
   const prependBoard = ({ board }) => {
     if (!board) return;
     const boards = [board].concat(data.boards);
-    const _data = {
-      boards: boards,
-      totalCount: data.totalCount + 1,
-      state: data.state,
-    };
-    setData(_data);
+    setData((data_) => {
+      return {
+        ...data_,
+        totalCount: data_.totalCount + 1,
+        boards: boards,
+      };
+    });
   };
   return (
     <>
-      <CreateBoard open={showCreateBoard} setOpen={setShowCreateBoard} afterCreate={prependBoard} />
+      {data.state == "loaded" && (
+        <CreateBoard
+          templates={data.boardTemplates}
+          open={showCreateBoard}
+          setOpen={setShowCreateBoard}
+          afterCreate={prependBoard}
+        />
+      )}
       <div className="container mx-auto">
         <div className="w-full">
           <div className="py-3 px-3 flex">
@@ -59,9 +67,11 @@ export default function ({ children }) {
               {data.state == "loading" && <p className="text-gray-500">Loading boards...</p>}
             </div>
             <div className="w-5/12 flex flex-row-reverse items-center">
-              <div>
-                <PrimaryButton onClick={() => setShowCreateBoard(true)}>Create a board</PrimaryButton>
-              </div>
+              {window.currentResource.type == "User" && (
+                <div>
+                  <PrimaryButton onClick={() => setShowCreateBoard(true)}>Create a board</PrimaryButton>
+                </div>
+              )}
             </div>
           </div>
 
@@ -92,8 +102,8 @@ export default function ({ children }) {
                     return (
                       <div className="p-3" key={n}>
                         <div className="p-5 bg-white rounded shadow">
-                          <div class="w-10/12 h-3 mb-3.5 bg-gray-200 rounded-xl animate-pulse"></div>
-                          <div class="w-9/12 h-2 bg-gray-200 rounded-xl animate-pulse"></div>
+                          <div className="w-10/12 h-3 mb-3.5 bg-gray-200 rounded-xl animate-pulse"></div>
+                          <div className="w-9/12 h-2 bg-gray-200 rounded-xl animate-pulse"></div>
                         </div>
                       </div>
                     );

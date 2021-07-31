@@ -19,13 +19,7 @@ function CreateColumn(props) {
   const nameField = useRef();
   const selectRole = useRef();
   const pokerClient = new Poker();
-  const templates = [
-    { id: 1, name: "Fibonacci series(1,2,3,5,8,13)" },
-    { id: 2, name: "1 - 10" },
-    { id: 3, name: "T-shirt sizes (XS, S, M, L, XL, 2XL" },
-    { id: 0, name: "Custom" },
-  ];
-
+  const templates = props.cardTemplates.concat({ id: 0, name: "Custom" });
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
   const [name, setName] = useState("");
   const [cardVotes, setCardVotes] = useState("");
@@ -236,6 +230,7 @@ CreateColumn.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterCreate: PropTypes.func,
+  cardTemplates: PropTypes.array,
 };
 
 export default CreateColumn;

@@ -18,11 +18,7 @@ function CreateColumn(props) {
   const nameField = useRef();
   const selectRole = useRef();
   const retroClient = new Retro();
-  const templates = [
-    { id: 0, name: "Blank" },
-    { id: 1, name: "What went well?, What we should stop doing?, What we can do better?, What should do more of?" },
-  ];
-
+  const templates = [{ name: "Blank", id: 0 }].concat(props.templates);
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
   const [name, setName] = useState("");
   const [context, setContext] = useState("");
@@ -37,7 +33,7 @@ function CreateColumn(props) {
     const payload = {
       name,
       context,
-      template_id: templateId,
+      template_id: selectedTemplate?.id,
     };
     retroClient
       .createBoard({ retro: payload })
@@ -136,6 +132,7 @@ function CreateColumn(props) {
                                   static
                                   className="absolute mt-1 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                   {templates.map((template) => {
+                                    console.log(template);
                                     return (
                                       <Listbox.Option
                                         key={template.id}
@@ -178,6 +175,12 @@ function CreateColumn(props) {
                           </>
                         )}
                       </Listbox>
+                      {selectedTemplate?.description && (
+                        <>
+                          <p className="mt-3">Columns:</p>
+                          <div className="mt-1 font-medium text-grafy-500">{selectedTemplate?.description}</div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -203,6 +206,7 @@ CreateColumn.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterCreate: PropTypes.func,
+  templates: PropTypes.array,
 };
 
 export default CreateColumn;

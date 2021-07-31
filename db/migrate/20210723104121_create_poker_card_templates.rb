@@ -3,6 +3,7 @@ class CreatePokerCardTemplates < ActiveRecord::Migration[6.1]
     create_table :poker_card_templates do |t|
       t.string :name, null: false
       t.text :cards, array: true, null: false
+      t.boolean :active, null: false
 
       t.timestamps
     end

@@ -10,6 +10,7 @@ import pluralize from "pluralize";
 
 import CreateCard from "./create_card";
 import EditColumnModal from "./edit_column";
+import ConfirmDialog from "../confirmdialog";
 
 import Retro from "../../services/retro";
 
@@ -19,7 +20,13 @@ function classNames(...classes) {
 
 export default function ({ children, boardId, column, afterUpdate, afterDelete, addCard }) {
   const retroClient = new Retro(boardId);
+
+  const [showEditColumn, setShowEditColumn] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [state, setState] = useState("ready");
+
   const deleteColumn = () => {
+    setState("deleting");
     retroClient
       .deleteColumn(column.id)
       .then(({ data }) => {
@@ -28,7 +35,6 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
       })
       .catch((r) => retroClient.handleError(r));
   };
-  const [showEditColumn, setShowEditColumn] = useState(false);
 
   const editColumn = () => {};
 
@@ -36,6 +42,19 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
 
   return (
     <>
+      <ConfirmDialog
+        open={confirmDelete}
+        title={() => `Delete '${column.name}' column?`}
+        body="Deleting this column will also delete the cards within it. Are you sure want to continue?"
+        okText={state == "ready" ? "Yes, Delete" : "Deleting column..."}
+        disabled={state == "deleting"}
+        onCancel={() => {
+          setConfirmDelete(false);
+        }}
+        cancelText="Cancel"
+        onOk={deleteColumn}
+      />
+
       <EditColumnModal
         column={column}
         open={showEditColumn}
@@ -90,7 +109,7 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
                                   active ? "bg-red-100 text-gray-900" : "text-gray-700",
                                   "block w-full text-left px-4 py-2 text-sm"
                                 )}
-                                onClick={deleteColumn}>
+                                onClick={() => setConfirmDelete(true)}>
                                 Remove column
                               </button>
                             )}

@@ -27,6 +27,7 @@ function CreateColumn(props) {
 
   const createColumn = () => {
     setError(false);
+    setState("creating");
     const payload = {
       name,
     };

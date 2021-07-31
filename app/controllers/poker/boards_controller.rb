@@ -21,7 +21,7 @@ class Poker::BoardsController < ApiController
           b.available_votes = template.cards
         end
       elsif board_params[:custom_votes].present?
-        b.available_votes = board_params[:custom_votes].split(",").reject(&:blank?)
+        b.available_votes = board_params[:custom_votes].split(",").reject(&:blank?).uniq
       end
       b.archived = false
       b.active = true

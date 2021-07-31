@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 import { TrashIcon, PencilIcon } from "@heroicons/react/solid";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
 
+import ConfirmDialog from "../confirmdialog";
+
 import Retro from "../../services/retro";
 
 const randId = () => {
@@ -19,6 +21,7 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
   const [commentText, setCommentText] = useState("");
   const [updatedMessage, setUpdatedMessage] = useState(card.message);
   const [state, setState] = useState("ready");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const addComment = (value) => {
     const tmpCommentId = randId();
@@ -72,6 +75,8 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
   };
 
   const deleteCard = (e) => {
+    if (state == "deleting") return;
+    setState("deleting");
     retroClient
       .deleteCard(columnId, card.id)
       .then(({ data }) => {
@@ -95,7 +100,19 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
 
   return (
     <>
-      <div className="w-full p-3 bg-white shadow rounded mb-3 retro-card">
+      <ConfirmDialog
+        open={confirmDelete}
+        title={() => `Are you sure want to delete this card?`}
+        body=""
+        okText={state == "ready" ? "Yes, Delete" : "Deleting card..."}
+        disabled={state == "deleting"}
+        onCancel={() => {
+          setConfirmDelete(false);
+        }}
+        cancelText="Cancel"
+        onOk={deleteCard}
+      />
+      <div className={"w-full p-3 bg-white shadow rounded mb-3 retro-card " + (state == "deleting" && "opacity-60")}>
         {(state == "editing" || state == "updating") && (
           <>
             <textarea
@@ -115,16 +132,17 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
             </div>
           </>
         )}
-        {state == "ready" && <pre className="text-sm">{card.message}</pre>}
-        {card.canManageCard && state == "ready" && (
+        {(state == "ready" || state == "deleting") && <pre className="text-sm">{card.message}</pre>}
+        {card.canManageCard && (state == "ready" || state == "deleting") && (
           <div className="flex mt-3">
             <button className="flex text-green-500 items-center mr-4" onClick={editCard}>
               <PencilIcon className="w-3.5 h-3.5 mr-1" />
               <span className="text-sm">Edit</span>
             </button>
-            <button className="flex text-red-700 items-center" onClick={deleteCard}>
+            <button className="flex text-red-700 items-center" onClick={() => setConfirmDelete(true)}>
               <TrashIcon className="w-3.5 h-3.5 mr-1" />
-              <span className="text-sm">Delete</span>
+              {state == "deleting" && <span className="text-sm">Deleting</span>}
+              {state == "ready" && <span className="text-sm">Delete</span>}
             </button>
           </div>
         )}
