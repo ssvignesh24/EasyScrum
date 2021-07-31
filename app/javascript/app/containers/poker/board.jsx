@@ -50,7 +50,10 @@ export default function ({ children, boardId }) {
   const [showIssueRemoveConfirmation, setShowIssueRemoveConfirmation] = useState(false);
   const [deletingIssue, setDeletingIssue] = useState();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showConfirmRemoveParticipant, setShowConfirmRemoveParticipant] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState();
   const [deleteState, setDeleteState] = useState("init");
+  const [removeParticipantState, setRemoveParticipantState] = useState("init");
 
   useEffect(() => {
     pokerClient
@@ -78,6 +81,33 @@ export default function ({ children, boardId }) {
 
   const currentIssue = () => issues?.find((i) => i.id == selectedIssueId);
 
+  const confirmRemoveParticipant = (participant) => {
+    if (board.currentParticipantId == participant.id) return;
+    setSelectedParticipant(participant);
+    setShowConfirmRemoveParticipant(true);
+  };
+
+  const removeParticipant = () => {
+    if (!selectedParticipant?.id) return;
+    setRemoveParticipantState("removing");
+    setBoard((board_) => {
+      return {
+        ...board_,
+        participants: board_.participants.filter((p) => p.id != selectedParticipant.id),
+      };
+    });
+    pokerClient
+      .removeParticipant(selectedParticipant?.id)
+      .then(({ data }) => {
+        if (!data.status) return;
+        setShowConfirmRemoveParticipant(false);
+        setTimeout(() => {
+          setSelectedParticipant(false);
+          setRemoveParticipantState("init");
+        }, 500);
+      })
+      .catch((r) => pokerClient.handleError(r));
+  };
   const deleteBoard = () => {
     setDeleteState("deleting");
     pokerClient
@@ -88,6 +118,7 @@ export default function ({ children, boardId }) {
       })
       .catch((r) => pokerClient.handleError(r));
   };
+
   const modifyBoard = (type, issue) => {
     switch (type) {
       case "add_issue":
@@ -155,12 +186,33 @@ export default function ({ children, boardId }) {
               updateIssueStatus(data.issueId, data.issueStatus);
               updateIssuePoints(data.issueId, data.finalStoryPoint);
               break;
+            case "new_participant":
+              addParticipant(data.participant);
+              break;
+            case "remove_participant":
+              setBoard((board_) => {
+                return {
+                  ...board_,
+                  participants: board_.participants.filter((p) => p.id != data.participantId),
+                };
+              });
+              break;
             default:
               break;
           }
         },
       }
     );
+  };
+
+  const addParticipant = (participant) => {
+    if (board.participants.find((p) => p.id == participant.id)) return;
+    setBoard((board_) => {
+      return {
+        ...board_,
+        participants: board_.participants.concat(participant),
+      };
+    });
   };
 
   const startVoting = () => {
@@ -363,6 +415,19 @@ export default function ({ children, boardId }) {
             }}
             cancelText="Cancel"
             onOk={deleteBoard}
+          />
+
+          <ConfirmDialog
+            open={showConfirmRemoveParticipant}
+            title={() => `Remove ${selectedParticipant?.name || ""}?`}
+            body="He/She may no longer able to vote in this board. Are you sure want to remove?"
+            okText={removeParticipantState == "init" ? "Yes, Remove" : `Removing ${selectedParticipant?.name}...`}
+            disabled={removeParticipantState == "removing"}
+            onCancel={() => {
+              setShowConfirmRemoveParticipant(false);
+            }}
+            cancelText="Cancel"
+            onOk={removeParticipant}
           />
         </>
       )}
@@ -716,49 +781,54 @@ export default function ({ children, boardId }) {
           </div>
           <div className="w-3/12 h-full bg-white">
             <div className="w-full h-3/5">
-              <p className="font-medium pt-5 pb-2 px-5 text-lg">Players</p>
-              {currentIssue() && (
-                <ul>
-                  {state == "loaded" &&
-                    board.participants?.length > 0 &&
-                    board.participants.map((participant) => {
-                      const participant_vote = getVoteOfParticipant(participant.id);
-                      return (
-                        <li
-                          className="w-full py-3 px-5 flex items-center hover:bg-gray-100 transition-colors"
-                          key={participant.id}>
-                          <div className="w-9/12 h-full flex justify-center flex-col">
-                            <p>{participant.name}</p>
-                            <p className="text-sm text-gray-500">{participant.email}</p>
-                          </div>
-                          <div className="w-3/12 h-full flex items-center flex-row-reverse">
-                            {currentIssue() && (
-                              <div className="h-10 w-10 rounded-full bg-purple-500 text-center flex items-center justify-center text-white">
-                                {currentIssue().status == STATUS.ADDED && (
-                                  <ClockIcon className="w-5 h-5 text-gray-100" />
-                                )}
+              <Scrollbars>
+                <p className="font-medium pt-5 pb-2 px-5 text-lg">Players</p>
+                {currentIssue() && (
+                  <ul>
+                    {state == "loaded" &&
+                      board.participants?.length > 0 &&
+                      board.participants.map((participant) => {
+                        const participant_vote = getVoteOfParticipant(participant.id);
+                        return (
+                          <li
+                            className="w-full py-3 px-5 flex items-center hover:bg-gray-100 transition-colors"
+                            onClick={() => confirmRemoveParticipant(participant)}
+                            key={participant.id}>
+                            <div className="w-9/12 h-full flex justify-center flex-col">
+                              <p>{participant.name}</p>
+                              <p className="text-sm text-gray-500">{participant.email}</p>
+                            </div>
+                            <div className="w-3/12 h-full flex items-center flex-row-reverse">
+                              {currentIssue() && (
+                                <div className="h-10 w-10 rounded-full bg-purple-500 text-center flex items-center justify-center text-white">
+                                  {currentIssue().status == STATUS.ADDED && (
+                                    <ClockIcon className="w-5 h-5 text-gray-100" />
+                                  )}
 
-                                {currentIssue().status == STATUS.VOTING && !participant_vote && (
-                                  <ClockIcon className="w-5 h-5 text-gray-100" />
-                                )}
+                                  {currentIssue().status == STATUS.VOTING && !participant_vote && (
+                                    <ClockIcon className="w-5 h-5 text-gray-100" />
+                                  )}
 
-                                {currentIssue().status == STATUS.VOTING && participant_vote && (
-                                  <CheckIcon className="w-5 h-5 text-white" />
-                                )}
+                                  {currentIssue().status == STATUS.VOTING && participant_vote && (
+                                    <CheckIcon className="w-5 h-5 text-white" />
+                                  )}
 
-                                {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) &&
-                                  participant_vote && <span className="font-medium">{participant_vote}</span>}
+                                  {(currentIssue().status == STATUS.VOTED ||
+                                    currentIssue().status == STATUS.FINISHED) &&
+                                    participant_vote && <span className="font-medium">{participant_vote}</span>}
 
-                                {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) &&
-                                  !participant_vote && <ClockIcon className="w-5 h-5 text-gray-100" />}
-                              </div>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                </ul>
-              )}
+                                  {(currentIssue().status == STATUS.VOTED ||
+                                    currentIssue().status == STATUS.FINISHED) &&
+                                    !participant_vote && <ClockIcon className="w-5 h-5 text-gray-100" />}
+                                </div>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                )}
+              </Scrollbars>
             </div>
             <div className="w-full h-2/5 border-t border-gray-200">
               {currentIssue() && (

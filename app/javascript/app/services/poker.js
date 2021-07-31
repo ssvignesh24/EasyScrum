@@ -42,7 +42,12 @@ export default class Poker extends Network{
   assignPoint(issueId, points){
     return this.post(`/poker/boards/${this.boardId}/issues/${issueId}/assign.json`, { points })
   }
+
   clearVotes(issueId){
     return this.put(`/poker/boards/${this.boardId}/issues/${issueId}/clear_votes.json`)
+  }
+
+  removeParticipant(participantId){
+    return this.delete(`/poker/boards/${this.boardId}/participant.json`, { participant_id: participantId })
   }
 }

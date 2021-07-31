@@ -1,6 +1,6 @@
 class Poker::BoardsController < ApiController
-  before_action :set_poker_board, only: [:show, :update, :archive]
-  before_action :authenticate_user!, only: [:create, :update, :archive, :destroy]
+  before_action :set_poker_board, only: [:show, :update, :archive, :remove_participant]
+  before_action :authenticate_user!, only: [:create, :update, :archive, :destroy, :remove_participant]
 
   def index
     @boards = current_resource.poker_boards.includes(:target_participants)
@@ -58,9 +58,19 @@ class Poker::BoardsController < ApiController
     guest = Guest.where(email: guest_params[:email], parent_user_id: board.created_by_id).first_or_initialize
     guest.name = guest_params[:name].strip
     guest.save!
-    Poker::Participant.where(board: board, participant: guest, is_spectator: false).first_or_create!
+    participant = Poker::Participant.where(board: board, participant: guest, is_spectator: false).first_or_create!
     cookies.encrypted[:guest_id] = guest.id
+    PokerBoardChannel.broadcast_to(board,  {status: true, type: 'new_participant', participant: { id: participant.id, email: participant.participant.email, name: participant.participant.name } })
     redirect_to "/poker/board/#{board.id}"
+  end
+
+  def remove_participant
+    raise ApiError::Forbidden.new("Action now allowed") if current_user != @board.created_by
+    @participant = @board.target_participants.where(id: params[:participant_id]).take
+    raise ApiError::Forbidden.new("You can't remove yourself!") if @participant.participant == current_user
+    raise ApiError::NotFound.new("Participant not found") unless @participant.present?
+    PokerBoardChannel.broadcast_to(@board,  { status: true, type: 'remove_participant', participantId: @participant.id })
+    @participant.destroy!
   end
 
   def archive
