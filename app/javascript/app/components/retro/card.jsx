@@ -112,7 +112,11 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
         cancelText="Cancel"
         onOk={deleteCard}
       />
-      <div className={"w-full p-3 bg-white shadow rounded mb-3 retro-card " + (state == "deleting" && "opacity-60")}>
+      <div
+        id={`card-id:${card.id}`}
+        className={
+          "w-full p-3 bg-white shadow rounded mb-3 retro-card cursor-move  " + (state == "deleting" && "opacity-60")
+        }>
         {(state == "editing" || state == "updating") && (
           <>
             <textarea

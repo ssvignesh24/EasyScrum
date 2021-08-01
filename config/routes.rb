@@ -39,6 +39,7 @@ Rails.application.routes.draw do
                 member do
                   post 'comment' => "cards#add_comment"
                   delete 'comment' => "cards#remove_comment"
+                  put 'rearrange'
                 end
               end
             end

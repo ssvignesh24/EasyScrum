@@ -6,6 +6,7 @@ import pluralize from "pluralize";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { Redirect } from "@reach/router";
+import { ReactSortable } from "react-sortablejs";
 
 import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
@@ -69,7 +70,6 @@ export default function ({ children, boardId }) {
         received(data) {
           const { status, originParticipantId, type } = data;
           let card;
-          console.log(data);
           if (!status) return;
           if (board.currentParticipantId == originParticipantId) return;
           switch (type) {
@@ -103,6 +103,28 @@ export default function ({ children, boardId }) {
               break;
             case "remove_comment":
               removeComment(data.columnId, data.cardId, data.commentId);
+              break;
+            case "rearrange":
+              const { affectedColumns } = data;
+              let needsActionInCols;
+              if (affectedColumns.length == 2 && affectedColumns[0].id == affectedColumns[1].id) {
+                needsActionInCols = [affectedColumns[0]];
+              } else {
+                needsActionInCols = affectedColumns;
+              }
+              setBoard((board_) => {
+                return {
+                  ...board_,
+                  columns: board_.columns.map((col) => {
+                    if (col.id == needsActionInCols[0].id) {
+                      col.cards = needsActionInCols[0].cards;
+                    } else if (needsActionInCols[1] && col.id == needsActionInCols[1].id) {
+                      col.cards = needsActionInCols[1].cards;
+                    }
+                    return col;
+                  }),
+                };
+              });
               break;
 
             default:
@@ -218,6 +240,39 @@ export default function ({ children, boardId }) {
     setBoard((board_) => {
       return { ...board_, columns: board_.columns.filter((c) => c.id != column.id) };
     });
+  };
+
+  const setCards = (columnId, cards) => {
+    // console.log(columnId, cards);
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((col) => {
+          if (col.id == columnId) col.cards = cards;
+          return col;
+        }),
+      };
+    });
+  };
+
+  const updateCards = (colId, e) => {
+    const { item, to, from, oldIndex, newIndex } = e;
+    const itemId = item.id.split(":")[1];
+    const toColId = to.id.split(":")[1];
+    const fromColId = from.id.split(":")[1];
+    if (oldIndex == newIndex && toColId == fromColId) return;
+    const payload = {
+      to_column_id: toColId,
+      from_column_id: fromColId,
+      old_index: oldIndex + 1,
+      new_index: newIndex + 1,
+    };
+    retroClient
+      .rearrangeCard(colId, itemId, payload)
+      .then(({ data }) => {
+        if (!data.status) return;
+      })
+      .catch((r) => retroClient.handleError(r));
   };
 
   return (
@@ -439,21 +494,30 @@ export default function ({ children, boardId }) {
                   addCard={addCard}
                   afterUpdate={updateColumn}
                   afterDelete={removeColumn}>
-                  {column.cards.length > 0 &&
-                    column.cards.map((card) => {
-                      return (
-                        <Card
-                          card={card}
-                          key={card.id}
-                          board={board}
-                          columnId={column.id}
-                          afterDelete={removeCard}
-                          afterUpdate={updateCard}
-                          addNewComment={addNewComment}
-                          removeComment={removeComment}
-                        />
-                      );
-                    })}
+                  <ReactSortable
+                    className="py-5 rounded"
+                    style={{ minHeight: "400px" }}
+                    id={`col-id:${column.id}`}
+                    group="cards"
+                    list={column.cards}
+                    onEnd={(e) => updateCards(column.id, e)}
+                    setList={(cards) => setCards(column.id, cards)}>
+                    {column.cards.length > 0 &&
+                      column.cards.map((card) => {
+                        return (
+                          <Card
+                            card={card}
+                            key={card.id}
+                            board={board}
+                            columnId={column.id}
+                            afterDelete={removeCard}
+                            afterUpdate={updateCard}
+                            addNewComment={addNewComment}
+                            removeComment={removeComment}
+                          />
+                        );
+                      })}
+                  </ReactSortable>
                 </Column>
               );
             })}

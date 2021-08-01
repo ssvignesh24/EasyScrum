@@ -54,4 +54,8 @@ export default class Retro extends Network{
   removeComment(cardId, columnId, commentId){
     return this.delete(`/retro/board/${this.boardId}/columns/${columnId}/cards/${cardId}/comment.json`, { comment_id: commentId })
   }
+
+  rearrangeCard(columnId, cardId, payload){
+    return this.put(`/retro/board/${this.boardId}/columns/${columnId}/cards/${cardId}/rearrange.json`, payload)
+  }
 }

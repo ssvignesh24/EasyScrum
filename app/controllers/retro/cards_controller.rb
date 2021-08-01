@@ -51,6 +51,31 @@ class Retro::CardsController < ApiController
     RetroBoardChannel.broadcast_to(@board,  {type: "remove_comment", cardId: @card.id, columnId: @column.id, commentId: @comment.id}.merge(default_broadcast_hash))
   end
 
+  def rearrange
+    Retro::Card.transaction do
+      @card = @column.cards.where(id: params[:card_id]).take
+      @to_col = @board.columns.where(id: params[:to_column_id]).take
+      @from_col = @board.columns.where(id: params[:from_column_id]).take
+      next unless @card.present? && @to_col.present? && @from_col.present?
+      if(@to_col == @from_col)
+        if params[:new_index].to_i < @card.position
+          @to_col.cards.where("position >= ? AND position < ?", params[:new_index].to_i, @card.position).where.not(id: @card.id).update_all("position = position + 1")
+        else
+          @to_col.cards.where("position <= :new_index AND position > :old_index", new_index: params[:new_index].to_i, old_index: @card.position).update_all("position = position - 1")
+        end
+      else
+        @to_col.cards.where("position >= ?", params[:new_index]).update_all("position = position + 1")
+        @from_col.cards.where("position >= ?", @card.position).update_all("position = position - 1")
+        @card.column = @to_col
+      end
+      @card.position = params[:new_index].to_i
+      @card.save!
+    end
+    col_changes = [JSON.parse(render_to_string(partial: 'retro/columns/column', locals: {column: @to_col })), JSON.parse(render_to_string(partial: 'retro/columns/column', locals: {column: @from_col }))]
+    RetroBoardChannel.broadcast_to(@board,  {type: "rearrange", affectedColumns: col_changes, columnId: @column.id}.merge(default_broadcast_hash))
+
+  end
+
   private
 
   def card_params

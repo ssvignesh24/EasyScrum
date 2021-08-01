@@ -159,7 +159,6 @@ export default function ({ children, boardId }) {
       {
         received(data) {
           const { status, originParticipantId } = data;
-          console.log(data);
           if (!status) return;
           switch (data.type) {
             case "add_issue":
