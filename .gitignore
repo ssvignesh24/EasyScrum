@@ -40,3 +40,6 @@ dump.rdb
 .DS_Store
 db/structure.sql
 .env
+/config/credentials/production.key
+
+/config/credentials/development.key
