@@ -42,7 +42,7 @@ export default function ({ children }) {
           currentResource={currentResource}
         />
       )}
-      <div className="fixed w-full" style={{ top: 0, left: 0, height: "60px", background: "#2e3740" }}>
+      <div className="fixed w-full z-40" style={{ top: 0, left: 0, height: "60px", background: "#2e3740" }}>
         <div className="flex h-full">
           <div className="w-8/12 flex">
             <Link to="/dashboard" getProps={isActive}>

@@ -28,6 +28,7 @@ function ProfileModal(props) {
 
   const update = () => {
     setError(false);
+    setState("updating");
     const payload = new FormData();
     const csrf = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     payload.append("authenticity_token", csrf);
@@ -38,11 +39,13 @@ function ProfileModal(props) {
       .updateProfile(payload)
       .then(({ data }) => {
         if (!data.status) return;
+        setState("updated");
         props.afterUpdate(data.user);
         closeModal();
       })
       .catch((r) =>
         userClient.handleError(r, ({ response }) => {
+          setState("init");
           if (response.data?.errors?.error) setError(response.data?.errors?.error);
         })
       );

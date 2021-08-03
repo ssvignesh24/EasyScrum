@@ -881,38 +881,38 @@ export default function ({ children, boardId }) {
               {state == "loaded" && currentIssue() && (
                 <>
                   <p className="font-medium pt-5 pb-2 px-5 text-lg">Results</p>
-                  (currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
-                  <div className="w-full px-5">
-                    <div className="w-full flex items-center mb-2">
-                      <div className="w-8/12 text-gray-600">Total votes</div>
-                      <div className="w-4/12 flex flex-row-reverse font-medium">
-                        <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
-                        <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
+                  {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
+                    <div className="w-full px-5">
+                      <div className="w-full flex items-center mb-2">
+                        <div className="w-8/12 text-gray-600">Total votes</div>
+                        <div className="w-4/12 flex flex-row-reverse font-medium">
+                          <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
+                          <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
+                        </div>
+                      </div>
+                      <div className="w-full flex items-center mb-2">
+                        <div className="w-8/12 text-gray-600">Highest vote</div>
+                        <div className="w-4/12 flex flex-row-reverse font-medium">
+                          <span>&ensp;points</span>
+                          <span className="text-purple-500">{highestVote()}</span>
+                        </div>
+                      </div>
+                      <div className="w-full flex items-center mb-2">
+                        <div className="w-8/12 text-gray-600">Lowest vote</div>
+                        <div className="w-4/12 flex flex-row-reverse font-medium">
+                          <span>&ensp;points</span>
+                          <span className="text-purple-500">{lowestVote()}</span>
+                        </div>
+                      </div>
+                      <div className="w-full flex items-center mb-2">
+                        <div className="w-8/12 text-gray-600">Most voted</div>
+                        <div className="w-4/12 flex flex-row-reverse font-medium">
+                          <span>&ensp;points</span>
+                          <span className="text-purple-500">{mostVoted().join(", ")}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="w-full flex items-center mb-2">
-                      <div className="w-8/12 text-gray-600">Highest vote</div>
-                      <div className="w-4/12 flex flex-row-reverse font-medium">
-                        <span>&ensp;points</span>
-                        <span className="text-purple-500">{highestVote()}</span>
-                      </div>
-                    </div>
-                    <div className="w-full flex items-center mb-2">
-                      <div className="w-8/12 text-gray-600">Lowest vote</div>
-                      <div className="w-4/12 flex flex-row-reverse font-medium">
-                        <span>&ensp;points</span>
-                        <span className="text-purple-500">{lowestVote()}</span>
-                      </div>
-                    </div>
-                    <div className="w-full flex items-center mb-2">
-                      <div className="w-8/12 text-gray-600">Most voted</div>
-                      <div className="w-4/12 flex flex-row-reverse font-medium">
-                        <span>&ensp;points</span>
-                        <span className="text-purple-500">{mostVoted().join(", ")}</span>
-                      </div>
-                    </div>
-                  </div>
-                  )
+                  )}
                   {state == "loaded" &&
                     !(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
                       <p className="mt-2 text-gray-500 px-5">Waiting for voting to be completed</p>
