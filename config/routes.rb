@@ -1,3 +1,6 @@
+require 'sidekiq/web'
+require 'sidekiq/cron/web'
+
 Rails.application.routes.draw do
   devise_for :users
   root to: 'main#redirect'
@@ -49,9 +52,9 @@ Rails.application.routes.draw do
     end
   end
 
-  # authenticate :user, lambda { |u| u.power_user? } do
-  #   mount Sidekiq::Web => '/power/jobs'
-  # end
+  authenticate :user, lambda { |u| u.power_user? } do
+    mount Sidekiq::Web => '/power/jobs'
+  end
   
   constraints lambda { |req| req.format == :html && !req.path.include?("/rails/active_storage/blobs") } do
     get '*path' => 'main#index'

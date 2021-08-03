@@ -117,4 +117,12 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+  config.action_mailer.smtp_settings = {
+    :address => "email-smtp.us-east-2.amazonaws.com",
+    :port => 587,
+    :user_name => Rails.application.credentials.aws[:ses][:username],
+    :password => Rails.application.credentials.aws[:ses][:password],
+    :authentication => :login,
+    :enable_starttls_auto => true
+  }
 end

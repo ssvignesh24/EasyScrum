@@ -17,7 +17,7 @@ class Retro::BoardController < ApiController
         template = Retro::Template.where(id: retro_params[:template_id]).take
         r.template = template if template.present?
       end
-      r.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
+      r.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
     end
     Retro::Board.transaction do
       @retro_board.save!

@@ -49,6 +49,11 @@ gem 'aes'
 gem 'strong_migrations'
 # Cronjob
 gem 'sidekiq-cron', '~> 1.2'
+
+gem "sentry-ruby"
+gem "sentry-rails"
+gem "sentry-sidekiq"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -72,6 +77,8 @@ group :development do
   gem "capistrano-rails", "~> 1.6", require: false
   gem 'capistrano-rbenv', '~> 2.2'
   gem 'capistrano-passenger'
+  gem 'capistrano-sidekiq',  git: "https://github.com/rwojnarowski/capistrano-sidekiq.git"
+  gem 'capistrano-rails-console', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

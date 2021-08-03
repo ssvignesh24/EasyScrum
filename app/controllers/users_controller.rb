@@ -13,7 +13,7 @@ class UsersController < ApplicationController
     token = SecureRandom.hex(64)
     32.times do |_|
       token = SecureRandom.hex(64)
-      computed_token = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], token)
+      computed_token = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, token)
       next if User.where(verification_token: computed_token).take.present?
       @user.verification_token = computed_token
       break
@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   def verify_email
     user = User.active.where(email: params[:email]).take
     show_error("Invalid link") and return unless user.present?
-    computed_token = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], params[:token])
+    computed_token = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, params[:token])
     if user.verification_email_sent_at && user.verification_email_sent_at > 3.days.ago && computed_token == user.verification_token
       user.update!(verified_at: Time.zone.now)
       sign_in(user)

@@ -13,7 +13,7 @@ class Poker::BoardsController < ApiController
   def create
     raise ApiError::InvalidParameters.new("Name is empty", { name: "Board name is empty"}) if board_params[:name].blank?
     @board = Poker::Board.new(created_by: current_user, name: board_params[:name].strip, status: Poker::Board::STATUS.CREATED).tap do |b|
-      b.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', ENV['HASH_SALT'], "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
+      b.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
       if board_params[:template_id].present? && !board_params[:template_id].zero?
         template = Poker::CardTemplate.where(id: board_params[:template_id]).take
         if template
