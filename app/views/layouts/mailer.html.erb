@@ -1,105 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html style="box-sizing: border-box; font-family: 'Roboto', sans-serif;">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style type="text/css">
-      html, body { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-      .mailer-body { background-color: #F0F4F2; }
-      .mailer-body .box { background-color: white; border-radius: 5px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); overflow: hidden; }
-      .mailer-body .btn-primary { color: white; border-radius: 5px; background-color: rgba(16, 185, 129, 1); }
-      .mailer-body .mx-auto{ margin-left: auto; margin-right: auto; }
-      
-      .w-full{ width: 100% }
-      .w-1/2{ width: 50% }
-      .w-1/4{ width: 24% }
-      .h-full{ height: 100% }
-
-      .middot{
-        width: 4px;
-        height: 4px;
-        background-color: rgba(107, 114, 128);
-        border-radius: 50%;
-        margin-left: 5px;
-        margin-right: 5px;
-      }
-      .inline-block{ display: inline-block }
-      .align-middle{ vertical-align: middle }
-      .flex{ display: flex }
-      .flex-col{ flex-direction: column; }
-      .items-center{ align-items: center }
-      .justify-center{ justify-content: center }
-      .font-medium{ font-weight: 500 }
-
-      .text-gray{ color: rgba(107, 114, 128)}
-      .text-primary{color: rgba(16, 185, 129, 1);}
-      .text-white{color: white}
-
-      .m-0{margin: 0}
-      .mt-10{margin-top: 10px }
-      .mt-5{margin-top: 5px }
-      .mt-15{margin-top: 15px }
-      .mt-20{margin-top: 20px}
-      .ml-10{ margin-left: 10px }
-      .ml-5{ margin-left: 5px }
-      .ml-15{ margin-left: 15px }
-      .ml-20{ margin-left: 20px }
-      .mr-10{ margin-right: 10px }
-      .mr-5{ margin-right: 5px }
-      .mr-15{ margin-right: 15px }
-      .mr-20{ margin-right: 20px }
-      .mb-2{ margin-bottom: 2px }
-      .mb-5{ margin-bottom: 5px }
-      .mb-10{ margin-bottom: 10px }
-      .mb-15{ margin-bottom: 15px }
-      .mb-20{ margin-bottom: 20px }
-
-      .p-5{ padding: 5px }
-      .p-10{ padding: 10px }
-      .p-15{ padding: 15px }
-      .p-20{ padding: 20px }
-      .p-25{ padding: 25px }
-      .p-30{ padding: 30px }
-      .pt-10{ padding-top: 10px }
-      .pt-5{ padding-top: 5px }
-      .pt-15{ padding-top: 15px }
-      .pt-20{ padding-top: 20px}
-      .pl-10{ padding-left: 10px }
-      .pl-5{ padding-left: 5px }
-      .pl-15{ padding-left: 15px }
-      .pl-20{ padding-left: 20px }
-      .pr-10{ padding-right: 10px }
-      .pr-5{ padding-right: 5px }
-      .pr-15{ padding-right: 15px }
-      .pr-20{ padding-right: 20px }
-      .pb-10{ padding-bottom: 10px }
-      .pb-5{ padding-bottom: 5px }
-      .pb-15{ padding-bottom: 15px }
-      .pb-20{ padding-bottom: 20px }
-
-      .trix-content img{ max-width: 100%;}
-      .trix-content figure{ margin: 0}
-
-      .font-12{ font-size: 12px; }
-      .font-14{ font-size: 14px; }
-      .font-16{ font-size: 16px; }
-      .font-18{ font-size: 18px; }
-      .font-20{ font-size: 20px; }
-      .font-22{ font-size: 22px; }
-      .font-24{ font-size: 24px; }
-      .font-26{ font-size: 26px; }
-
-    </style>
   </head>
-
-  <body class="mailer-body">
-    <div style="width: 100%; max-width: 640px; margin: auto; margin-top: 40px" class="flex justify-center items-center">
-      <img src=<%= ENV['ASSET_HOST'] + asset_url("logo/v1/logo-180.png") %> style="width: 40px; height: 40px; margin-right: 7px">
-      <p style="font-size: 22px; margin-top: 24px; font-weight: 500">Easy Scrum</p>
+  <body style="box-sizing: border-box; font-family: 'Roboto', sans-serif; background-color: #F0F4F2; padding-top: 30px; padding-bottom: 30px">
+    <div style="width: 100%; max-width: 640px; margin: auto; margin-top: 40px; text-align: center">
+      <img src=<%= ENV['ASSET_HOST'] + asset_url("logo/v1/logo-180.png") %> style="width: 40px; height: 40px; margin-right: 7px; vertical-align: middle; display: inline-block;">
+      <p style="font-size: 22px; margin-top: 24px; font-weight: 500; vertical-align: middle; display: inline-block;">Easy Scrum</p>
     </div>
     <%= yield %>
     <div style="width: 100%; max-width: 640px; text-align: center; margin-top: 40px; margin: auto; margin-bottom: 60px">
-      <span class="text-gray">Have a question? Email us at </span>
-      <a href="mailto: contact@candidteam.com" class="text-primary"> contact@easyscrum.com </a>
+      <span style="color: rgba(107, 114, 128)">Have a question? Email us at </span>
+      <a href="mailto: contact@candidteam.com" style="color: rgba(16, 185, 129, 1);"> contact@easyscrum.co </a>
     </div>
   </body>
 </html>
