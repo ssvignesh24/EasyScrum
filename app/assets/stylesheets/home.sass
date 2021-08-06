@@ -1,0 +1,197 @@
+/** @format */
+
+$body-bg: #f0f0f0 // #f0f3f7
+
+$primary-color: #1d9e62
+
+*
+  box-sizing: border-box
+  font-family: 'Roboto', sans-serif
+
+.serif
+  font-family: 'Noto Serif', serif
+
+html, body
+  margin: 0
+  font-family: "Roboto", sans-serif
+  .text-white
+    color: white
+  .text-highlight
+    color: #ec8d14
+  .relative
+    position: relative
+  .absolute
+    position: absolute
+  .w-full
+    width: 100%
+  .w-11\/12
+    width: 91.666%
+  .w-10\/12
+    width: 83.333%
+  .w-9\/12
+    width: 75%
+  .w-8\/12
+    width: 66.666%
+  .w-7\/12
+    width: 58.333%
+  .w-6\/12
+    width: 50%
+  .w-5\/12
+    width: 41.666%
+  .w-4\/12
+    width: 33.3333%
+  .w-3\/12
+    width: 25%
+  .w-2\/12
+    width: 16.666%
+  .w-1\/12
+    width: 8.333%
+  .h-full
+    height: 100%
+  .block
+    display: inline-block
+  .inline-block
+    display: inline-block
+  .align-middle
+    vertical-align: middle
+  .flex
+    display: flex
+  .flex-row-reverse
+    flex-direction: row-reverse
+  .flex-col
+    flex-direction: column
+  .items-center
+    align-items: center
+  .justify-center
+    justify-content: center
+  .text-center
+    text-align: center
+  .m-0
+    margin: 0
+  .mb-5
+    margin-bottom: 5px !important
+  .mb-10
+    margin-bottom: 10px !important
+  .mt-10
+    margin-top: 10px !important
+  a
+    color: black
+    text-decoration: none
+
+  body
+    background-color: $body-bg
+    font-size: 16px
+    line-height: 23px
+  .viewport
+    width: 100%
+    max-width: 1200px
+    margin: auto
+    position: relative
+  .viewport-sm
+    width: 100%
+    max-width: 1000px
+    margin: auto
+    position: relative
+  section.cover
+    width: 100%
+    height: 75vh
+    position: relative
+    background: rgb(46,113,171)
+    background: -moz-linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
+    background: -webkit-linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
+    background: linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2e71ab",endColorstr="#123e63",GradientType=1)
+    .overview-container
+      width: 100%
+      height: 250px
+      background-color: white
+      border-radius: 10px
+      position: absolute
+      box-shadow: 3px 3px 10px rgba(0,0,0,0.15)
+      overflow: hidden
+      bottom: -125px
+      .overview-item
+        padding: 30px
+        &:hover
+          background-color: #f6f6f6
+          cursor: pointer
+        .title
+          margin-left: 5px
+
+  section.description
+    &#retro
+      padding-top: 250px
+    .desc-segment
+      min-height: 200px
+      margin-bottom: 80px
+      .title-segment
+        text-align: right
+        padding: 0 15px
+        padding-right: 35px
+      h1, p
+        margin: 0
+      .segment-item
+        min-height: 150px
+        padding-left: 15px
+        padding-right: 15px
+        margin-bottom: 55px
+        h4, p
+          margin: 0
+        h4
+          margin-bottom: 5px
+        p
+          color: #555
+        .desc-icon
+          width: 40px
+          height: 40px
+          background-image: image-url("icons.png")
+          background-size: 550%
+          margin-top: -5px
+          &.check
+            background-position: -1px -1px
+          &.template
+            background-position: -55px -1px
+          &.thumbs
+            background-position: -52px -50px
+            margin-top: -10px
+          &.feedbacks
+            background-position: -58px -100px
+          &.ghost
+            background-position: -110px -1px
+          &.chart
+            background-position: -113px -100px
+            margin-top: -10px
+          &.question
+            background-position: -1px -50px
+            margin-top: -10px
+          &.clock
+            background-position: -1px -100px
+            margin-top: -10px
+          &.report
+            background-position: -175px -1px
+          &.blocker
+            background-position: -114px -52px
+            margin-bottom: -10px
+          &.jira
+            background-image: image-url("jira.png")
+            background-size: 100%
+  section.footer
+    height: 100px
+    background-color: #333
+    .social-icons
+      width: 40px
+      height: 40px
+      display: flex
+      justify-content: center
+      align-items: center
+      border-radius: 50%
+      border-width: 2px
+      border-style: solid
+      background-color: transparent
+      margin-right: 15px
+      &.facebook
+        border-color: #4460A0
+      &.twitter
+        border-color: #00AAEC
+      &.insta
+        border: none

@@ -35,7 +35,7 @@ const STATUS = {
 
 const GHOST_ISSUE = {
   SUMMARY: "Ghost issue",
-  DESCRIPTION: "Use this issue to vote if you don't want to add issues to the board",
+  DESCRIPTION: "Use this issue to vote if you don't want to add any issues to the board",
 };
 export default function ({ children, boardId }) {
   const pokerClient = new Poker(boardId);
@@ -620,7 +620,7 @@ export default function ({ children, boardId }) {
             </Scrollbars>
           </div>
           <div className="w-6/12 h-full border-r border-gray-200 bg-white shadow">
-            <div className="w-full h-3/5">
+            <div className="w-full h-2/5">
               <div className="pmx-5 w-full">
                 <div
                   className={
@@ -756,7 +756,7 @@ export default function ({ children, boardId }) {
                     {currentIssue().isGhost && (
                       <>
                         <div className="px-5">
-                          <p className="pt-2 mb-1 font-medium text-indigo-500">{GHOST_ISSUE.SUMMARY}</p>
+                          <p className="pt-2 mb-1 font-medium">{GHOST_ISSUE.SUMMARY}</p>
                           <p className="pb-2">{GHOST_ISSUE.DESCRIPTION}</p>
                         </div>
                       </>
@@ -773,45 +773,53 @@ export default function ({ children, boardId }) {
                 )}
               </div>
             </div>
-            <div className="w-full h-2/5 pb-20 border-t border-gray-200">
+            <div className="w-full h-3/5 pb-20 border-t border-gray-200">
               <p className="font-medium text-lg px-5 mb-2 mt-3">Your vote</p>
-              <div className="h-full w-full flex flex-wrap justify-center px-3">
-                {state == "loaded" &&
-                  board.availableVotes &&
-                  board.availableVotes.length > 0 &&
-                  board.availableVotes.map((v) => {
-                    return (
-                      <div className="p-3 w-32 h-32" key={v}>
-                        <div
-                          onClick={() => vote(v)}
-                          className={
-                            "shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium " +
-                            (currentIssue() && currentIssue().votes.currentUserVote == v
-                              ? "bg-green-500 hover:bg-green-500 text-white"
-                              : "bg-white") +
-                            (currentIssue()?.status != "voting"
-                              ? " cursor-not-allowed opacity-60 "
-                              : " cursor-normal hover:bg-green-50")
-                          }>
-                          {v}
-                        </div>
-                      </div>
-                    );
-                  })}
-                {state == "loading" && (
-                  <>
-                    {_.times(12, (n) => {
+              <Scrollbars>
+                <div className="h-full w-full text-center">
+                  {state == "loaded" &&
+                    board.availableVotes &&
+                    board.availableVotes.length > 0 &&
+                    board.availableVotes.map((v) => {
                       return (
-                        <div className="p-3 w-32 h-32" key={n}>
-                          <div className="animate-pulse shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium ">
-                            <div className="w-0 h-3 bg-gray-300 rounded"></div>
+                        <div className="w-32 h-32 inline-block" key={v} style={{ padding: "10px" }}>
+                          <div
+                            onClick={() => vote(v)}
+                            title={
+                              currentIssue()?.status != "voting"
+                                ? "Voting is disabled. Waiting for the facilitator to start voting"
+                                : v
+                            }
+                            className={
+                              "shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium " +
+                              (currentIssue() && currentIssue().votes.currentUserVote == v
+                                ? "bg-green-500 hover:bg-green-500 text-white"
+                                : "bg-white") +
+                              (currentIssue()?.status != "voting"
+                                ? " cursor-not-allowed opacity-60 "
+                                : " cursor-normal hover:bg-green-50")
+                            }>
+                            {v}
                           </div>
                         </div>
                       );
                     })}
-                  </>
-                )}
-              </div>
+
+                  {state == "loading" && (
+                    <>
+                      {_.times(12, (n) => {
+                        return (
+                          <div className="p-3 w-32 h-32" key={n}>
+                            <div className="animate-pulse shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium ">
+                              <div className="w-0 h-3 bg-gray-300 rounded"></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+              </Scrollbars>
             </div>
           </div>
           <div className="w-3/12 h-full bg-white">

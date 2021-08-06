@@ -3,7 +3,7 @@ require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
   devise_for :users
-  root to: 'main#redirect'
+  root to: 'home#index'
 
   get 'signup' => "users#new"
   post 'signup' => "users#create"

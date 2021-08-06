@@ -7,12 +7,12 @@
     = form_tag signup_path, method: :post do
       .w-full
         p.mb-1 Your name
-        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[name]' type='text' value=@data[:user_name] placeholder=t('name_hint')
+        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[name]' type='text' value=@data[:name] placeholder=t('name_hint')
         - if @errors[:name].present?
           small.text-red-500 = @errors[:name]
       .w-full.mt-2
         p.mb-1 Email
-        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[email]' type='email' value=@data[:user_email] placeholder=t('email_hint')
+        input.bg-white.border.border-gray-400.w-full.rounded.p-3.outline-none name='user[email]' type='email' value=@data[:email] placeholder=t('email_hint')
         - if @errors[:email].present?
           small.text-red-500 = @errors[:email]
       .w-full.mt-2

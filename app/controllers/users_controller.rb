@@ -29,7 +29,7 @@ class UsersController < ApplicationController
     if user.verification_email_sent_at && user.verification_email_sent_at > 3.days.ago && computed_token == user.verification_token
       user.update!(verified_at: Time.zone.now)
       sign_in(user)
-      redirect_to root_path
+      redirect_to "/dashboard"
     else
       show_error("Either the token is not valid or the link has expired") and return
     end
