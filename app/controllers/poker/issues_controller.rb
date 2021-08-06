@@ -14,7 +14,7 @@ class Poker::IssuesController < ApiController
 
   def assign
     raise ApiError::Forbidden.new("Action not allowed") unless current_user&.id == @board.created_by_id
-    raise ApiError::InvalidParameters.new("Not a valid point", { points: "Invalid point. The point should be any of #{@board.available_votes.to_sentence}"}) unless @board.available_votes.include?(params[:points])
+    raise ApiError::InvalidParameters.new("Not a valid point", { points: "Invalid point. The point should be any of #{@board.available_votes.map { |v| v['value' ]}.to_sentence}"}) unless @board.available_votes.find { |v| v['value'].to_s == params[:points] }.present?
     @issue.update!(status: Poker::Issue::STATUS.FINISHED, final_story_point: params[:points], total_votes: @issue.votes.size)
     PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'assign_story_points', issueId: @issue.id, finalStoryPoint: params[:points], issueStatus: Poker::Issue::STATUS.FINISHED, total_votes: @issue.votes.size}))
   end
@@ -46,9 +46,10 @@ class Poker::IssuesController < ApiController
     raise ApiError::Forbidden.new("Action not allowed") unless target_participant.present?
     raise ApiError::Forbidden.new("Action not allowed") if @issue.status != Poker::Issue::STATUS.VOTING
     vote_record = @issue.votes.where(target_participant: target_participant).first_or_initialize
-    vote_record.vote = params[:vote] if @board.available_votes.include?(params[:vote])
+    current_vote = @board.available_votes.find{ |v| v['value'] == params[:vote]}
+    vote_record.vote = current_vote if current_vote
     vote_record.save!
-    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'vote', issueId: @issue.id, voteId: vote_record.id, participantId: target_participant.id, vote: params[:vote]}))
+    PokerBoardChannel.broadcast_to(@board,  default_broadcast_hash.merge({type: 'vote', issueId: @issue.id, voteId: vote_record.id, participantId: target_participant.id, vote: current_vote}))
   end
 
   def clear_votes

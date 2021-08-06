@@ -32,9 +32,9 @@ end
 
 Poker::CardTemplate.update_all(active: false)
 [
-  { name: "Number series(0.5,1,2,3,4,5,6,7,8,9,10,11,12)", cards: %w{0.5 1 2 3 4 5 6 7 8 9 10 11 12}},
-  { name: "Fibonacci series(0.5,1,2,3,5,8,13)", cards: %w{0.5 1 2 3 5 8 13}},
-  { name: "T-Shirt sizes(XS,S,M,L,XL,XXL)", cards: %w{XS S M L XL XXL}},
+  { name: "Number series(0.5,1,2,3,4,5,6,7,8,9,10,11,12)", cards: [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map { |num| { type: 'number', value: num }}},
+  { name: "Fibonacci series(0.5,1,2,3,5,8,13)", cards: [0.5, 1, 2, 3, 5, 8, 13].map { |num| { type: 'number', value: num }}},
+  { name: "T-Shirt sizes(XS,S,M,L,XL,XXL)", cards: %w{XS S M L XL XXL}.map { |num| { type: 'string', value: num }}},
 ].each do |card|
   template = Poker::CardTemplate.where(name: card[:name]).first_or_initialize
   template.cards = card[:cards]

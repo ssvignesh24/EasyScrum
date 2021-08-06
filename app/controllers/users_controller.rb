@@ -3,6 +3,7 @@ class UsersController < ApplicationController
   before_action :authenticate_user!, except: [:new, :create, :verify_email]
   
   def new
+    redirect_to "/dashboard" if current_user.present?
     @errors = {}
     @data = {}
     @user = User.first

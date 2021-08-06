@@ -37,7 +37,7 @@ const GHOST_ISSUE = {
   SUMMARY: "Ghost issue",
   DESCRIPTION: "Use this issue to vote if you don't want to add any issues to the board",
 };
-export default function ({ children, boardId }) {
+export default function ({ boardId }) {
   const pokerClient = new Poker(boardId);
 
   const [showInviteUsersModal, setShowInviteUsersModal] = useState(false);
@@ -328,7 +328,7 @@ export default function ({ children, boardId }) {
       })
     );
     pokerClient
-      .vote(selectedIssueId, vote)
+      .vote(selectedIssueId, vote.value)
       .then(({ data }) => {})
       .catch((r) => pokerClient.handleError(r));
   };
@@ -370,30 +370,40 @@ export default function ({ children, boardId }) {
   };
 
   const highestVote = () => {
-    for (const vote_ of board.availableVotes.concat([]).reverse()) {
-      const firstVote = currentIssue().votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+    for (const { value } of board.availableVotes.concat([]).reverse()) {
+      const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
       if (firstVote) return firstVote;
     }
     return "";
   };
 
   const lowestVote = () => {
-    for (const vote_ of board.availableVotes) {
-      const firstVote = currentIssue().votes.participant_votes.find((v) => v.vote == vote_)?.vote;
+    for (const { value } of board.availableVotes) {
+      const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
       if (firstVote) return firstVote;
     }
     return "";
   };
 
+  const avgVote = () => {
+    const allVotes = currentIssue()
+      .votes.participant_votes.filter((v) => {
+        return v.vote.type == "number";
+      })
+      .map((v) => +v.vote.value);
+    const voteSum = allVotes.reduce((a, value) => a + value, 0);
+    return Math.round((voteSum / allVotes.length) * 100) / 100;
+  };
+
   const mostVoted = () => {
     let mostVote = [],
       mostVoteCount = 0;
-    for (const vote_ of board.availableVotes) {
-      const count = currentIssue().votes.participant_votes.filter((v) => v.vote == vote_).length || -1;
+    for (const { value } of board.availableVotes) {
+      const count = currentIssue().votes.participant_votes.filter(({ vote }) => vote.value == value).length || -1;
       if (count > mostVoteCount) {
-        mostVote = [vote_];
+        mostVote = [value];
         mostVoteCount = count;
-      } else if (count == mostVoteCount) mostVote.push(vote_);
+      } else if (count == mostVoteCount) mostVote.push(value);
     }
     return mostVote;
   };
@@ -782,24 +792,24 @@ export default function ({ children, boardId }) {
                     board.availableVotes.length > 0 &&
                     board.availableVotes.map((v) => {
                       return (
-                        <div className="w-32 h-32 inline-block" key={v} style={{ padding: "10px" }}>
+                        <div className="w-32 h-32 inline-block" key={v.value} style={{ padding: "10px" }}>
                           <div
                             onClick={() => vote(v)}
                             title={
                               currentIssue()?.status != "voting"
                                 ? "Voting is disabled. Waiting for the facilitator to start voting"
-                                : v
+                                : v.value
                             }
                             className={
                               "shadow border border-gray-200 rounded w-full h-full cursor-pointer transition-colors flex items-center justify-center text-xl font-medium " +
-                              (currentIssue() && currentIssue().votes.currentUserVote == v
+                              (currentIssue() && currentIssue().votes.currentUserVote?.value == v.value
                                 ? "bg-green-500 hover:bg-green-500 text-white"
                                 : "bg-white") +
                               (currentIssue()?.status != "voting"
                                 ? " cursor-not-allowed opacity-60 "
                                 : " cursor-normal hover:bg-green-50")
                             }>
-                            {v}
+                            {v.value}
                           </div>
                         </div>
                       );
@@ -858,7 +868,7 @@ export default function ({ children, boardId }) {
 
                                   {(currentIssue().status == STATUS.VOTED ||
                                     currentIssue().status == STATUS.FINISHED) &&
-                                    participant_vote && <span className="font-medium">{participant_vote}</span>}
+                                    participant_vote && <span className="font-medium">{participant_vote.value}</span>}
 
                                   {(currentIssue().status == STATUS.VOTED ||
                                     currentIssue().status == STATUS.FINISHED) &&
@@ -873,9 +883,9 @@ export default function ({ children, boardId }) {
                       <>
                         {_.times(5, (n) => {
                           return (
-                            <div className="py-3 px-5 mb-3 w-full">
-                              <div class="w-10/12 h-3 mb-2.5 bg-gray-200 rounded animate-pulse"></div>
-                              <div class="w-9/12 h-2 bg-gray-200 rounded animate-pulse"></div>
+                            <div className="py-3 px-5 mb-3 w-full" key={n}>
+                              <div className="w-10/12 h-3 mb-2.5 bg-gray-200 rounded animate-pulse"></div>
+                              <div className="w-9/12 h-2 bg-gray-200 rounded animate-pulse"></div>
                             </div>
                           );
                         })}
@@ -910,6 +920,13 @@ export default function ({ children, boardId }) {
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
                           <span className="text-purple-500">{lowestVote()}</span>
+                        </div>
+                      </div>
+                      <div className="w-full flex items-center mb-2">
+                        <div className="w-8/12 text-gray-600">Avg vote</div>
+                        <div className="w-4/12 flex flex-row-reverse font-medium">
+                          <span>&ensp;points</span>
+                          <span className="text-purple-500">{avgVote()}</span>
                         </div>
                       </div>
                       <div className="w-full flex items-center mb-2">
