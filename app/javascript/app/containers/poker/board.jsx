@@ -557,9 +557,6 @@ export default function ({ boardId }) {
               )}
             </Menu>
           )}
-          <PrimaryButton className="mr-3" onClick={() => setShowAddIssueModal(true)}>
-            Add issue
-          </PrimaryButton>
           <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
             Invite users
           </PrimaryButton>
@@ -571,6 +568,13 @@ export default function ({ boardId }) {
             <Scrollbars>
               <div className="p-5">
                 <p className="text-lg font-medium mb-2">Issues</p>
+                {state == "loaded" && (
+                  <>
+                    <PrimaryButton className="w-full mb-4" onClick={() => setShowAddIssueModal(true)}>
+                      Add issue
+                    </PrimaryButton>
+                  </>
+                )}
                 {state == "loaded" &&
                   issues?.length > 0 &&
                   issues.map((issue) => {
@@ -597,6 +601,11 @@ export default function ({ boardId }) {
                               <p className="font-medium text-gray-500">{GHOST_ISSUE.SUMMARY}</p>
                               <p className="text-gray-600 text-sm"> {GHOST_ISSUE.DESCRIPTION}</p>
                             </>
+                          )}
+                          {!issue.isGhost && issue.link && (
+                            <a href={currentIssue().link} target="_blank" className="text-sm mb-2 text-green-500 mr-4">
+                              View issue
+                            </a>
                           )}
                           {!issue.isGhost && board?.canManageBoard && (
                             <button className="text-red-500 text-sm mt-2" onClick={(e) => confirmRemoveIssue(e, issue)}>
@@ -754,11 +763,6 @@ export default function ({ boardId }) {
                       <>
                         <div className="px-5">
                           <p className="pt-2 font-medium">{currentIssue().summary}</p>
-                          {currentIssue().link && (
-                            <Link to={currentIssue().link} className="text-sm mb-2 text-green-500">
-                              View issue
-                            </Link>
-                          )}
                           <p className="pb-2 mt-1">{currentIssue().description}</p>
                         </div>
                       </>

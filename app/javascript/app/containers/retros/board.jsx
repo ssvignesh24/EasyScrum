@@ -345,20 +345,6 @@ export default function ({ children, boardId }) {
                           static
                           className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <div className="py-1">
-                            {board.canManageBoard && (
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <button
-                                    onClick={() => setShowCreateColumn(true)}
-                                    className={classNames(
-                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                      "block w-full text-left px-4 py-2 text-sm"
-                                    )}>
-                                    Add column
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            )}
                             <Menu.Item>
                               {({ active }) => (
                                 <button
@@ -521,6 +507,19 @@ export default function ({ children, boardId }) {
                 </Column>
               );
             })}
+          {state == "loaded" && board.canManageBoard && (
+            <>
+              <div className="h-full p-3 inline-block whitespace-normal align-top" style={{ width: "400px" }}>
+                <div className="w-full">
+                  <button
+                    onClick={() => setShowCreateColumn(true)}
+                    className="w-full p-3 bg-white shadow rounded mb-3 text-center">
+                    + Add column
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
           {state == "loading" && (
             <>
               <div className="flex">
