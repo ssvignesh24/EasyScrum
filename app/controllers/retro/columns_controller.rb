@@ -1,6 +1,6 @@
 class Retro::ColumnsController < ApiController
   before_action :set_board
-  before_action :enure_permission!
+  before_action :ensure_board_manage_permission!
 
   def create
     raise ApiError::InvalidParameters.new("Column name is empty", { name: "Column name is empty" }) if column_params[:name].blank?
@@ -34,10 +34,6 @@ class Retro::ColumnsController < ApiController
 
   def column_params
     params.require(:column).permit(:name, :color_code)
-  end
-
-  def enure_permission!
-    raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
   end
 
   def default_broadcast_hash

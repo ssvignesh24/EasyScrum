@@ -32,7 +32,6 @@ function CreateColumn(props) {
     const payload = {
       name,
     };
-    console.log(payload);
     retroClient
       .updateColumn(column.id, payload)
       .then(({ data }) => {

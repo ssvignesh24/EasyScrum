@@ -132,7 +132,6 @@ function CreateColumn(props) {
                                   static
                                   className="absolute mt-1 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                   {templates.map((template) => {
-                                    console.log(template);
                                     return (
                                       <Listbox.Option
                                         key={template.id}

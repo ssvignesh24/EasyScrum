@@ -75,7 +75,7 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
   config.action_mailer.default_url_options = { host: 'localhost', port: 4000 }
 
-  Rack::MiniProfiler.config.position = 'bottom-right'
+  Rack::MiniProfiler.config.position = 'bottom-left'
 
   # Mailcatcher
   config.action_mailer.delivery_method = :smtp

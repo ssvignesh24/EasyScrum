@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { Primary as PrimaryButton, Muted as MutedButton, Danger as DangerButton } from "./button";
 
 function ConfirmDialog(props) {
-  const cancelDelete = useRef();
+  const focusButton = useRef();
   const { okText, cancelText, onOk, onCancel, title, body, open, disabled } = props;
 
   return (
@@ -15,7 +15,7 @@ function ConfirmDialog(props) {
         as="div"
         static
         className="fixed z-50 inset-0 overflow-y-auto"
-        initialFocus={cancelDelete}
+        initialFocus={focusButton}
         open={open}
         onClose={onCancel}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -55,16 +55,28 @@ function ConfirmDialog(props) {
                 </div>
               </div>
 
-              <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
-                <DangerButton type="button" className="ml-3" onClick={() => onOk()} disabled={disabled}>
-                  {okText}
-                </DangerButton>
-                {props.cancelText && (
-                  <MutedButton type="button" innerRef={cancelDelete} onClick={() => onCancel()}>
+              {props.cancelText && (
+                <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <DangerButton type="button" className="ml-3" onClick={() => onOk()} disabled={disabled}>
+                    {okText}
+                  </DangerButton>
+                  <MutedButton type="button" innerRef={focusButton} onClick={() => onCancel()}>
                     {cancelText}
                   </MutedButton>
-                )}
-              </div>
+                </div>
+              )}
+              {!props.cancelText && (
+                <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <DangerButton
+                    type="button"
+                    innerRef={focusButton}
+                    className="ml-3"
+                    onClick={() => onOk()}
+                    disabled={disabled}>
+                    {okText}
+                  </DangerButton>
+                </div>
+              )}
             </div>
           </Transition.Child>
         </div>

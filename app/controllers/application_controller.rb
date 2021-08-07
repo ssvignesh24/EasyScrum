@@ -12,6 +12,10 @@ class ApplicationController < ActionController::Base
   helper_method :current_resource
   helper_method :current_user_type
 
+  def after_sign_in_path_for(resource)
+    "/dashboard"
+  end
+
   protected
 
   def as_api
@@ -46,6 +50,7 @@ class ApplicationController < ActionController::Base
   end
 
   def can_modify_retro_board?(board)
+    return false unless board.present?
     board.created_by == current_resource
   end
 
@@ -61,5 +66,9 @@ class ApplicationController < ActionController::Base
   def ensure_resource!
     return if current_resource.present?
     redirect_to new_user_session_path
+  end
+
+  def ensure_board_manage_permission!
+    raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
   end
 end

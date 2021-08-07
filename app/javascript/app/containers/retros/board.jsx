@@ -14,6 +14,7 @@ import CreateColumnModal from "./modals/create_column";
 import InviteUsersModal from "../../components/invite_users";
 import consumer from "../../lib/action_cable_consumer";
 import ConfirmDialog from "../../components/confirmdialog";
+import ActionPanel from "../../components/retro/action_panel";
 
 import Retro from "../../services/retro";
 
@@ -29,6 +30,7 @@ export default function ({ children, boardId }) {
   const [board, setBoard] = useState();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteState, setDeleteState] = useState("init");
+  const [showActionItemColumn, setShowActionItemColumn] = useState(false);
 
   useEffect(() => {
     retroClient
@@ -126,7 +128,15 @@ export default function ({ children, boardId }) {
                 };
               });
               break;
-
+            case "create_action_item":
+              addActionItem(data.actionItem);
+              break;
+            case "toggle_action_item":
+              updateActionItem(data.actionItem);
+              break;
+            case "delete_action_item":
+              deleteActionItem(data.actionItem);
+              break;
             default:
               break;
           }
@@ -179,7 +189,6 @@ export default function ({ children, boardId }) {
   };
 
   const addNewComment = (columnId, cardId, comment, oldId = false) => {
-    console.log(oldId);
     setBoard((board_) => {
       return {
         ...board_,
@@ -243,7 +252,6 @@ export default function ({ children, boardId }) {
   };
 
   const setCards = (columnId, cards) => {
-    // console.log(columnId, cards);
     setBoard((board_) => {
       return {
         ...board_,
@@ -275,8 +283,54 @@ export default function ({ children, boardId }) {
       .catch((r) => retroClient.handleError(r));
   };
 
+  const addActionItem = (actionItem) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        actionItems: [actionItem].concat(board_.actionItems),
+      };
+    });
+  };
+
+  const updateActionItem = (actionItem) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        actionItems: board_.actionItems.map((item) => {
+          if (item.id == actionItem.id) {
+            item.status = actionItem.status;
+            item.actionMessage = actionItem.actionMessage;
+          }
+          return item;
+        }),
+      };
+    });
+  };
+
+  const deleteActionItem = (actionItem) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        actionItems: board_.actionItems.filter((item) => actionItem.id != item.id),
+      };
+    });
+  };
+
   return (
     <>
+      {state == "loaded" && (
+        <ActionPanel
+          currentActionItems={board.actionItems}
+          previousActionItems={board.previousActionItems}
+          previousRetroName={board.previousRetroName}
+          open={showActionItemColumn}
+          setOpen={setShowActionItemColumn}
+          afterCreate={addActionItem}
+          afterUpdate={updateActionItem}
+          afterDelete={deleteActionItem}
+          board={board}
+        />
+      )}
       {deleteState == "deleted" && <Redirect to={"/retro"} noThrow />}
       {state == "loaded" && board.canManageBoard && (
         <>
@@ -404,58 +458,10 @@ export default function ({ children, boardId }) {
                 </Menu>
               )}
             </div>
-            <div className="flex-shrink-0">
-              <Menu as="div" className="relative z-30">
-                {({ open }) => (
-                  <>
-                    <Menu.Button className="mr-3">
-                      <PrimaryButton as="div">
-                        Action items
-                        <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
-                      </PrimaryButton>
-                    </Menu.Button>
-
-                    <Transition
-                      show={open}
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95">
-                      <Menu.Items
-                        static
-                        className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="py-1">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={classNames(
-                                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                  "block w-full text-left px-4 py-2 text-sm"
-                                )}>
-                                Show action items
-                              </button>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={classNames(
-                                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                  "block w-full text-left px-4 py-2 text-sm"
-                                )}>
-                                Previous retro action items
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </div>
-                      </Menu.Items>
-                    </Transition>
-                  </>
-                )}
-              </Menu>
+            <div className="flex-shrink-0 mr-3 cursor-pointer">
+              <PrimaryButton as="div" onClick={() => setShowActionItemColumn(true)}>
+                Action items
+              </PrimaryButton>
             </div>
             <div className="flex-shrink-0">
               <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
@@ -466,9 +472,9 @@ export default function ({ children, boardId }) {
         )}
       </div>
       <div
-        className="w-full pt-3 pl-3"
-        style={{ height: "calc(100vh - 140px)", overflowX: "hidden", overflowY: "auto" }}>
-        <div className="whitespace-nowrap h-full" style={{ overflowY: "auto" }}>
+        className="w-full pt-3 pl-3 flex relative z-20"
+        style={{ height: "calc(100vh - 140px)", overflowX: "hidden", overflowY: "hidden" }}>
+        <div className="whitespace-nowrap h-full w-full" style={{ overflowY: "hidden" }}>
           {state == "loaded" &&
             board?.columns.length > 0 &&
             board.columns.map((column) => {
@@ -478,6 +484,7 @@ export default function ({ children, boardId }) {
                   column={column}
                   key={column.id}
                   addCard={addCard}
+                  canManage={board.canManageBoard}
                   afterUpdate={updateColumn}
                   afterDelete={removeColumn}>
                   <ReactSortable

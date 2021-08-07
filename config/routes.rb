@@ -36,6 +36,11 @@ Rails.application.routes.draw do
     namespace :retro do
       resources :board, except: [:new, :edit], param: :board_id do
         member do
+          resources :action_items, only: [:create, :destroy], param: :item_id do
+            member do
+              put 'toggle'
+            end
+          end
           resources :columns, only: [:create, :update, :destroy], param: :column_id do
             member do
               resources :cards, only: [:create, :update, :destroy], param: :card_id do

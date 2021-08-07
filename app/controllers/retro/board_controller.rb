@@ -4,7 +4,7 @@ class Retro::BoardController < ApiController
   before_action :enure_permission!, except: [:index, :create, :show, :accept_invitation, :add_participant]
 
   def index
-    @retro_boards = current_resource.retro_boards
+    @retro_boards = current_resource.retro_boards.order(created_at: :desc).includes(:action_items)
   end
 
   def create

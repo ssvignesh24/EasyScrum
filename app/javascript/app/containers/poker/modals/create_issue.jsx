@@ -33,7 +33,6 @@ function CreateColumn(props) {
     pokerClient
       .createIssue({ issue: payload })
       .then(({ data }) => {
-        console.log(data);
         if (!data.status) return;
         props.afterCreate(data.issue);
         closeModal();

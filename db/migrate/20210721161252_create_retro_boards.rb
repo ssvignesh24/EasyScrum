@@ -2,7 +2,7 @@ class CreateRetroBoards < ActiveRecord::Migration[6.1]
   def change
     create_table :retro_boards do |t|
       t.text :name, null: false
-      t.bigint :created_by_id, null: false, foreign_key: { to_table: :users, name: :retro_boards_user_id_fkey }
+      t.bigint :created_by_id, null: false, foreign_key: { to_table: :users, name: :retro_boards_created_by_id_fkey }
       t.text :context
       t.string :status, null: false
       t.references :retro_template, foreign_key: { to_table: :retro_templates, name: :retro_boards_retro_template_id_fkey }
