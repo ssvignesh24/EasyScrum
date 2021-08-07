@@ -9,18 +9,29 @@ class Retro::BoardController < ApiController
 
   def create
     ApiError::InvalidParameters.new({name: "Name is empty"}) if retro_params[:name].strip.blank?
+    last_board = nil
     @retro_board = Retro::Board.new(created_by: current_user, name: retro_params[:name].strip).tap do |r|
       r.status = Retro::Board::STATUS.CREATED
       r.archived = false
       r.context = retro_params[:context].strip
       if retro_params[:template_id]
-        template = Retro::Template.where(id: retro_params[:template_id]).take
-        r.template = template if template.present?
+        if retro_params[:template_id].to_i == -1
+          last_board = current_user.created_retro_boards.order(created_at: :desc).first
+        elsif !retro_params[:template_id].to_i.zero?
+          template = Retro::Template.where(id: retro_params[:template_id]).take
+          r.template = template if template.present?
+        end
       end
       r.board_unique_string = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, "#{current_user.id}:#{Time.zone.now.to_i}:#{SecureRandom.hex(12)}")
     end
     Retro::Board.transaction do
       @retro_board.save!
+      if last_board.present?
+        columns = last_board.columns
+        columns.each do |col|
+          @retro_board.columns.create!(name: col.name, color_code: col.color_code, sort_by: 'default', position: col.position)
+        end
+      end
       @retro_board.target_participants.create!(participant: current_user)
     end
   rescue => e
