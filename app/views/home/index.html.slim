@@ -2,36 +2,36 @@ section.cover
   .viewport.h-full
     .relative.w-full.h-full
       .w-full.flex.h-full
-        .w-6/12.text-white.flex.h-full.justify-center.items-center.flex-col style="margin-top: -50px"
+        .cover-content.text-white.h-full.justify-center.items-center.flex-col
           .w-full style="margin-bottom: 10px"
-            = image_tag "logo/v1/logo-180.png", style: "width: 50px; height: 50px;", class: "inline-block align-middle"
-            h1.inline-block.align-middle style="margin-left: 10px; position: relative; top: 5px" EasyScrum
-          h1.serif.m-0 style="font-size: 3rem; line-height: 55px" Best Scrum master tool for your team.
-          p style="line-height: 26px; font-size: 1.2rem" Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur assumenda, ipsam nihil distinctio quis quos necessitatibus quia nam iusto ea omnis a temporibus facilis velit provident perferendis laborum est illo.
+            = image_tag "logo/v1/logo-180.png", style: "width: 50px; height: 50px;", class: "inline-block align-middle", alt: "Easycrum logo"
+            h1.name.inline-block.align-middle EasyScrum
+          h1.main-text.serif.m-0 Best Scrum master tool for your team.
+          p style="line-height: 27px; font-size: 1.2rem" Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur assumenda, ipsam nihil distinctio quis quos necessitatibus quia nam iusto ea omnis a temporibus facilis velit provident perferendis laborum est illo.
           .w-full
             = link_to "/signup" do
               button style="padding: 15px 25px; background: #fff; border-radius: 40px; color: rgb(46,113,171); border: 0; font-size: 16px; cursor: pointer; font-weight: 600" Signup for free now
-        .w-6/12.flex.h-full.justify-center.items-center style="margin-top: -50px"
-          = image_tag "cover.png", style: "width: 100%;"
+        .cover-image.flex.h-full.justify-center.items-center style="margin-top: -50px"
+          = image_tag "cover.png", style: "width: 100%;", alt: "Cover image"
       .overview-container
-        .w-full.flex.h-full
-          a.inline-block.w-4/12.h-full href="#retro"
-            .w-full.h-full.overview-item.flex.flex-col.items-center.justify-center
+        .w-full.h-full.overview-viewport
+          a.inline-block.overview-item.h-full href="#retro"
+            .w-full.h-full.flex.flex-col.items-center.justify-center
               .inline-block
                 svg.align-middle xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#cc948e" class="bi bi-kanban" viewBox="0 0 16 16"
                   path d="M13.5 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h11zm-11-1a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11z"
                   path d="M6.5 3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm-4 0a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm8 0a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3z"
                 h2.inline-block.serif.title.align-middle Retrospective
               p.m-0.text-center = cycle("Harum explicabo laudantium nostrum nihil dolorem. ", " Reiciendis dolorem quam accusamus sunt sequi quibusdam sed tempore.", "Minus id rerum hic. Hic ex magni vero aut. In dicta officia doloremque accusamus occaecati. ")
-          a.inline-block.w-4/12.h-full href="#poker"
-            .w-full.h-full.overview-item.flex.flex-col.items-center.justify-center
+          a.inline-block.overview-item.h-full href="#poker"
+            .w-full.h-full.flex.flex-col.items-center.justify-center
               .inline-block
                 svg.align-middle xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#0092ff" class="bi bi-suit-club-fill" viewBox="0 0 16 16"
                   path d="M11.5 12.5a3.493 3.493 0 0 1-2.684-1.254 19.92 19.92 0 0 0 1.582 2.907c.231.35-.02.847-.438.847H6.04c-.419 0-.67-.497-.438-.847a19.919 19.919 0 0 0 1.582-2.907 3.5 3.5 0 1 1-2.538-5.743 3.5 3.5 0 1 1 6.708 0A3.5 3.5 0 1 1 11.5 12.5z"
                 h2.inline-block.serif.title.align-middle Planning poker
               p.m-0.text-center = cycle("Harum explicabo laudantium nostrum nihil dolorem. ", " Reiciendis dolorem quam accusamus sunt sequi quibusdam sed tempore.", "Minus id rerum hic. Hic ex magni vero aut. In dicta officia doloremque accusamus occaecati. ")
-          a.inline-block.w-4/12.h-full href="#checkins"
-            .w-full.h-full.overview-item.flex.flex-col.items-center.justify-center
+          a.inline-block.overview-item.h-full href="#checkins"
+            .w-full.h-full.flex.flex-col.items-center.justify-center
               .inline-block 
                 svg.align-middle xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#d69317" class="bi bi-ui-checks" viewBox="0 0 16 16"
                   path d="M7 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zM2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm0 8a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2zm.854-3.646a.5.5 0 0 1-.708 0l-1-1a.5.5 0 1 1 .708-.708l.646.647 1.646-1.647a.5.5 0 1 1 .708.708l-2 2zm0 8a.5.5 0 0 1-.708 0l-1-1a.5.5 0 0 1 .708-.708l.646.647 1.646-1.647a.5.5 0 0 1 .708.708l-2 2zM7 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm0-5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"
@@ -41,32 +41,32 @@ section.cover
 
 section.description#retro
   .viewport-sm
-    .desc-segment.flex
-      .w-4/12.title-segment
+    .desc-segment
+      .title-segment
         h1.serif.mb-10 Retrospective
         p = cycle("Harum explicabo laudantium nostrum nihil dolorem. ", " Reiciendis dolorem quam accusamus sunt sequi quibusdam sed tempore.", "Minus id rerum hic. Hic ex magni vero aut. In dicta officia doloremque accusamus occaecati. ")
-      .w-8/12
-        .w-full.flex
-          .segment-item.w-6/12.flex
+      .details-segment
+        .w-full.segment-wrapper
+          .segment-item.flex
             div style="padding-right: 7px"
               .desc-icon.check
             div
               h3.m-0.mb-10 Assignable action items
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 7px"
               .desc-icon.template
             div
               h3.m-0.mb-10 Custom column templates
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-        .w-full.flex
-          .segment-item.w-6/12.flex
+        .w-full.segment-wrapper
+          .segment-item.flex
             div style="padding-right: 7px"
               .desc-icon.thumbs
             div
               h3.m-0.mb-10 Voting
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 7px"
               .desc-icon.feedbacks
             div
@@ -76,32 +76,32 @@ section.description#retro
 
 section.description#poker
   .viewport-sm
-    .desc-segment.flex
-      .w-4/12.title-segment
+    .desc-segment
+      .title-segment
         h1.serif.mb-10 Planning poker
         p = cycle("Harum explicabo laudantium nostrum nihil dolorem. ", " Reiciendis dolorem quam accusamus sunt sequi quibusdam sed tempore.", "Minus id rerum hic. Hic ex magni vero aut. In dicta officia doloremque accusamus occaecati. ")
-      .w-8/12
-        .w-full.flex
-          .segment-item.w-6/12.flex
+      .details-segment
+        .segment-wrapper
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.template
             div
               h3.m-0.mb-10 Custom templates
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.ghost
             div
               h3.m-0.mb-10 Ghost issue
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-        .w-full.flex
-          .segment-item.w-6/12.flex
+        .segment-wrapper
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.chart
             div
               h3.m-0.mb-10 Insights
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.jira
             div
@@ -111,32 +111,32 @@ section.description#poker
 
 section.description#checkins
   .viewport-sm
-    .desc-segment.flex
-      .w-4/12.title-segment
+    .desc-segment
+      .title-segment
         h1.serif.mb-10 Checkins
         p = cycle("Harum explicabo laudantium nostrum nihil dolorem. ", " Reiciendis dolorem quam accusamus sunt sequi quibusdam sed tempore.", "Minus id rerum hic. Hic ex magni vero aut. In dicta officia doloremque accusamus occaecati. ")
-      .w-8/12
-        .w-full.flex
-          .segment-item.w-6/12.flex
+      .details-segment
+        .segment-wrapper
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.question
             div
               h3.m-0.mb-10 Custom questions
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.clock
             div
               h3.m-0.mb-10 Timezone flexibility
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-        .w-full.flex
-          .segment-item.w-6/12.flex
+        .segment-wrapper
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.report
             div
               h3.m-0.mb-10 Daily checkin reports
               p Deleniti molestiae et et quia deserunt voluptatem natus optio odio ea laudantium rem corrupti assumenda modi quisquam maiores ullam suscipit
-          .segment-item.w-6/12.flex
+          .segment-item.flex
             div style="padding-right: 10px"
               .desc-icon.blocker
             div
@@ -156,4 +156,4 @@ section.footer
         svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AAEC" class="bi bi-twitter" viewBox="0 0 16 16"
           path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
       .social-icons.insta
-        = image_tag "insta.svg", class: "w-full h-full"
+        = image_tag "insta.svg", class: "w-full h-full", alt: "Instagram"

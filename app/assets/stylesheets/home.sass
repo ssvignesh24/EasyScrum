@@ -7,6 +7,9 @@ $primary-color: #1d9e62
 body#home
   margin: 0
   font-family: "Roboto", sans-serif
+  background-color: $body-bg
+  font-size: 16px
+  line-height: 23px
   *
     box-sizing: border-box
     font-family: 'Roboto', sans-serif
@@ -77,40 +80,47 @@ body#home
     color: black
     text-decoration: none
 
-  body
-    background-color: $body-bg
-    font-size: 16px
-    line-height: 23px
   .viewport
     width: 100%
-    max-width: 1200px
     margin: auto
     position: relative
   .viewport-sm
     width: 100%
-    max-width: 1000px
     margin: auto
     position: relative
   section.cover
     width: 100%
-    height: 75vh
     position: relative
     background: rgb(46,113,171)
     background: -moz-linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
     background: -webkit-linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
     background: linear-gradient(315deg, rgba(46,113,171,1) 0%, rgba(18,62,99,1) 100%)
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2e71ab",endColorstr="#123e63",GradientType=1)
+    .cover-image
+      display: none
+    .cover-content
+      width: 100%
+      padding: 20px
+      h1.name
+        margin-left: 10px
+        position: relative
+        top: 5px
+      h1.main-text
+        font-size: 2rem
+        line-height: 40px
     .overview-container
       width: 100%
-      height: 250px
+      min-height: 250px
       background-color: white
-      border-radius: 10px
-      position: absolute
-      box-shadow: 3px 3px 10px rgba(0,0,0,0.15)
+      border-radius: 0px
+      position: relative
       overflow: hidden
-      bottom: -125px
+      margin-bottom: 25px
+      .overview-viewport
+
       .overview-item
         padding: 30px
+        width: 100%
         &:hover
           background-color: #f6f6f6
           cursor: pointer
@@ -118,22 +128,25 @@ body#home
           margin-left: 5px
 
   section.description
-    &#retro
-      padding-top: 250px
+    padding: 10px 0
     .desc-segment
       min-height: 200px
-      margin-bottom: 80px
+      margin-bottom: 20px
+      .details-segment
+        width: 100%
       .title-segment
-        text-align: right
+        width: 100%
+        text-align: center
         padding: 0 15px
-        padding-right: 35px
+        margin-bottom: 35px
       h1, p
         margin: 0
       .segment-item
+        width: 100%
         min-height: 150px
         padding-left: 15px
         padding-right: 15px
-        margin-bottom: 55px
+        margin-bottom: 15px
         h4, p
           margin: 0
         h4
@@ -194,3 +207,65 @@ body#home
         border-color: #00AAEC
       &.insta
         border: none
+@media only screen and (min-width: 1000px)
+  body#home
+    section.description
+      .desc-segment
+        .segment-wrapper
+          display: flex
+          .segment-item
+            width: 50%
+
+@media only screen and (min-width: 1200px)
+  body#home
+    .viewport
+      max-width: 1200px
+    .viewport-sm
+      max-width: 1000px
+    section.cover
+      height: 600px
+      .cover-image
+        width: 50%
+        display: flex
+      .cover-content
+        width: 50%
+        display: flex
+        margin-top: -50px
+        h1.name
+          margin-left: 10px
+          position: relative
+          top: 5px
+        h1.main-text
+          font-size: 3rem
+          line-height: 55px
+      .overview-container
+        position: absolute
+        border-radius: 10px
+        height: 250px
+        bottom: -125px
+        margin-bottom: 0
+        box-shadow: 3px 3px 10px rgba(0,0,0,0.15)
+
+        .overview-viewport
+          display: flex
+          .overview-item
+            width: 33.3333%
+    section.description
+      padding: 0
+      &#retro
+        padding-top: 250px
+      .desc-segment
+        display: flex
+        margin-bottom: 80px
+        .details-segment
+          width: 66.6666%
+          .segment-wrapper
+            display: flex
+        .title-segment
+          width: 33.333%
+          text-align: right
+          padding-right: 35px
+          margin-bottom: 0
+        .segment-item
+          width: 50%
+          margin-bottom: 55px
