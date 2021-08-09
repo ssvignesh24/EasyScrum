@@ -8,7 +8,7 @@ const randId = () => {
   return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
 };
 
-function File({ labelText, onChange, disabled, className, showName }) {
+function File({ labelText, onChange, disabled, className, showName, as }) {
   const [uploadedFile, setUploadedFile] = useState("");
   const field = useRef();
 
@@ -32,11 +32,13 @@ function File({ labelText, onChange, disabled, className, showName }) {
         onChange={(event) => handleFile(event)}
         style={{ opacity: 0, position: "fixed", top: "-100%", left: "-100%" }}
       />
-      <div className="flex items-center">
-        <PrimaryButton className={className} onClick={handleClick} disabled={disabled}>
-          {labelText}
-        </PrimaryButton>
-        {showName && <div className="ml-5">{uploadedFile?.name}</div>}
+      <div className="items-center">
+        {React.createElement(as, {
+          className: className,
+          onClick: handleClick,
+          disabled: disabled,
+          children: showName && uploadedFile?.name ? `${uploadedFile?.name} - Change image` : labelText,
+        })}
       </div>
     </>
   );
@@ -48,15 +50,18 @@ File.propTypes = {
   disabled: PropTypes.bool,
   className: PropTypes.string,
   showName: PropTypes.bool,
+  as: PropTypes.any,
 };
 
 File.defaultProps = {
   disabled: false,
   className: "",
   showName: false,
+  as: PrimaryButton,
 };
 
-function TextArea({ defaultValue, onChange, placeholder, disabled, error, listenToChange, className, asRef }) {
+const TextArea = React.forwardRef((props, ref) => {
+  const { defaultValue, onChange, placeholder, disabled, error, listenToChange, className } = props;
   const [value, setValue] = useState(defaultValue || "");
 
   useEffect(() => {
@@ -77,20 +82,19 @@ function TextArea({ defaultValue, onChange, placeholder, disabled, error, listen
         }
         placeholder={placeholder}
         value={value}
-        ref={asRef}
+        ref={ref}
         disabled={disabled}
         onChange={handleChange}></textarea>
       {!!error && <p className="text-sm text-red-500">{error}</p>}
     </>
   );
-}
+});
 
 TextArea.propTypes = {
   onChange: PropTypes.func.isRequired,
   defaultValue: PropTypes.string,
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
-  ref: PropTypes.any,
   error: PropTypes.string,
   listenToChange: PropTypes.string,
   className: PropTypes.string,
@@ -103,4 +107,48 @@ TextArea.defaultProps = {
   className: "",
 };
 
-export default { File, TextArea };
+const Text = React.forwardRef((props, ref) => {
+  const { defaultValue, onChange, placeholder, disabled, error, type, className } = props;
+  const [value, setValue] = useState(defaultValue || "");
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    onChange(event.target.value);
+  };
+  return (
+    <>
+      <input
+        className={
+          "w-full outline-none bg-white border border-gray-300 w-full rounded p-3 focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:opacity-80 disabled:cursor-not-allowed " +
+          +className
+        }
+        placeholder={placeholder}
+        value={value}
+        ref={ref}
+        disabled={disabled}
+        type={type}
+        onChange={handleChange}
+        autoComplete={type == "password" ? "new-password" : "on"}
+      />
+      {!!error && <p className="text-sm text-red-500">{error}</p>}
+    </>
+  );
+});
+
+Text.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  defaultValue: PropTypes.string,
+  placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
+  error: PropTypes.string,
+  type: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Text.defaultProps = {
+  disabled: false,
+  type: "text",
+  error: "",
+  className: "",
+};
+
+export default { Text, File, TextArea };

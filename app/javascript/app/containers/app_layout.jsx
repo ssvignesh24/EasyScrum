@@ -6,10 +6,10 @@ import PropTypes from "prop-types";
 
 import Header from "../components/header";
 
-export default function ({ children }) {
+export default function ({ children, setCurrentResource }) {
   return (
     <>
-      <Header />
+      <Header setCurrentResource={setCurrentResource} />
       <div id="stage">{children}</div>
     </>
   );

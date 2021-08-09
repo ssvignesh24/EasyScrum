@@ -6,28 +6,40 @@ import PropTypes from "prop-types";
 import Input from "../components/input_fields";
 
 import UserClient from "../services/user";
+import CurrentResourceContext from "../contexts/current_resource";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-import { Primary as PrimaryButton, Muted as MutedButton } from "../components/button";
+import {
+  Primary as PrimaryButton,
+  PrimaryLight as PrimaryLightButton,
+  Muted as MutedButton,
+} from "../components/button";
 
 function ProfileModal(props) {
-  const nameField = useRef();
-  const { currentResource } = props;
+  const currentResource = useContext(CurrentResourceContext);
+  const nameField = React.createRef();
   const userClient = new UserClient(currentResource.id);
+  const { setCurrentResource } = props;
 
   const [state, setState] = useState("init");
   const [name, setName] = useState(currentResource.name);
   const [email, setEmail] = useState(currentResource.email);
+  const [errors, setErrors] = useState({});
+  const [currentPassword, setCurrentPassword] = useState();
+  const [newPassword, setNewPassword] = useState();
   const [dp, setDp] = useState();
   const [error, setError] = useState(false);
 
-  useEffect(() => () => userClient.cancel(), []);
+  useEffect(() => {
+    return () => userClient.cancel();
+  }, []);
 
   const update = () => {
     setError(false);
+    setErrors({});
     setState("updating");
     const payload = new FormData();
     const csrf = document.querySelector("meta[name='csrf-token']").getAttribute("content");
@@ -35,6 +47,10 @@ function ProfileModal(props) {
     if (!!dp) payload.append("user[display_picture]", dp);
     payload.append("user[name]", name);
     payload.append("user[email]", email);
+    if (currentPassword && newPassword) {
+      payload.append("user[current_password]", currentPassword);
+      payload.append("user[new_password]", newPassword);
+    }
     userClient
       .updateProfile(payload)
       .then(({ data }) => {
@@ -42,10 +58,14 @@ function ProfileModal(props) {
         setState("updated");
         props.afterUpdate(data.user);
         closeModal();
+        setCurrentResource((currentResource_) => {
+          return { ...currentResource_, name: name, email: email };
+        });
       })
       .catch((r) =>
         userClient.handleError(r, ({ response }) => {
           setState("init");
+          if (response.data?.errors) setErrors(response.data?.errors);
           if (response.data?.errors?.error) setError(response.data?.errors?.error);
         })
       );
@@ -54,7 +74,9 @@ function ProfileModal(props) {
   const closeModal = () => {
     props.setOpen(false);
     setState("init");
-    setError(false);
+    setErrors({});
+    setName(currentResource.name);
+    setEmail(currentResource.email);
   };
 
   return (
@@ -65,7 +87,7 @@ function ProfileModal(props) {
         className="fixed z-40 inset-0 overflow-y-auto"
         initialFocus={nameField}
         open={props.open}
-        onClose={props.setOpen}>
+        onClose={closeModal}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -102,23 +124,47 @@ function ProfileModal(props) {
                       </div>
                     )}
                     <p className="mb-1 mt-3">Name</p>
-                    <input
+                    <Input.Text
                       className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
                       placeholder="Eg. John Smith"
-                      value={name}
-                      ref={nameField}
-                      onChange={(event) => setName(event.target.value)}
+                      defaultValue={name}
+                      error={errors.name}
+                      onChange={setName}
                     />
 
                     <p className="mb-1 mt-3">Email</p>
-                    <input
+                    <Input.Text
                       className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
                       placeholder="Eg. john@easyscrum.com"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      defaultValue={email}
+                      error={errors.email}
+                      onChange={setEmail}
                     />
-                    <div className="mt-3">
-                      <Input.File labelText="Change profile picture" onChange={(file) => setDp(file)} showName={true} />
+                    <hr className="mt-5" />
+                    <p className="mb-1 mt-3">Current password</p>
+                    <Input.Text
+                      className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
+                      type="password"
+                      error={errors.current_password}
+                      onChange={setCurrentPassword}
+                    />
+                    <p className="mb-1 mt-3">New password</p>
+                    <Input.Text
+                      className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
+                      type="password"
+                      error={errors.new_password}
+                      onChange={setNewPassword}
+                    />
+                    <hr className="mt-5" />
+
+                    <div className="mt-3" ref={nameField}>
+                      <Input.File
+                        as={PrimaryLightButton}
+                        labelText="Change profile picture"
+                        className="w-full"
+                        onChange={(file) => setDp(file)}
+                        showName={true}
+                      />
                     </div>
                   </div>
                 </div>
@@ -128,7 +174,7 @@ function ProfileModal(props) {
                 <PrimaryButton
                   onClick={update}
                   disabled={
-                    email.split("@").length != 2 || email.trim() == "" || name.trim() == "" || state == "updating"
+                    email?.split("@")?.length != 2 || email.trim() == "" || name.trim() == "" || state == "updating"
                   }>
                   {state == "updating" ? "Updating..." : "Update"}
                 </PrimaryButton>
@@ -148,7 +194,7 @@ ProfileModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterUpdate: PropTypes.func,
-  currentResource: PropTypes.object.isRequired,
+  setCurrentResource: PropTypes.any.isRequired,
 };
 
 export default ProfileModal;

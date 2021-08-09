@@ -1,7 +1,7 @@
 class CreatePokerIssues < ActiveRecord::Migration[6.1]
   def change
     create_table :poker_issues do |t|
-      t.references :poker_board, null: false, foreign_key: { to_table: :poker_boards, name: :poker_issues_poker_board_id_fkey }
+      t.references :poker_board, null: false, foreign_key: { to_table: :poker_boards, name: :poker_issues_poker_board_id_fkey, on_delete: :cascade }
       t.text :summary, null: false
       t.text :description
       t.text :link

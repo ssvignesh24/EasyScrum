@@ -40,14 +40,44 @@ class UsersController < ApplicationController
     as_api do
       name = params[:user].try(:[], :name)
       email = params[:user].try(:[], :email)
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name and email are empty"}) unless name.present? && email.present?
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name is empty"}) unless name.present?
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Name is too small"}) if name.size <= 1
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Email is empty"}) unless email.present?
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Invalid email"}) if !Mail::Address.new(email).domain.present?
-      raise ApiError::InvalidParameters.new("Invalid paramters", { error: "Email already take"}) if User.where(email: email).where.not(id: current_user.id).take.present? || Guest.where(email: email).take.present?
+      current_password = params[:user].try(:[], :current_password)
+      new_password = params[:user].try(:[], :new_password)
+      needs_password_updated = false
+      errors = {}
+      if name.blank?
+        errors[:name] = "Name is empty"
+      elsif name.size <= 1
+        errors[:name] = "Name is too short"
+      end
+      if email.blank?
+        errors[:email] = "Email is empty"
+      elsif !(Mail::Address.new(email).domain.present? rescue nil)
+        errors[:email] = "Invalid email"
+      elsif User.where(email: email).where.not(id: current_user.id).take.present? || Guest.where(email: email).take.present?
+        errors[:email] = "Email already in use"
+      end  
+      
+      if current_password.present?
+        if current_user.valid_password?(current_password)
+          if new_password.blank?
+            errors[:new_password] = "New password is blank"
+          elsif PasswordValidator.validate(new_password).present?
+            errors[:new_password] = PasswordValidator.validate(new_password)
+          elsif current_user.valid_password?(new_password)
+            errors[:new_password] = "New password is same as the current password"
+          else
+            needs_password_updated = true
+          end
+        else
+          errors[:current_password] = "Not a valid pasword"
+        end
+      end
+      raise ApiError::InvalidParameters.new("Invalid paramters", errors) if errors.present?
       User.transaction do
         current_user.update!(name: name, email: email)
+        if needs_password_updated
+          current_user.update!(password: new_password)
+        end
         if params[:user].try(:[], :display_picture).present?
           current_user.avatar = params[:user][:display_picture]
           current_user.save!

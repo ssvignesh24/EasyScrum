@@ -13,10 +13,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function ({ children }) {
+export default function ({ setCurrentResource }) {
   const csrf_token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 
-  const [currentResource, setCurrentResource] = useState(window.currentResource);
   const [showProfile, setShowProfile] = useState(false);
 
   const isActive = ({ isCurrent, isPartiallyCurrent }) => {
@@ -39,7 +38,7 @@ export default function ({ children }) {
           open={showProfile}
           setOpen={setShowProfile}
           afterUpdate={updateProfile}
-          currentResource={currentResource}
+          setCurrentResource={setCurrentResource}
         />
       )}
       <div className="fixed w-full z-40" style={{ top: 0, left: 0, height: "60px", background: "#2e3740" }}>

@@ -1,10 +1,11 @@
 /** @format */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
 import { Router, Redirect } from "@reach/router";
+import CurrentResourceContext from "./contexts/current_resource";
 
 import AppLayout from "./containers/app_layout";
 
@@ -17,21 +18,25 @@ import PokerBoard from "./containers/poker/board";
 import PokerList from "./containers/poker/list";
 
 export default function () {
+  const [currentResource, setCurrentResource] = useState(window.currentResource);
+
   return (
     <div className="w-full">
-      <Router primary={false}>
-        <AppLayout path="/">
-          <DashboardContainer path="/dashboard"></DashboardContainer>
-          <RetroContainer path="/retro">
-            <RetroList path="/" default></RetroList>
-            <RetroBoard path="board/:boardId"></RetroBoard>
-          </RetroContainer>
-          <PokerContainer path="/poker">
-            <PokerList path="/" default></PokerList>
-            <PokerBoard path="board/:boardId"></PokerBoard>
-          </PokerContainer>
-        </AppLayout>
-      </Router>
+      <CurrentResourceContext.Provider value={currentResource}>
+        <Router primary={false}>
+          <AppLayout path="/" setCurrentResource={setCurrentResource}>
+            <DashboardContainer path="/dashboard"></DashboardContainer>
+            <RetroContainer path="/retro">
+              <RetroList path="/" default></RetroList>
+              <RetroBoard path="board/:boardId"></RetroBoard>
+            </RetroContainer>
+            <PokerContainer path="/poker">
+              <PokerList path="/" default></PokerList>
+              <PokerBoard path="board/:boardId"></PokerBoard>
+            </PokerContainer>
+          </AppLayout>
+        </Router>
+      </CurrentResourceContext.Provider>
     </div>
   );
 }

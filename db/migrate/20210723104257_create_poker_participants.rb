@@ -1,7 +1,7 @@
 class CreatePokerParticipants < ActiveRecord::Migration[6.1]
   def change
     create_table :poker_participants do |t|
-      t.references :poker_board, null: false, foreign_key: { to_table: :poker_boards, name: :poker_participants_poker_board_id_fkey }
+      t.references :poker_board, null: false, foreign_key: { to_table: :poker_boards, name: :poker_participants_poker_board_id_fkey, on_delete: :cascade }
       t.references :participant, null: false, polymorphic: true
       t.boolean :is_spectator, null: false
 

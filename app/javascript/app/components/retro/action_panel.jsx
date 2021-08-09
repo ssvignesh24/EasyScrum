@@ -226,7 +226,7 @@ export default function Example({
                                 <InputField.TextArea
                                   className="h-full"
                                   onChange={setNewActionItem}
-                                  asRef={newActionItemField}
+                                  ref={newActionItemField}
                                   listenToChange={newActionItem}
                                 />
                               </div>

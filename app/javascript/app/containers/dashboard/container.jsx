@@ -43,7 +43,7 @@ export default function ({ children }) {
                     width="36"
                     height="36"
                     fill="#fff"
-                    class="bi bi-kanban-fill"
+                    className="bi bi-kanban-fill"
                     viewBox="0 0 16 16">
                     <path d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" />
                   </svg>
@@ -72,7 +72,7 @@ export default function ({ children }) {
                     width="36"
                     height="36"
                     fill="#fff"
-                    class="bi bi-suit-club-fill"
+                    className="bi bi-suit-club-fill"
                     viewBox="0 0 16 16">
                     <path d="M11.5 12.5a3.493 3.493 0 0 1-2.684-1.254 19.92 19.92 0 0 0 1.582 2.907c.231.35-.02.847-.438.847H6.04c-.419 0-.67-.497-.438-.847a19.919 19.919 0 0 0 1.582-2.907 3.5 3.5 0 1 1-2.538-5.743 3.5 3.5 0 1 1 6.708 0A3.5 3.5 0 1 1 11.5 12.5z" />
                   </svg>

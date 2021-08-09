@@ -2,7 +2,7 @@ class CreateUsers < ActiveRecord::Migration[6.1]
   def change
     create_table :users do |t|
       t.string :name
-      t.references :account, foreign_key: { to_table: :accounts, name: :users_account_id_fkey }
+      t.references :account, foreign_key: { to_table: :accounts, name: :users_account_id_fkey, on_delete: :cascade}
       
       t.text :invitation_token
       t.datetime :invited_at
