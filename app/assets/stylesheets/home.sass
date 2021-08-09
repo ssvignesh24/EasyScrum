@@ -116,8 +116,6 @@ body#home
       position: relative
       overflow: hidden
       margin-bottom: 25px
-      .overview-viewport
-
       .overview-item
         padding: 30px
         width: 100%
@@ -190,6 +188,11 @@ body#home
   section.footer
     height: 100px
     background-color: #333
+    padding: 0 15px
+    .footer-copy, .footer-social
+      width: 50%
+    .footer-mid
+      display: none
     .social-icons
       width: 40px
       height: 40px
@@ -201,12 +204,14 @@ body#home
       border-style: solid
       background-color: transparent
       margin-right: 15px
+      flex-shrink: 0
       &.facebook
         border-color: #4460A0
       &.twitter
         border-color: #00AAEC
       &.insta
         border: none
+
 @media only screen and (min-width: 1000px)
   body#home
     section.description
@@ -215,6 +220,13 @@ body#home
           display: flex
           .segment-item
             width: 50%
+    section.footer
+      padding: 0
+      .footer-copy, .footer-social
+        width: 40%
+      .footer-mid
+        display: block
+        width: 20%
 
 @media only screen and (min-width: 1200px)
   body#home
@@ -269,3 +281,9 @@ body#home
         .segment-item
           width: 50%
           margin-bottom: 55px
+    section.footer
+      .footer-copy, .footer-social
+        width: 33.333%
+      .footer-mid
+        display: block
+        width: 33.333%
