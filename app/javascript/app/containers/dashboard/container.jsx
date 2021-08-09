@@ -18,7 +18,7 @@ export default function ({ children }) {
             temporibus.
           </p>
           <div className="flex mt-10">
-            <div className="w-6/12 flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
+            {/* <div className="w-6/12 flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
               <div className="w-24 h-24 bg-pink-600 rounded-lg flex-shrink-0 flex items-center justify-center">
                 <UserAddIcon className="w-10 h-10 text-white"></UserAddIcon>
               </div>
@@ -34,7 +34,7 @@ export default function ({ children }) {
                   reprehenderit non!
                 </p>
               </div>
-            </div>
+            </div> */}
             <Link to="/retro" className="block w-6/12">
               <div className="w-full flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
                 <div className="w-24 h-24 bg-blue-500 rounded-lg flex-shrink-0 flex items-center justify-center">
@@ -61,9 +61,6 @@ export default function ({ children }) {
                 </div>
               </div>
             </Link>
-          </div>
-
-          <div className="flex mt-10">
             <Link to="/poker" className="block w-6/12">
               <div className="w-full flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
                 <div className="w-24 h-24 bg-yellow-500 rounded-lg flex-shrink-0 flex items-center justify-center">
@@ -91,6 +88,9 @@ export default function ({ children }) {
                 </div>
               </div>
             </Link>
+          </div>
+
+          <div className="flex mt-10">
             <div className="w-6/12 flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors opacity-50">
               <div className="w-24 h-24 bg-green-500 rounded-lg flex-shrink-0 flex items-center justify-center">
                 <CheckCircleIcon className="w-10 h-10 text-white"></CheckCircleIcon>

@@ -1,0 +1,13 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col style="top: 10vh"
+  .text-2xl.font-bold.inline-block Forgot password?
+  .session-container.shadow.p-7.mt-5
+    - if resource.errors.full_messages.present?
+      .w-full.rounded.bg-red-100.p-3.mb-2.border.border-red-400
+        p.m-0 = resource.errors.full_messages.to_sentence
+    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| 
+      .w-full.mt-2
+        p.mb-1 Email
+        = f.email_field :email, autofocus: true, autocomplete: "email", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none', placeholder: t('email_hint')
+      .w-full.mt-5
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Request a reset link
+    

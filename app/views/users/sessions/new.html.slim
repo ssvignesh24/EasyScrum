@@ -11,6 +11,8 @@
       .w-full.mt-2
         p.mb-1 Password
         = f.password_field :password, autocomplete: "current-password", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none', placeholder: t('password_hint')
+        = link_to new_user_password_path do
+          .text-green-500.cursor-pointer.hover:underline.text-sm.mt-2 Forgot password?
       .w-full.mt-5
         button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Login
     .w-full.mt-5.border-t.border-gray-300.pt-5.text-center

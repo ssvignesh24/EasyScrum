@@ -1,0 +1,17 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col style="top: 10vh"
+  .text-2xl.font-bold.inline-block Change your password
+  .session-container.shadow.p-7.mt-5
+    - if resource.errors.full_messages.present?
+      .w-full.rounded.bg-red-100.p-3.mb-2.border.border-red-400
+        p.m-0 = resource.errors.full_messages.to_sentence
+    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
+      = f.hidden_field :reset_password_token
+      .w-full.mt-2
+        p.mb-1 New password
+        = f.password_field :password, autofocus: true, autocomplete: "new-password", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none'
+      .w-full.mt-2
+        p.mb-1 Confirm password
+        = f.password_field :password_confirmation, autofocus: true, autocomplete: "new-password", class: 'bg-white border border-gray-400 w-full rounded p-3 outline-none'
+      .w-full.mt-5
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Change password
+    
