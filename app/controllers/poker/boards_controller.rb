@@ -1,6 +1,6 @@
 class Poker::BoardsController < ApiController
-  before_action :set_poker_board, only: [:show, :update, :archive, :remove_participant]
-  before_action :authenticate_user!, only: [:create, :update, :archive, :destroy, :remove_participant]
+  before_action :set_poker_board, only: [:show, :update, :archive, :remove_participant, :rename]
+  before_action :authenticate_user!, only: [:create, :update, :archive, :destroy, :remove_participant, :rename]
 
   def index
     @boards = current_resource.poker_boards.includes(:target_participants)
@@ -89,6 +89,12 @@ class Poker::BoardsController < ApiController
     @board = current_user.created_poker_boards.where(id: params[:board_id]).take
     raise ApiError::Forbidden.new("Action now allowed") if @board&.created_by != current_user
     @board.destroy!
+  end
+
+  def rename
+    raise ApiError::Forbidden.new("Action now allowed") if current_user != @board.created_by
+    raise ApiError::InvalidParameters.new("Invalid name", { name: "Name is empty"}) if params[:name].blank?
+    @board.update(name: params[:name])
   end
 
   private

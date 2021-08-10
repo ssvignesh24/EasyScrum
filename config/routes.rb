@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       resources :boards, only: [:index, :show, :create, :update, :destroy], param: :board_id do
         member do
           post 'archive'
+          put 'rename'
           delete 'participant' => "boards#remove_participant"
           resources :issues, only: [:create, :destroy], param: :issue_id do
             member do

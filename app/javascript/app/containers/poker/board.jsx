@@ -13,6 +13,7 @@ import { Menu, Transition } from "@headlessui/react";
 import ConfirmDialog from "../../components/confirmdialog";
 import truncate from "../../lib/truncate";
 
+import RenameBoardModal from "./modals/rename_board";
 import Poker from "../../services/poker";
 import InviteUsersModal from "../../components/invite_users";
 import CreateIssueModal from "./modals/create_issue";
@@ -54,6 +55,7 @@ export default function ({ boardId }) {
   const [selectedParticipant, setSelectedParticipant] = useState();
   const [deleteState, setDeleteState] = useState("init");
   const [removeParticipantState, setRemoveParticipantState] = useState("init");
+  const [showRenameBoard, setShowRenameBoard] = useState(false);
 
   useEffect(() => {
     pokerClient
@@ -408,6 +410,15 @@ export default function ({ boardId }) {
     return mostVote;
   };
 
+  const renameBoard = (name) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        name: name,
+      };
+    });
+  };
+
   return (
     <>
       {deleteState == "deleted" && <Redirect to={"/poker"} noThrow />}
@@ -438,6 +449,12 @@ export default function ({ boardId }) {
             cancelText="Cancel"
             onOk={removeParticipant}
           />
+
+          <RenameBoardModal
+            open={showRenameBoard}
+            setOpen={setShowRenameBoard}
+            board={board}
+            afterRename={renameBoard}></RenameBoardModal>
         </>
       )}
       {state == "loaded" && currentIssue() && (
@@ -490,72 +507,66 @@ export default function ({ boardId }) {
         </div>
         <div className="w-3/12 flex items-center flex-row-reverse">
           {state == "loaded" && board && (
-            <Menu as="div" className="relative z-30">
-              {({ open }) => (
-                <>
-                  <Menu.Button className="mr-3">
-                    <PrimaryButton as="div">
-                      Board options
-                      <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
-                    </PrimaryButton>
-                  </Menu.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95">
-                    <Menu.Items
-                      static
-                      className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block w-full text-left px-4 py-2 text-sm"
-                              )}>
-                              Show participants
-                            </button>
-                          )}
-                        </Menu.Item>
-                        {board.canManageBoard && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={classNames(
-                                  active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                  "block w-full text-left px-4 py-2 text-sm"
-                                )}>
-                                Edit board
-                              </button>
-                            )}
-                          </Menu.Item>
-                        )}
-                        {board.canManageBoard && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={classNames(
-                                  active ? "bg-red-100 text-gray-900" : "text-gray-700",
-                                  "block w-full text-left px-4 py-2 text-sm"
+            <>
+              {board.canManageBoard && (
+                <Menu as="div" className="relative z-30">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="mr-3">
+                        <PrimaryButton as="div">
+                          Board options
+                          <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
+                        </PrimaryButton>
+                      </Menu.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95">
+                        <Menu.Items
+                          static
+                          className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => setShowRenameBoard(true)}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Rename board
+                                  </button>
                                 )}
-                                onClick={() => setConfirmDelete(true)}>
-                                Delete board
-                              </button>
+                              </Menu.Item>
                             )}
-                          </Menu.Item>
-                        )}
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </>
+                            {board.canManageBoard && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      active ? "bg-red-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}
+                                    onClick={() => setConfirmDelete(true)}>
+                                    Delete board
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
               )}
-            </Menu>
+            </>
           )}
           <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
             Invite users

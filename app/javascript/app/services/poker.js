@@ -50,4 +50,8 @@ export default class Poker extends Network{
   removeParticipant(participantId){
     return this.delete(`/poker/boards/${this.boardId}/participant.json`, { participant_id: participantId })
   }
+
+  renameBoard(name){
+    return this.put(`/poker/boards/${this.boardId}/rename.json`, { name })
+  }
 }
