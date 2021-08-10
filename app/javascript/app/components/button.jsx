@@ -15,7 +15,8 @@ const sizeClasses = (size) => {
 const commonClasses =
   "inline-flex items-center justify-center rounded-md border border-transparent shadow-sm text-base disabled:opacity-50 focus:outline-none  ";
 
-function Muted({ children, onClick, size, className, disabled }) {
+const Muted = React.forwardRef((props, ref) => {
+  const { children, onClick, size, className, disabled } = props;
   const handleClick = () => {
     if (!onClick) return;
     onClick();
@@ -24,13 +25,14 @@ function Muted({ children, onClick, size, className, disabled }) {
     <>
       <button
         onClick={handleClick}
+        ref={ref}
         disabled={disabled}
         className={commonClasses + " border bg-gray-50 border-gray-300 " + sizeClasses(size) + " " + className}>
         {children}
       </button>
     </>
   );
-}
+});
 
 Muted.propTypes = {
   onClick: PropTypes.func,

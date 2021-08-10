@@ -35,6 +35,7 @@ function ProfileModal(props) {
   const [newPassword, setNewPassword] = useState();
   const [dp, setDp] = useState();
   const [error, setError] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     return () => userClient.cancel();
@@ -97,8 +98,6 @@ function ProfileModal(props) {
       })
       .catch((r) => userClient.handleError(r));
   };
-
-  const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
     <>

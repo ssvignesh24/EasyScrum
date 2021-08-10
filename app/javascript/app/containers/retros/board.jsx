@@ -11,6 +11,7 @@ import { ReactSortable } from "react-sortablejs";
 import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
 import CreateColumnModal from "./modals/create_column";
+import ParticipantsModal from "./modals/participants";
 import InviteUsersModal from "../../components/invite_users";
 import consumer from "../../lib/action_cable_consumer";
 import ConfirmDialog from "../../components/confirmdialog";
@@ -31,6 +32,7 @@ export default function ({ children, boardId }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteState, setDeleteState] = useState("init");
   const [showActionItemColumn, setShowActionItemColumn] = useState(false);
+  const [showParticipants, setShowParticipants] = useState(false);
 
   useEffect(() => {
     retroClient
@@ -319,17 +321,20 @@ export default function ({ children, boardId }) {
   return (
     <>
       {state == "loaded" && (
-        <ActionPanel
-          currentActionItems={board.actionItems}
-          previousActionItems={board.previousActionItems}
-          previousRetroName={board.previousRetroName}
-          open={showActionItemColumn}
-          setOpen={setShowActionItemColumn}
-          afterCreate={addActionItem}
-          afterUpdate={updateActionItem}
-          afterDelete={deleteActionItem}
-          board={board}
-        />
+        <>
+          <ActionPanel
+            currentActionItems={board.actionItems}
+            previousActionItems={board.previousActionItems}
+            previousRetroName={board.previousRetroName}
+            open={showActionItemColumn}
+            setOpen={setShowActionItemColumn}
+            afterCreate={addActionItem}
+            afterUpdate={updateActionItem}
+            afterDelete={deleteActionItem}
+            board={board}
+          />
+          <ParticipantsModal open={showParticipants} setOpen={setShowParticipants} board={board} />
+        </>
       )}
       {deleteState == "deleted" && <Redirect to={"/retro"} noThrow />}
       {state == "loaded" && board.canManageBoard && (
@@ -402,6 +407,7 @@ export default function ({ children, boardId }) {
                             <Menu.Item>
                               {({ active }) => (
                                 <button
+                                  onClick={() => setShowParticipants(true)}
                                   className={classNames(
                                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                                     "block w-full text-left px-4 py-2 text-sm"
@@ -418,12 +424,12 @@ export default function ({ children, boardId }) {
                                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                                       "block w-full text-left px-4 py-2 text-sm"
                                     )}>
-                                    Edit board
+                                    Rename board
                                   </button>
                                 )}
                               </Menu.Item>
                             )}
-                            {board.canManageBoard && (
+                            {/* {board.canManageBoard && (
                               <Menu.Item>
                                 {({ active }) => (
                                   <button
@@ -435,7 +441,7 @@ export default function ({ children, boardId }) {
                                   </button>
                                 )}
                               </Menu.Item>
-                            )}
+                            )} */}
                             {board.canManageBoard && (
                               <Menu.Item>
                                 {({ active }) => (

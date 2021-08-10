@@ -25,6 +25,13 @@ json.createdBy do
 end
 json.participantsCount retro.target_participants.size
 
+json.participants retro.target_participants do |t_participant|
+  participant = t_participant.participant
+  json.id t_participant.id
+  json.type t_participant.participant_type
+  json.(participant, :name, :email)
+end
+
 if full_board
   json.columns retro.columns.order(position: :asc), partial: 'retro/columns/column', as: :column, locals: { full_column: true }
 end
