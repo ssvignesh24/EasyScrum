@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   constraints lambda { |req| req.format == :json } do
     # resources :users, only: [:update, :destroy]
     put "profile" => "users#update"
+    delete "profile" => "users#destroy"
 
     namespace :poker do
       resources :boards, only: [:index, :show, :create, :update, :destroy], param: :board_id do

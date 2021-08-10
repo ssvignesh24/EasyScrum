@@ -11,4 +11,8 @@ export default class User extends Network{
     return this.put("/profile.json", payload)
   }
 
+  deleteProfile(){
+    return this.delete("/profile.json")
+  }
+
 }

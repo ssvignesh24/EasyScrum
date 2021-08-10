@@ -209,4 +209,58 @@ Danger.defaultProps = {
   as: "button",
 };
 
-export { Primary, PrimaryLight, Muted, Danger };
+function DangerLight({ children, onClick, size, className, disabled, as }) {
+  const handleClick = () => {
+    if (!onClick) return;
+    onClick();
+  };
+  return (
+    <>
+      {as == "button" && (
+        <button
+          onClick={handleClick}
+          disabled={disabled}
+          className={
+            commonClasses +
+            "bg-red-500 bg-opacity-30 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-red-600 " +
+            sizeClasses(size) +
+            " " +
+            className
+          }>
+          {children}
+        </button>
+      )}
+      {as == "div" && (
+        <div
+          onClick={handleClick}
+          disabled={disabled}
+          className={
+            commonClasses +
+            "bg-red-500 bg-opacity-30 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-red-600 " +
+            sizeClasses(size) +
+            " " +
+            className
+          }>
+          {children}
+        </div>
+      )}
+    </>
+  );
+}
+
+DangerLight.propTypes = {
+  onClick: PropTypes.func,
+  size: PropTypes.string,
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  as: PropTypes.string,
+};
+
+DangerLight.defaultProps = {
+  size: "md",
+  className: "",
+  disabled: false,
+  as: "button",
+};
+
+export { Primary, PrimaryLight, Muted, Danger, DangerLight };
