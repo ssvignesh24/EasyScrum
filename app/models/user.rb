@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_one_attached :avatar
   
   scope :active, -> { where(active: true) }
+  scope :inactive, -> { where(active: false) }
 
   def active_for_authentication?
     (verification_token.present? && verified_at.present?) || (invitation_token.present? && invitation_accepted_at.present?)

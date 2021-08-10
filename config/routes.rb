@@ -13,6 +13,13 @@ Rails.application.routes.draw do
   get 'poker/board/invite/:token' => "poker/boards#accept_invitation", as: :poker_board_invitation
   post 'poker/board/invite/:token' => "poker/boards#add_participant"
 
+  get "/power" => "power#index"
+  namespace :power do
+    resources :users do
+
+    end
+  end
+
   constraints lambda { |req| req.format == :json } do
     # resources :users, only: [:update, :destroy]
     put "profile" => "users#update"
@@ -64,5 +71,7 @@ Rails.application.routes.draw do
   constraints lambda { |req| req.format == :html && !req.path.include?("/rails/active_storage/blobs") } do
     get '*path' => 'main#index'
   end
+
+  
   
 end
