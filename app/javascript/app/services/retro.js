@@ -70,4 +70,8 @@ export default class Retro extends Network{
   deleteActionItem(itemId){
     return this.delete(`/retro/board/${this.boardId}/action_items/${itemId}.json`)
   }
+
+  renameBoard(name){
+    return this.put(`/retro/board/${this.boardId}/rename.json`, {name })
+  }
 }

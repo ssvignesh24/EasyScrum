@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     namespace :retro do
       resources :board, except: [:new, :edit], param: :board_id do
         member do
+          put 'rename' => "board#rename"
           resources :action_items, only: [:create, :destroy], param: :item_id do
             member do
               put 'toggle'

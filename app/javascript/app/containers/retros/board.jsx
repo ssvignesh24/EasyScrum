@@ -12,6 +12,7 @@ import { Primary as PrimaryButton } from "../../components/button";
 import { Column, Card } from "../../components/retro";
 import CreateColumnModal from "./modals/create_column";
 import ParticipantsModal from "./modals/participants";
+import RenameBoardModal from "./modals/rename_board";
 import InviteUsersModal from "../../components/invite_users";
 import consumer from "../../lib/action_cable_consumer";
 import ConfirmDialog from "../../components/confirmdialog";
@@ -33,6 +34,7 @@ export default function ({ children, boardId }) {
   const [deleteState, setDeleteState] = useState("init");
   const [showActionItemColumn, setShowActionItemColumn] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showRenameBoard, setShowRenameBoard] = useState(false);
 
   useEffect(() => {
     retroClient
@@ -318,6 +320,15 @@ export default function ({ children, boardId }) {
     });
   };
 
+  const renameBoard = (name) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        name: name,
+      };
+    });
+  };
+
   return (
     <>
       {state == "loaded" && (
@@ -334,6 +345,11 @@ export default function ({ children, boardId }) {
             board={board}
           />
           <ParticipantsModal open={showParticipants} setOpen={setShowParticipants} board={board} />
+          <RenameBoardModal
+            open={showRenameBoard}
+            setOpen={setShowRenameBoard}
+            board={board}
+            afterRename={renameBoard}></RenameBoardModal>
         </>
       )}
       {deleteState == "deleted" && <Redirect to={"/retro"} noThrow />}
@@ -420,6 +436,7 @@ export default function ({ children, boardId }) {
                               <Menu.Item>
                                 {({ active }) => (
                                   <button
+                                    onClick={() => setShowRenameBoard(true)}
                                     className={classNames(
                                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                                       "block w-full text-left px-4 py-2 text-sm"

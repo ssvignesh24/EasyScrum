@@ -1,5 +1,5 @@
 class Retro::BoardController < ApiController
-  before_action :set_board, only: [:show, :destroy]
+  before_action :set_board, only: [:show, :destroy, :rename]
   before_action :authenticate_user!, except: [:index, :show, :add_participant, :accept_invitation]
   before_action :enure_permission!, except: [:index, :create, :show, :accept_invitation, :add_participant]
 
@@ -72,6 +72,11 @@ class Retro::BoardController < ApiController
 
   def destroy
     @board.destroy!
+  end
+
+  def rename
+    raise ApiError::InvalidParameters.new("Invalid name", { name: "Name is empty"}) if params[:name].blank?
+    @board.update(name: params[:name])
   end
 
   private
