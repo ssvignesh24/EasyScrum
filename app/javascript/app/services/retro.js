@@ -74,4 +74,8 @@ export default class Retro extends Network{
   renameBoard(name){
     return this.put(`/retro/board/${this.boardId}/rename.json`, {name })
   }
+
+  removeParticipant(participantId){
+    return this.delete(`/retro/board/${this.boardId}/participant.json`, { participant_id: participantId })
+  }
 }

@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       resources :board, except: [:new, :edit], param: :board_id do
         member do
           put 'rename' => "board#rename"
+          delete 'participant' => "board#remove_participant"
           resources :action_items, only: [:create, :destroy], param: :item_id do
             member do
               put 'toggle'

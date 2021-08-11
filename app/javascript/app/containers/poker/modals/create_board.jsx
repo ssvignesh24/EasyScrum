@@ -197,7 +197,7 @@ function CreateColumn(props) {
                       </>
                     )}
 
-                    <div className="mt-5 relative">
+                    {/* <div className="mt-5 relative">
                       <Toggle
                         labelText="Add me as a spectator"
                         description="Turn this on if you are only facilitating the planning poker and not voting for issues"
@@ -205,7 +205,7 @@ function CreateColumn(props) {
                         toggleFront={true}
                         onChange={setIsSpectator}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

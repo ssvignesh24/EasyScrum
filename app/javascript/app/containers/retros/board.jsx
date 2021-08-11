@@ -329,6 +329,15 @@ export default function ({ children, boardId }) {
     });
   };
 
+  const removeParticipant = (participantId) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        participants: board_.participants.filter((p) => p.id != participantId),
+      };
+    });
+  };
+
   return (
     <>
       {state == "loaded" && (
@@ -344,7 +353,12 @@ export default function ({ children, boardId }) {
             afterDelete={deleteActionItem}
             board={board}
           />
-          <ParticipantsModal open={showParticipants} setOpen={setShowParticipants} board={board} />
+          <ParticipantsModal
+            open={showParticipants}
+            setOpen={setShowParticipants}
+            board={board}
+            afterRemove={removeParticipant}
+          />
           <RenameBoardModal
             open={showRenameBoard}
             setOpen={setShowRenameBoard}

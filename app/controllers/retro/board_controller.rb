@@ -1,5 +1,5 @@
 class Retro::BoardController < ApiController
-  before_action :set_board, only: [:show, :destroy, :rename]
+  before_action :set_board, only: [:show, :destroy, :rename, :remove_participant]
   before_action :authenticate_user!, except: [:index, :show]
   before_action :enure_permission!, except: [:index, :create, :show]
 
@@ -49,6 +49,15 @@ class Retro::BoardController < ApiController
   def rename
     raise ApiError::InvalidParameters.new("Invalid name", { name: "Name is empty"}) if params[:name].blank?
     @board.update(name: params[:name])
+  end
+
+  def remove_participant
+    raise ApiError::Forbidden.new("Action now allowed") if current_user != @board.created_by
+    @participant = @board.target_participants.where(id: params[:participant_id]).take
+    raise ApiError::Forbidden.new("You can't remove yourself!") if @participant.participant == current_user
+    raise ApiError::NotFound.new("Participant not found") unless @participant.present?
+    RetroBoardChannel.broadcast_to(@board,  { status: true, type: 'remove_participant', participantId: @participant.id })
+    @participant.destroy!
   end
 
   private
