@@ -8,16 +8,19 @@ Rails.application.routes.draw do
   get 'signup' => "users#new"
   post 'signup' => "users#create"
   get 'verify_email' => 'users#verify_email'
-  get 'retro/board/invite/:token' => "retro/board#accept_invitation", as: :retro_board_invitation
-  post 'retro/board/invite/:token' => "retro/board#add_participant"
-  get 'poker/board/invite/:token' => "poker/boards#accept_invitation", as: :poker_board_invitation
-  post 'poker/board/invite/:token' => "poker/boards#add_participant"
-
+  
   get "/power" => "power#index"
   namespace :power do
     resources :users do
 
     end
+  end
+
+  scope :invite do
+    get ":invite_for/:token" => "guests#new"
+    post ":invite_for/:token" => "guests#send_email_otp", as: :new_guest
+    get ":invite_for/verify_email/:token" => "guests#get_otp"
+    post ":invite_for/verify_email/:token" => "guests#verify_email", as: :create_guest
   end
 
   constraints lambda { |req| req.format == :json } do

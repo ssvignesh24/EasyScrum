@@ -45,34 +45,6 @@ class Poker::BoardsController < ApiController
   def update
   end
 
-  def accept_invitation
-    @token = params[:token]
-    return unless @token.present?
-    @board = Poker::Board.get_board_by_invitation_token(@token)
-  end
-
-  def add_participant
-    token = params[:token]
-    show_invitation_error("Invalid token") and return unless token.present?
-    if guest_params[:email].blank? && guest_params[:name].blank?
-      show_invitation_error("Both name and email are empty") and return
-    elsif guest_params[:email].blank?
-      show_invitation_error("Email is empty") and return
-    elsif guest_params[:name].blank?
-      show_invitation_error("Name is empty") and return
-    elsif !Mail::Address.new(guest_params[:email]).domain.present?
-      show_invitation_error("Invalid email address") and return
-    end
-    board = Poker::Board.get_board_by_invitation_token(token)
-    guest = Guest.where(email: guest_params[:email], parent_user_id: board.created_by_id).first_or_initialize
-    guest.name = guest_params[:name].strip
-    guest.save!
-    participant = Poker::Participant.where(board: board, participant: guest, is_spectator: false).first_or_create!
-    cookies.encrypted[:guest_id] = guest.id
-    PokerBoardChannel.broadcast_to(board,  {status: true, type: 'new_participant', participant: { id: participant.id, email: participant.participant.email, name: participant.participant.name } })
-    redirect_to "/poker/board/#{board.id}"
-  end
-
   def remove_participant
     raise ApiError::Forbidden.new("Action now allowed") if current_user != @board.created_by
     @participant = @board.target_participants.where(id: params[:participant_id]).take
@@ -101,11 +73,6 @@ class Poker::BoardsController < ApiController
   
   def board_params
     params.require(:board).permit(:name, :template_id, :custom_votes, :is_spectator)
-  end
-
-  def show_invitation_error(error)
-    flash[:alert] = error
-    redirect_to poker_board_invitation_path(params[:token])
   end
 
   def guest_params

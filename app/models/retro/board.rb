@@ -10,12 +10,12 @@ class Retro::Board < ApplicationRecord
   after_create :create_columns_from_template, if: -> { template.present? }
 
   def get_invitation_token
-    Base64.encode64("#{id}:#{created_by_id}:#{board_unique_string}")
+    Base64.encode64("r:#{id}:#{created_by_id}:#{board_unique_string}")
   end
 
   def self.get_board_by_invitation_token(token)
-    id_, created_by_id_, board_unique_string_ = Base64.decode64(token)&.split(":") rescue nil
-    Retro::Board.where(id: id_, created_by_id: created_by_id_, board_unique_string: board_unique_string_).take
+    invite_for, id_, created_by_id_, board_unique_string_ = Base64.decode64(token)&.split(":") rescue nil
+    invite_for == "r" && Retro::Board.where(id: id_, created_by_id: created_by_id_, board_unique_string: board_unique_string_).take
   end
 
   def previous_retro

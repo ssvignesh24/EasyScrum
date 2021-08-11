@@ -7,11 +7,11 @@ class Poker::Board < ApplicationRecord
   has_many :target_participants, class_name: "Poker::Participant", foreign_key: :poker_board_id, dependent: :destroy
 
   def get_invitation_token
-    Base64.encode64("#{id}:#{created_by_id}:#{board_unique_string}")
+    Base64.encode64("p:#{id}:#{created_by_id}:#{board_unique_string}")
   end
 
   def self.get_board_by_invitation_token(token)
-    id_, created_by_id_, board_unique_string_ = Base64.decode64(token)&.split(":") rescue nil
-    Poker::Board.where(id: id_, created_by_id: created_by_id_, board_unique_string: board_unique_string_).take
+    invite_for, id_, created_by_id_, board_unique_string_ = Base64.decode64(token)&.split(":") rescue nil
+    invite_for == "p" && Poker::Board.where(id: id_, created_by_id: created_by_id_, board_unique_string: board_unique_string_).take
   end
 end

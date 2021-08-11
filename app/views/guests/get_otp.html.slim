@@ -1,0 +1,19 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col style="top: 10vh"
+  .text-2xl.font-bold.inline-block = @board.name
+  .text-gray-500 
+    - if @invite_for == "retro"
+      span Retrospective
+    - elsif @invite_for == "poker"
+      span Planning poker
+  .session-container.shadow.p-7.mt-5
+    - if flash[:alert].present?
+      .w-full.rounded.bg-red-100.p-3.mb-2.border.border-red-400
+        p.m-0 = flash[:alert]
+    - if !@invalid && @board.present?
+      = form_tag create_guest_path(invite_for: @invite_for, token: @token) do
+        .w-full.mt-2
+          p.mb-2 = "Please enter the one-time-password (OTP) that we sent you to the given email #{@guest.email}"
+          input type="text" name="otp" class='bg-white border border-gray-400 w-full rounded p-3 outline-none' placeholder="Please check your email"
+        .w-full.mt-5
+          button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Join board
+      

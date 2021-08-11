@@ -1,7 +1,7 @@
 full_board ||= false
 
 json.(board, :id, :name, :archived, :active)
-json.inviteURL "#{ENV['HOST']}poker/board/invite/#{board.get_invitation_token}"
+json.inviteURL "#{ENV['HOST']}invite/poker/#{board.get_invitation_token}"
 json.canManageBoard board.created_by_id == current_user&.id
 json.availableVotesString board.available_votes.map { |v| v['value'] }.join(", ")
 json.availableVotes board.available_votes
