@@ -1,21 +1,23 @@
 /** @format */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useContext } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { Link } from "@reach/router";
 import { ArrowNarrowRightIcon, CheckCircleIcon, UserAddIcon } from "@heroicons/react/solid";
 
+import CurrentResourceContext from "../../contexts/current_resource";
+
 export default function ({ children }) {
+  const currentResource = useContext(CurrentResourceContext);
+
   return (
     <div className="w-full h-full flex items-center justify-center pt-20">
       <div className="container mx-auto">
         <div className="w-8/12 mx-auto">
-          <h1 className="text-2xl font-medium">Welcome Vignesh Shanmugasundaram!</h1>
+          <h1 className="text-2xl font-medium">Welcome {currentResource.name}</h1>
           <p className="mt-3 text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quis laboriosam nostrum placeat vel
-            delectus ad fuga animi modi minus, omnis deserunt dolorem, nam aspernatur eligendi unde doloribus impedit
-            temporibus.
+            Choose anyone option below to start using EasyScrum. You can invite users after creating a retrospective or
+            planning poker board.
           </p>
           <div className="flex mt-10">
             {/* <div className="w-6/12 flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
@@ -56,7 +58,8 @@ export default function ({ children }) {
                     </div>
                   </div>
                   <p className="text-gray-500">
-                    Laborum repudiandae cum repellendus sed nihil veniam eaque quos ea rerum ipsa reprehenderit non!
+                    Review your team's work and progress in the previous sprint/release. Discuss and create action items
+                    to increase your team's success
                   </p>
                 </div>
               </div>
@@ -82,8 +85,8 @@ export default function ({ children }) {
                     </div>
                   </div>
                   <p className="text-gray-500">
-                    Saepe laborum repudiandae cum repellendus sed nihil veniam eaque quos ea rerum ipsa reprehenderit
-                    non!
+                    Discuss about issues/stories for the upcoming sprint/release and estimate story points for issues as
+                    a team
                   </p>
                 </div>
               </div>
@@ -103,7 +106,9 @@ export default function ({ children }) {
                   </div>
                 </div>
                 <p className="text-sm text-yellow-700">Coming soon!</p>
-                <p className="text-gray-500">Qui asperiores, odit velit nesciunt impedit consectetur saepe</p>
+                <p className="text-gray-500">
+                  Eliminate standup meetings and stay up-to-date with your team's progress and resolve team blockers
+                </p>
               </div>
             </div>
           </div>

@@ -664,7 +664,7 @@ export default function ({ boardId }) {
                     {state == "loaded" &&
                       !currentIssue() &&
                       board?.canManageBoard &&
-                      "Please select an issue to start voting"}
+                      "Please select an issue from the left panel to start voting"}
                     {state == "loaded" &&
                       !currentIssue() &&
                       !board?.canManageBoard &&
@@ -675,13 +675,15 @@ export default function ({ boardId }) {
                           <>
                             {currentIssue().status == STATUS.ADDED && "Click 'Start voting' to begin voting"}
                             {currentIssue().status == STATUS.VOTING &&
-                              "Voting in progress. Click 'Finish voting' after all participants voted to view results"}
-                            {currentIssue().status == STATUS.VOTED && !currentIssue().isGhost && "Click 'Next issue'"}
+                              "Voting in progress. Click 'Finish voting' after all participants voted to view results."}
+                            {currentIssue().status == STATUS.VOTED &&
+                              !currentIssue().isGhost &&
+                              "Assign story points to the issue or click 'Clear votes' to restart voting for this issue"}
                             {currentIssue().status == STATUS.VOTED &&
                               currentIssue().isGhost &&
                               "Click 'Reset votes' to begin voting again"}
                             {currentIssue().status == STATUS.FINISHED &&
-                              "You have assigned points to this issue. Please click next issue to start voting"}
+                              "Successfully estimated story points for this issue! Please click an issue from the left panel to start voting."}
                           </>
                         )}
                         {!board?.canManageBoard && (

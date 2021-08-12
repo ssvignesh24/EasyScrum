@@ -65,9 +65,8 @@ function InviteUsers(props) {
                       </div>
                     )}
                     <p className="my-2 text-gray-600">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quos ad, nisi soluta, molestias modi
-                      consequatur tenetur rem quam obcaecati repellendus accusantium quod veritatis. Soluta ratione
-                      aliquid tempora eius impedit voluptatibus!
+                      Share the below link with the users you would like to add. Participants should provide their name
+                      and email before adding themselves to the board
                     </p>
                     <p className="mb-1 mt-3">Invite link</p>
                     <input
