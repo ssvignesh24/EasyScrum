@@ -8,7 +8,7 @@
       span = @user.name
     .w-full.flex.mt-4
       .w-14.h-14.rounded-full.flex-shrink-0.overflow-hidden
-        = image_tag @user.avatar_url || "default_dp.jpeg", class: "w-full min-h-full"
+        = image_tag @user.avatar_url || "default_dp.jpg", class: "w-full min-h-full"
       .w-full.pl-3
         p.font-medium.text-xl = @user.name
         .flex.items-center

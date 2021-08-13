@@ -14,7 +14,7 @@
       = link_to power_user_path(user) do
         .w-full.rounded.bg-white.shadow.p-5.flex.mb-3.hover:bg-green-50.transition-colors
           .w-12.h-12.rounded-full.flex-shrink-0.overflow-hidden
-            = image_tag user.avatar_url || "default_dp.jpeg", class: "w-full min-h-full"
+            = image_tag user.avatar_url || "default_dp.jpg", class: "w-full min-h-full"
           .w-full.pl-3
             p.font-medium = user.name
             .flex.items-center.text-sm

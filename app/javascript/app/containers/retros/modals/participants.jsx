@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
 
-import DefaultDp from "images/default_dp.jpeg";
+import DefaultDp from "images/default_dp.jpg";
 import Retro from "../../../services/retro";
 import ConfirmDialog from "../../../components/confirmdialog";
 import BoardNetwork from "../board";

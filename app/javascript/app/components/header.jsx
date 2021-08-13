@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { Link } from "@reach/router";
 import { Menu, Transition } from "@headlessui/react";
 
-import DefaultDp from "images/default_dp.jpeg";
+import DefaultDp from "images/default_dp.jpg";
 import ProfileModal from "../containers/profile_modal";
 
 function classNames(...classes) {
