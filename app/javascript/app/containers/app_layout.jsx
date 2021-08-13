@@ -1,8 +1,7 @@
 /** @format */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 
 import Header from "../components/header";
 

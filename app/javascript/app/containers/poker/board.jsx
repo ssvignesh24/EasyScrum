@@ -940,7 +940,7 @@ export default function ({ boardId }) {
                         </div>
                       </div>
                       <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Avg vote</div>
+                        <div className="w-8/12 text-gray-600">Average vote</div>
                         <div className="w-4/12 flex flex-row-reverse font-medium">
                           <span>&ensp;points</span>
                           <span className="text-purple-500">{avgVote()}</span>

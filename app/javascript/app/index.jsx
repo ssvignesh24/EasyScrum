@@ -2,9 +2,8 @@
 
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 
-import { Router, Redirect } from "@reach/router";
+import { Router } from "@reach/router";
 import CurrentResourceContext from "./contexts/current_resource";
 
 import AppLayout from "./containers/app_layout";
@@ -18,7 +17,7 @@ import PokerBoard from "./containers/poker/board";
 import PokerList from "./containers/poker/list";
 
 export default function () {
-  const [currentResource, setCurrentResource] = useState(window.currentResource);
+  const [currentResource, setCurrentResource] = useState(window._currentResource);
 
   return (
     <div className="w-full">

@@ -1,19 +1,20 @@
 /** @format */
 
-import React, { useEffect, Fragment, useState } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { Link } from "@reach/router";
 import { Menu, Transition } from "@headlessui/react";
 
 import DefaultDp from "images/default_dp.jpg";
 import ProfileModal from "../containers/profile_modal";
+import CurrentResourceContext from "../contexts/current_resource";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function ({ setCurrentResource }) {
+  const currentResource = useContext(CurrentResourceContext);
   const csrf_token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 
   const [showProfile, setShowProfile] = useState(false);

@@ -2,7 +2,6 @@
 
 import React, { Fragment, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { DotsVerticalIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { Scrollbars } from "react-custom-scrollbars";
@@ -25,6 +24,8 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [state, setState] = useState("ready");
 
+  useEffect(() => () => retroClient.cancel(), []);
+
   const deleteColumn = () => {
     setState("deleting");
     retroClient
@@ -35,10 +36,6 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
       })
       .catch((r) => retroClient.handleError(r));
   };
-
-  const editColumn = () => {};
-
-  const updateColumn = () => {};
 
   return (
     <>

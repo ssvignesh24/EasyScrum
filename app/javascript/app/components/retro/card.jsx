@@ -1,8 +1,7 @@
 /** @format */
 
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import { TrashIcon, PencilIcon } from "@heroicons/react/solid";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
 
@@ -22,6 +21,8 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
   const [updatedMessage, setUpdatedMessage] = useState(card.message);
   const [state, setState] = useState("ready");
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => () => retroClient.cancel(), []);
 
   const addComment = (value) => {
     const tmpCommentId = randId();
@@ -136,7 +137,7 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
             </div>
           </>
         )}
-        {(state == "ready" || state == "deleting") && <pre className="text-sm">{card.message}</pre>}
+        {(state == "ready" || state == "deleting") && <pre className="text-sm whitespace-normal">{card.message}</pre>}
         {card.canManageCard && (state == "ready" || state == "deleting") && (
           <div className="flex mt-3">
             <button className="flex text-green-500 items-center mr-4" onClick={editCard}>

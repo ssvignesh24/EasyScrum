@@ -4,12 +4,11 @@ import React, { Fragment, useState, useRef, useContext, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
-import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
+import { Muted as MutedButton } from "../../../components/button";
 
 import DefaultDp from "images/default_dp.jpg";
 import Retro from "../../../services/retro";
 import ConfirmDialog from "../../../components/confirmdialog";
-import BoardNetwork from "../board";
 
 function ParticipantsModal(props) {
   const closeButton = useRef();

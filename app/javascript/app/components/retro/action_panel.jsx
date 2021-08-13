@@ -9,7 +9,6 @@ import { XIcon } from "@heroicons/react/outline";
 import Scrollbars from "react-custom-scrollbars";
 
 import InputField from "../input_fields";
-import ConfirmDialog from "../confirmdialog";
 import { Primary as PrimaryButton } from "../button";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import Retro from "../../services/retro";

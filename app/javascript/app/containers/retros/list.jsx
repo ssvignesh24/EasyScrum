@@ -1,8 +1,7 @@
 /** @format */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 import pluralize from "pluralize";
 import { Link } from "@reach/router";
 
@@ -10,9 +9,11 @@ import { Primary as PrimaryButton } from "../../components/button";
 import CreateBoard from "./modals/create_board";
 import EmptyData from "images/empty.png";
 import Retro from "../../services/retro";
+import CurrentResourceContext from "../../contexts/current_resource";
 
 export default function ({ children }) {
   const retroClient = new Retro();
+  const currentResource = useContext(CurrentResourceContext);
 
   const [showCreateBoard, setShowCreateBoard] = useState(false);
   const [data, setData] = useState({
@@ -50,7 +51,7 @@ export default function ({ children }) {
   };
   return (
     <>
-      {data.state == "loaded" && (
+      {currentResource.type == "User" && data.state == "loaded" && (
         <CreateBoard
           templates={data.boardTemplates}
           open={showCreateBoard}
@@ -67,7 +68,7 @@ export default function ({ children }) {
               {data.state == "loading" && <p className="text-gray-500">Loading boards...</p>}
             </div>
             <div className="w-5/12 flex flex-row-reverse items-center">
-              {window.currentResource.type == "User" && (
+              {currentResource.type == "User" && (
                 <div>
                   <PrimaryButton onClick={() => setShowCreateBoard(true)}>Create a board</PrimaryButton>
                 </div>
@@ -83,12 +84,22 @@ export default function ({ children }) {
                     <div className="p-10 mt-10 w-4/12 mx-auto text-center">
                       <img src={EmptyData} alt="No poker board found" className="w-f" />
                       <div className="mt-5">
-                        <span className="text-gray-500"> No retrospectives found, </span>
-                        <span
-                          className="text-green-500 cursor-pointer hover:underline"
-                          onClick={() => setShowCreateBoard(true)}>
-                          create one here.
-                        </span>
+                        {currentResource.type == "User" && (
+                          <>
+                            <span className="text-gray-500"> No retrospectives found, </span>
+                            <span
+                              className="text-green-500 cursor-pointer hover:underline"
+                              onClick={() => setShowCreateBoard(true)}>
+                              create one here.
+                            </span>
+                          </>
+                        )}
+
+                        {currentResource.type == "Guest" && (
+                          <>
+                            <span className="text-gray-500"> No retrospectives found </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </>

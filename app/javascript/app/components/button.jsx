@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useRef, useState, Fragment, useEffect } from "react";
+import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
 
 const randId = () => {

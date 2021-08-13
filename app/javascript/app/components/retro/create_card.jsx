@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
 
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
 
@@ -15,6 +14,8 @@ export default function ({ children, addCard, boardId, columnId }) {
   const [showForm, setShowForm] = useState(false);
   const [state, setState] = useState("ready");
   const [message, setMessage] = useState("");
+
+  useEffect(() => () => retroClient.cancel(), []);
 
   useEffect(() => {
     if (!showForm) return;

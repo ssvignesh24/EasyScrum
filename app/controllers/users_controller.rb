@@ -53,7 +53,7 @@ class UsersController < ApplicationController
         errors[:email] = "Email is empty"
       elsif !(Mail::Address.new(email).domain.present? rescue nil)
         errors[:email] = "Invalid email"
-      elsif User.where(email: email).where.not(id: current_user.id).take.present? || Guest.where(email: email).take.present?
+      elsif User.where(email: email).where.not(id: current_user.id).take.present?
         errors[:email] = "Email already in use"
       end  
       

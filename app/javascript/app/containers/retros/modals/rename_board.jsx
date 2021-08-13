@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext, useEffect } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 

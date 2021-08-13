@@ -59,6 +59,7 @@ class GuestsController < ApplicationController
     show_invitation_error("Invalid invite link") and return unless guest.present?
     computed_otp = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, "#{params[:otp].strip}:#{guest.id}")
     show_otp_error("Invalid OTP") and return unless guest.email_otp == computed_otp
+    sign_out(current_user) if current_user
     cookies.encrypted[:guest_id] = guest.id
     cookies.delete(:temp_gid)
     case @board.class.to_s

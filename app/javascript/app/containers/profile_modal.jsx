@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext, useEffect } from "react";
+import React, { Fragment, useState, useContext, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 import Input from "../components/input_fields";
@@ -9,10 +9,6 @@ import ConfirmDialog from "../components/confirmdialog";
 
 import UserClient from "../services/user";
 import CurrentResourceContext from "../contexts/current_resource";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 import {
   Primary as PrimaryButton,
@@ -63,7 +59,7 @@ function ProfileModal(props) {
         props.afterUpdate(data.user);
         closeModal();
         setCurrentResource((currentResource_) => {
-          return { ...currentResource_, name: name, email: email };
+          return { ...currentResource_, name: name, email: email, avatarUrl: data.user.avatarUrl };
         });
       })
       .catch((r) =>

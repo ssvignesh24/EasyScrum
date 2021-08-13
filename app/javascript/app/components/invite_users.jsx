@@ -1,10 +1,10 @@
 /** @format */
 
-import React, { Fragment, useState, useRef, useContext } from "react";
+import React, { Fragment, useState, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
-import { Primary as PrimaryButton, Muted as MutedButton } from "./button";
+import { Muted as MutedButton } from "./button";
 
 function InviteUsers(props) {
   const nameField = useRef();

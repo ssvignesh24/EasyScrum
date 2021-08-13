@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useRef, useState, Fragment, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import { Primary as PrimaryButton } from "./button";
