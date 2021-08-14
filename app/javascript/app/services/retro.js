@@ -59,6 +59,10 @@ export default class Retro extends Network{
     return this.put(`/retro/board/${this.boardId}/columns/${columnId}/cards/${cardId}/rearrange.json`, payload)
   }
 
+  voteCard(columnId, cardId){
+    return this.post(`/retro/board/${this.boardId}/columns/${columnId}/cards/${cardId}/vote.json`)
+  }
+
   createActionItem(text){
     return this.post(`/retro/board/${this.boardId}/action_items.json`, { text })
   }

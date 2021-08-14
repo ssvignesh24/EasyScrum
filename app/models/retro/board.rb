@@ -22,6 +22,11 @@ class Retro::Board < ApplicationRecord
     created_by.created_retro_boards.where("created_at < ?", created_at).order(created_at: :desc).take
   end
 
+  def participant_id_of(resource)
+    return unless resource
+    target_participants.where(participant: resource).take&.id
+  end
+
   private
 
   def create_columns_from_template

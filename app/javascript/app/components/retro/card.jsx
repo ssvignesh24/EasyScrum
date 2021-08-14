@@ -2,18 +2,29 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { TrashIcon, PencilIcon } from "@heroicons/react/solid";
+import { TrashIcon, PencilIcon, ThumbUpIcon } from "@heroicons/react/solid";
+import { ThumbUpIcon as ThumbUpIconOutline } from "@heroicons/react/outline";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
 
 import ConfirmDialog from "../confirmdialog";
 
 import Retro from "../../services/retro";
+import pluralize from "pluralize";
 
 const randId = () => {
   return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
 };
 
-export default function ({ card, afterDelete, afterUpdate, addNewComment, removeComment, board, columnId }) {
+export default function ({
+  card,
+  afterDelete,
+  afterUpdate,
+  addNewComment,
+  removeComment,
+  board,
+  columnId,
+  toggleVote,
+}) {
   const retroClient = new Retro(board.id);
   const editCardField = useRef();
 
@@ -71,7 +82,6 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
 
   const cancelEdit = () => {
     setState("ready");
-
     setUpdatedMessage(card.message);
   };
 
@@ -137,18 +147,52 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
             </div>
           </>
         )}
-        {(state == "ready" || state == "deleting") && <pre className="text-sm whitespace-normal">{card.message}</pre>}
-        {card.canManageCard && (state == "ready" || state == "deleting") && (
+        {(state == "ready" || state == "deleting") && (
+          <pre className="text-sm" style={{ whiteSpace: "break-spaces" }}>
+            {card.message}
+          </pre>
+        )}
+        {(state == "ready" || state == "deleting") && (
           <div className="flex mt-3">
-            <button className="flex text-green-500 items-center mr-4" onClick={editCard}>
-              <PencilIcon className="w-3.5 h-3.5 mr-1" />
-              <span className="text-sm">Edit</span>
-            </button>
-            <button className="flex text-red-700 items-center" onClick={() => setConfirmDelete(true)}>
-              <TrashIcon className="w-3.5 h-3.5 mr-1" />
-              {state == "deleting" && <span className="text-sm">Deleting</span>}
-              {state == "ready" && <span className="text-sm">Delete</span>}
-            </button>
+            <div className="w-6/12 flex items-center">
+              {card.voted && (
+                <button
+                  className="flex items-center bg-green-50 text-green-700 py-1 px-2 rounded-lg"
+                  onClick={() => toggleVote(columnId, card)}>
+                  <ThumbUpIcon className="w-4 h-4 mr-1"></ThumbUpIcon>
+                  <span className="text-sm">Voted</span>
+                </button>
+              )}
+
+              {!card.voted && (
+                <button
+                  className="flex items-center hover:bg-green-100 py-1 px-2 rounded-lg"
+                  onClick={() => toggleVote(columnId, card)}>
+                  <ThumbUpIconOutline className="w-4 h-4 mr-1"></ThumbUpIconOutline>
+                  <span className="text-sm">Vote</span>
+                </button>
+              )}
+              <div className="text-sm ml-2">{pluralize("vote", card.voteCount, true)}</div>
+            </div>
+            <div className="w-6/12 flex flex-row-reverse">
+              {card.canManageCard && (
+                <>
+                  <button
+                    className="flex text-red-700 items-center hover:bg-red-100 py-1 px-2 rounded-lg"
+                    onClick={() => setConfirmDelete(true)}>
+                    <TrashIcon className="w-3.5 h-3.5 mr-1" />
+                    {state == "deleting" && <span className="text-sm">Deleting</span>}
+                    {state == "ready" && <span className="text-sm">Delete</span>}
+                  </button>
+                  <button
+                    className="flex text-green-500 items-center mr-1 hover:bg-gray-100 py-1 px-2 rounded-lg"
+                    onClick={editCard}>
+                    <PencilIcon className="w-3.5 h-3.5 mr-1" />
+                    <span className="text-sm">Edit</span>
+                  </button>{" "}
+                </>
+              )}
+            </div>
           </div>
         )}
         <hr className="mt-3" />
@@ -166,14 +210,12 @@ export default function ({ card, afterDelete, afterUpdate, addNewComment, remove
                   </div>
                   <p className="text-gray-700">{comment.message}</p>
                   <div className="w-full mt-1">
-                    {!comment.loading &&
-                      (board.canManageBoard ||
-                        comment.participant.targetParticipantId == board.currentParticipantId) && (
-                        <button className="flex text-red-700 items-center" onClick={() => removeCardComment(comment)}>
-                          <TrashIcon className="w-3.5 h-3.5 mr-1" />
-                          <span>Delete comment</span>
-                        </button>
-                      )}
+                    {!comment.loading && board.canManageBoard && (
+                      <button className="flex text-red-700 items-center" onClick={() => removeCardComment(comment)}>
+                        <TrashIcon className="w-3.5 h-3.5 mr-1" />
+                        <span>Delete comment</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               );

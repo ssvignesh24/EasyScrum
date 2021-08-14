@@ -62,6 +62,7 @@ Rails.application.routes.draw do
                   post 'comment' => "cards#add_comment"
                   delete 'comment' => "cards#remove_comment"
                   put 'rearrange'
+                  post 'vote' => "cards#toggle_vote"
                 end
               end
             end

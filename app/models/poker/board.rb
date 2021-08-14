@@ -14,4 +14,8 @@ class Poker::Board < ApplicationRecord
     invite_for, id_, created_by_id_, board_unique_string_ = Base64.decode64(token)&.split(":") rescue nil
     invite_for == "p" && Poker::Board.where(id: id_, created_by_id: created_by_id_, board_unique_string: board_unique_string_).take
   end
+
+  def participant_id_for(resource)
+    target_participants.where(participant: resource).take
+  end
 end

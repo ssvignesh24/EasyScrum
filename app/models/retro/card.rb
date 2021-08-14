@@ -5,4 +5,12 @@ class Retro::Card < ApplicationRecord
   has_many :votes, class_name: "Retro::Vote", foreign_key: :retro_card_id, dependent: :destroy
   delegate :participant, to: :target_participant
 
+  def has_voted?(resource)
+    votes
+      .joins(<<-SQL
+          INNER JOIN retro_participants ON retro_votes.retro_participant_id = retro_participants.id
+        SQL
+      ).where("retro_participants.participant_type = :type AND retro_participants.participant_id = :id", type: resource.class.to_s, id: resource.id).exists?
+  end
+
 end

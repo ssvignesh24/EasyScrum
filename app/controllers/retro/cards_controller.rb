@@ -26,10 +26,18 @@ class Retro::CardsController < ApiController
     RetroBoardChannel.broadcast_to(@board,  {type: "remove_card", cardId: @card.id, columnId: @column.id}.merge(default_broadcast_hash))
   end
 
-  def vote
-  end
-
-  def unvote
+  def toggle_vote
+    @card = @column.cards.where(id: params[:card_id]).take
+    retro_participant = @board.participant_id_of(current_resource)
+    raise ApiError::Forbidden.new("Action not allowed") unless retro_participant.present?
+    if @card.has_voted?(current_resource)
+      @card.votes.where(target_participant: retro_participant).destroy_all
+      @action = 'unvote'
+    else
+      @card.votes.where(target_participant: retro_participant).first_or_create!  
+      @action = 'vote'
+    end
+    RetroBoardChannel.broadcast_to(@board,  {type: "vote_change", voteCount: @card.votes.size, cardId: @card.id, columnId: @column.id}.merge(default_broadcast_hash))
   end
 
   def add_comment
@@ -72,6 +80,10 @@ class Retro::CardsController < ApiController
       @card.save!
     end
     col_changes = [JSON.parse(render_to_string(partial: 'retro/columns/column', locals: {column: @to_col })), JSON.parse(render_to_string(partial: 'retro/columns/column', locals: {column: @from_col }))]
+    col_changes = col_changes.map do |col|
+      col['cards'] = col['cards'].map { |c| c.except('voted') }
+      col
+    end
     RetroBoardChannel.broadcast_to(@board,  {type: "rearrange", affectedColumns: col_changes, columnId: @column.id}.merge(default_broadcast_hash))
 
   end

@@ -111,25 +111,25 @@ export default function ({ children, boardId }) {
               removeComment(data.columnId, data.cardId, data.commentId);
               break;
             case "rearrange":
-              const { affectedColumns } = data;
-              let needsActionInCols;
-              if (affectedColumns.length == 2 && affectedColumns[0].id == affectedColumns[1].id) {
-                needsActionInCols = [affectedColumns[0]];
-              } else {
-                needsActionInCols = affectedColumns;
-              }
-              setBoard((board_) => {
-                return {
-                  ...board_,
-                  columns: board_.columns.map((col) => {
-                    if (col.id == needsActionInCols[0].id) {
-                      col.cards = needsActionInCols[0].cards;
-                    } else if (needsActionInCols[1] && col.id == needsActionInCols[1].id) {
-                      col.cards = needsActionInCols[1].cards;
-                    }
-                    return col;
-                  }),
-                };
+              data.affectedColumns.map((col) => {
+                setBoard((board_) => {
+                  return {
+                    ...board_,
+                    columns: board_.columns.map((column) => {
+                      if (column.id == col.id) {
+                        column.cards = col.cards.map((card) => {
+                          const actualCard = findCard(card);
+                          return {
+                            ...card,
+                            canManageCard: actualCard.canManageCard,
+                            voted: actualCard.voted,
+                          };
+                        });
+                      }
+                      return column;
+                    }),
+                  };
+                });
               });
               break;
             case "create_action_item":
@@ -141,12 +141,25 @@ export default function ({ children, boardId }) {
             case "delete_action_item":
               deleteActionItem(data.actionItem);
               break;
+            case "vote_change":
+              updateVote(data.columnId, data.cardId, data.voteCount);
+              break;
             default:
               break;
           }
         },
       }
     );
+  };
+
+  const findCard = (search_card) => {
+    if (!board) return;
+    let the_card, found;
+    board.columns.map((col) => {
+      found = col.cards.find((card) => card.id == search_card.id);
+      if (found) the_card = found;
+    });
+    return the_card;
   };
 
   const addCard = (columnId, card) => {
@@ -338,6 +351,43 @@ export default function ({ children, boardId }) {
     });
   };
 
+  const toggleVote = (columnId, card) => {
+    retroClient.voteCard(columnId, card.id).catch((r) => retroClient.handleError(r));
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (columnId != column.id) return column;
+          column.cards = column.cards.map((c) => {
+            if (c.id == card.id) {
+              c.voted = !c.voted;
+              if (c.voted) updateVote(columnId, card.id, c.voteCount + 1);
+              else updateVote(columnId, card.id, c.voteCount - 1);
+            }
+            return c;
+          });
+          return column;
+        }),
+      };
+    });
+  };
+
+  const updateVote = (columnId, cardId, voteCount) => {
+    setBoard((board_) => {
+      return {
+        ...board_,
+        columns: board_.columns.map((column) => {
+          if (columnId != column.id) return column;
+          column.cards = column.cards.map((c) => {
+            if (c.id == cardId) c.voteCount = voteCount;
+            return c;
+          });
+          return column;
+        }),
+      };
+    });
+  };
+
   return (
     <>
       {state == "loaded" && (
@@ -403,7 +453,7 @@ export default function ({ children, boardId }) {
           <p className="font-medium text-lg ">{state == "loaded" && board.name}</p>
           <p className="font-medium text-lg ">{state == "loading" && "Loading retrospective..."}</p>
           <p className="text-gray-500 text-sm">
-            {state == "loaded" && pluralize("Participants", board.participantsCount, true)}
+            {state == "loaded" && pluralize("Participants", board.participants.length || 0, true)}
           </p>
         </div>
         {state == "loaded" && (
@@ -525,7 +575,7 @@ export default function ({ children, boardId }) {
                   afterUpdate={updateColumn}
                   afterDelete={removeColumn}>
                   <ReactSortable
-                    className="py-5 rounded"
+                    className="pb-5 pt-2.5 rounded"
                     style={{ minHeight: "400px" }}
                     id={`col-id:${column.id}`}
                     group="cards"
@@ -544,6 +594,7 @@ export default function ({ children, boardId }) {
                             afterUpdate={updateCard}
                             addNewComment={addNewComment}
                             removeComment={removeComment}
+                            toggleVote={toggleVote}
                           />
                         );
                       })}

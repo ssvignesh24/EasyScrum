@@ -41,7 +41,6 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
     <>
       {canManage && (
         <>
-          {" "}
           <ConfirmDialog
             open={confirmDelete}
             title={() => `Delete '${column.name}' column?`}
