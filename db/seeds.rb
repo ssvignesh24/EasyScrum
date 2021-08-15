@@ -1,3 +1,47 @@
+plans = [
+  {name: "Basic", key: :basic, description: "Personal or small team"},
+  {name: "Advanced", key: :advanced, description: "Large teams"},
+  {name: "Pro", key: :pro, description: "Company wide"},
+]
+plans.each do |data|
+  plan = Plan.where(key: data[:key]).first_or_initialize
+  plan.active = true
+  plan.description = data[:description]
+  plan.name = data[:name]
+  plan.save!
+end
+Plan.where.not(key: plans.map{ |x| x[:key] }).update_all(active: false)
+
+features = [
+  {name: "Google signin", key: :google_oauth, description: "Signup and login with google account" },
+]
+features.each do |data|
+  feature = Feature.where(key: data[:key]).first_or_initialize
+  feature.active = true
+  feature.description = data[:description]
+  feature.name = data[:name]
+  feature.save!
+  Plan.where(key: data[:plans]).each do |plan|
+    PlanFeature.where(plan: plan, )
+  end
+end
+Feature.where.not(key: features.map{ |x| x[:key] }).update_all(active: false)
+
+{
+  basic: { google_oauth: {} },
+  advanced: { google_oauth: {} },
+  pro: { google_oauth: {} }
+}.transform_values(&:with_indifferent_access).each do |plan_key, features|
+  plan = Plan.where(key: plan_key).take
+  next unless plan.present?
+  Feature.where(key: features.keys).find_each do |feature|
+    pf = PlanFeature.where(plan: plan, feature: feature).first_or_initialize
+    config = features[feature.key]
+    pf.config = config || {}
+    pf.save!
+  end
+end
+
 Retro::Template.update_all(active: false)
 [
   { name: "The Standard", description: "What went well?, What we should stop doing?, What we can do better?, What should do more of?", columns: [

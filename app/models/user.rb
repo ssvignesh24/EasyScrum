@@ -41,6 +41,22 @@ class User < ApplicationRecord
       user.avatar.attach(io: open(data['image']), filename: "#{user.id}-#{SecureRandom.hex(5)}-#{avatar_name}")
     end
     [data['email'].present?, user]
-end
+  end
 
+  def plan
+    if account.nil?
+      Plan.basic 
+    else
+      raise "Not implemented"
+    end
+  end
+
+  def can_access?(key)
+    return false unless key.present?
+    plan.can_access?(key).present?
+  end
+
+  def feature_config(key)
+    plan.can_access?(key).try(:config)
+  end
 end
