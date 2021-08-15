@@ -22,6 +22,12 @@
           small.text-red-500 = @errors[:password]
       .w-full.mt-5
         button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Create account
+    - if Rails.application.credentials.dig(:google, :oauth, :client_id).present?
+      .w-full.mt-3 
+        = link_to  user_google_oauth2_omniauth_authorize_path(state: Base64.encode64('{"origin": "signup"}')), method: :post do
+          .w-full.py-3.5.px-5.shadow.border.border-gray-50.bg-white.rounded-lg.flex.justify-center.items-center
+            = image_tag "google_logo.png", style: "height: 20px; width: 20px; margin-right: 5px"
+            span Signup with Google
     .w-full.mt-5.border-t.border-gray-300.pt-5.text-center
       span.m-0 Already have an account? 
       = link_to 'Sign in here', new_user_session_path, class: "text-green-500"

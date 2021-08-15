@@ -185,6 +185,9 @@ function ProfileModal(props) {
                         error={errors.new_password}
                         onChange={setNewPassword}
                       />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Signed up with Google? Set a new password using the forgot password option on the login page.
+                      </p>
                       <hr className="mt-5" />
 
                       <div className="mt-3" ref={nameField}>

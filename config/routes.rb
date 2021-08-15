@@ -2,7 +2,7 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
   root to: 'home#index'
 
   get 'signup' => "users#new"
@@ -76,7 +76,7 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => '/power/jobs'
   end
   
-  constraints lambda { |req| req.format == :html && !req.path.include?("/rails/active_storage/blobs") } do
+  constraints lambda { |req| req.format == :html && !req.path.include?("/rails/active_storage") } do
     get '*path' => 'main#index'
   end
 

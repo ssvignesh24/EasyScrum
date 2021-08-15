@@ -49,6 +49,10 @@ gem 'aes'
 gem 'strong_migrations'
 # Cronjob
 gem 'sidekiq-cron', '~> 1.2'
+# Google oauth
+gem 'omniauth-oauth2'
+gem "omniauth-rails_csrf_protection"
+gem 'omniauth-google-oauth2'
 
 gem "sentry-ruby"
 gem "sentry-rails"
