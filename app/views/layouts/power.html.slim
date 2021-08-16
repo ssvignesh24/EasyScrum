@@ -1,0 +1,24 @@
+doctype html
+html lang='en'
+  head
+    title = content_for?(:title) ? yield(:title) : 'EasyScrum'
+    = csrf_meta_tags
+    = csp_meta_tag
+    meta content="width=device-width, initial-scale=1.0" name="viewport" /
+    = yield :meta_data
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    = stylesheet_pack_tag "application", "data-turbo-track": "reload"
+    = javascript_pack_tag 'power_app'
+    = yield :head_scripts
+  
+  body
+    script
+      | window._currentResource = { };
+      = "window._currentResource.id = #{current_resource.id};".html_safe
+      = "window._currentResource.type = '#{current_resource.class.to_s}';".html_safe
+      = "window._currentResource.name = '#{sanitize(current_resource.name)}';".html_safe
+      = "window._currentResource.email = '#{sanitize(current_resource.email)}';".html_safe
+      - if current_user
+        = "window._currentResource.avatarUrl = '#{current_user.avatar_url}';".html_safe
+

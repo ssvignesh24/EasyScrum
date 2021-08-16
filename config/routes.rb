@@ -10,11 +10,6 @@ Rails.application.routes.draw do
   get 'verify_email' => 'users#verify_email'
   
   get "/power" => "power#index"
-  namespace :power do
-    resources :users do
-
-    end
-  end
 
   scope :invite do
     get ":invite_for/:token" => "guests#new"
@@ -70,16 +65,26 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    namespace :power do
+      resources :users
+      resources :features, param: :feature_id do
+        member do
+          post 'toggle'
+        end
+      end
+    end
+  end
+
+  constraints lambda { |req| req.format == :html && !req.path.starts_with?("/rails/active_storage") && !req.path.starts_with?("/power")} do
+    get '*path' => 'main#index'
   end
 
   authenticate :user, lambda { |u| u.power_user? } do
     mount Sidekiq::Web => '/power/jobs'
+    constraints lambda { |req| req.format == :html && req.path.starts_with?("/power") } do
+      get '*path' => 'power#index'
+    end
   end
-  
-  constraints lambda { |req| req.format == :html && !req.path.include?("/rails/active_storage") } do
-    get '*path' => 'main#index'
-  end
-
-  
   
 end

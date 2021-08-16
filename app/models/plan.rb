@@ -20,7 +20,7 @@ class Plan < ApplicationRecord
 
   def can_access?(feature_key)
     return unless feature_key.present?
-    feature = Feature.active.where(key: feature_key).take
+    feature = Feature.active.where(key: feature_key, globally_enabled: true).take
     raise "Feature key is invalid or inactive" unless feature.present?
     feature_config(feature)
   end

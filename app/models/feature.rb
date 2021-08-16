@@ -4,4 +4,10 @@ class Feature < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  def self.enabled?(feature_key)
+    feature = Feature.where(key: feature_key).take
+    raise "Invalid feature" unless feature.present?
+    raise false unless feature.active?
+    feature.globally_enabled
+  end
 end

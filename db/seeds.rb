@@ -13,13 +13,15 @@ end
 Plan.where.not(key: plans.map{ |x| x[:key] }).update_all(active: false)
 
 features = [
-  {name: "Google signin", key: :google_oauth, description: "Signup and login with google account" },
+  {name: "Google sign-in", key: :google_oauth, description: "Signup and login with google account", default_state: false },
 ]
 features.each do |data|
   feature = Feature.where(key: data[:key]).first_or_initialize
   feature.active = true
   feature.description = data[:description]
   feature.name = data[:name]
+  feature.default_state = data[:default_state]
+  feature.globally_enabled = feature.globally_enabled.nil? ? feature.default_state : feature.globally_enabled
   feature.save!
   Plan.where(key: data[:plans]).each do |plan|
     PlanFeature.where(plan: plan, )

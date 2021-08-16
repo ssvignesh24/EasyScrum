@@ -5,9 +5,5 @@ class Power::UsersController < PowerController
 
   def show
     @user = User.where(id: params[:id]).take
-    unless @user.present?
-      flash[:notice] = "Invalid user"
-      redirect_to power_users_path 
-    end
   end
 end
