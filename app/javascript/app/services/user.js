@@ -3,7 +3,7 @@ import Network from './network';
 export default class User extends Network{
 
   constructor(userId){
-    super()
+    super(30 * 1000)
     if(userId) this.userId = userId;
   }
 

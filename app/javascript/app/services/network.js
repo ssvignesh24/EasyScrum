@@ -2,11 +2,11 @@ import axios from 'axios';
 
 export default class Network{
 
-  constructor(){
+  constructor(timeout = 15 * 1000){
     this.cancelSource = axios.CancelToken.source();
     this.csrf =  document.querySelector("meta[name='csrf-token']").getAttribute('content');
     this.client = axios.create({
-      timeout: 15 * 1000,
+      timeout: timeout,
       cancelToken: this.cancelSource.token
     });
     this.client.interceptors.response.use((response) => response, (error) => {

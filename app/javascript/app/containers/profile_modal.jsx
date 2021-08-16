@@ -197,6 +197,7 @@ function ProfileModal(props) {
                           className="w-full"
                           onChange={(file) => setDp(file)}
                           accept="image/*"
+                          maxSize={3000000}
                           showName={true}
                         />
                       </div>

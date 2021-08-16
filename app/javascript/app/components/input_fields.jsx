@@ -8,8 +8,11 @@ const randId = () => {
   return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
 };
 
-function File({ labelText, onChange, disabled, className, showName, accept, as }) {
+function File(props) {
+  const { labelText, onChange, disabled, className, showName, accept, as, maxSize } = props;
+
   const [uploadedFile, setUploadedFile] = useState("");
+  const [error, setError] = useState(false);
   const field = useRef();
 
   const handleClick = () => {
@@ -17,8 +20,13 @@ function File({ labelText, onChange, disabled, className, showName, accept, as }
   };
 
   const handleFile = (event) => {
+    setError(false);
     if (event.target.files.length <= 0) return;
     const file = event.target.files[0];
+    if (maxSize > -1 && file.size > maxSize) {
+      setError("The selected file size is greater than " + maxSize / 1000000 + "MB");
+      return;
+    }
     setUploadedFile(file);
     onChange(file);
   };
@@ -40,6 +48,7 @@ function File({ labelText, onChange, disabled, className, showName, accept, as }
           disabled: disabled,
           children: showName && uploadedFile?.name ? `${uploadedFile?.name} - Change image` : labelText,
         })}
+        {error && <p className="text-sm mt-1.5 text-red-500 text-center">{error}</p>}
       </div>
     </>
   );
@@ -53,6 +62,7 @@ File.propTypes = {
   className: PropTypes.string,
   showName: PropTypes.bool,
   as: PropTypes.any,
+  maxSize: PropTypes.number,
 };
 
 File.defaultProps = {
@@ -60,6 +70,7 @@ File.defaultProps = {
   className: "",
   showName: false,
   as: PrimaryButton,
+  maxSize: -1,
 };
 
 const TextArea = React.forwardRef((props, ref) => {
