@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     get ":invite_for/verify_email/:token" => "guests#get_otp"
     post ":invite_for/verify_email/:token" => "guests#verify_email", as: :create_guest
   end
+  delete "guests/exit" => "guests#exit"
 
   constraints lambda { |req| req.format == :json } do
     # resources :users, only: [:update, :destroy]

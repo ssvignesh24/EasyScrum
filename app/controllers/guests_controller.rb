@@ -76,6 +76,11 @@ class GuestsController < ApplicationController
     end
   end
 
+  def exit
+    cookies.delete(:guest_id)
+    redirect_to '/dashboard'
+  end
+
   private
 
   def guest_params

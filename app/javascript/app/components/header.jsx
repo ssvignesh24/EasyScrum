@@ -115,6 +115,18 @@ export default function ({ setCurrentResource }) {
                 )}
               </Menu>
             )}
+
+            {currentResource.type == "Guest" && (
+              <>
+                <form method="POST" action="/guests/exit">
+                  <input type="hidden" name="_method" value="DELETE" />
+                  <input type="hidden" name="authenticity_token" value={csrf_token} />
+                  <button className="h-full text-white flex items-center px-3 hover:bg-black hover:bg-opacity-10 cursor-pointer">
+                    Exit as {currentResource.name}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </div>
       </div>

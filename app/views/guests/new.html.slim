@@ -20,4 +20,9 @@
         p.text-sm.text-gray-500.mt-1 We ask your email so that you can use this email to see all the retrospectives you participated in the past and also we can remind you about the action items assigned to you
         .w-full.mt-5
           button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Next
-      
+    - if current_resource.present? && current_resource.class == Guest
+      .w-full.mt-5.border-t.border-gray-300.pt-2.5.text-center
+        = link_to guest_target_link(@board) do
+          .w-full.h-full.hover:bg-green-50.py-2.5.rounded.cursor-pointer.mt-2.transition-colors
+            p.m-0.text-green-500.font-medium = "Continue as #{current_resource.name} to #{@board.name}"
+            p.m-0.text-gray-500.text-sm = current_resource.email
