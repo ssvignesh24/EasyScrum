@@ -8,7 +8,7 @@ const randId = () => {
   return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
 };
 
-function File({ labelText, onChange, disabled, className, showName, as }) {
+function File({ labelText, onChange, disabled, className, showName, accept, as }) {
   const [uploadedFile, setUploadedFile] = useState("");
   const field = useRef();
 
@@ -28,6 +28,7 @@ function File({ labelText, onChange, disabled, className, showName, as }) {
       <input
         ref={field}
         type="file"
+        accept={accept}
         id={randId()}
         onChange={(event) => handleFile(event)}
         style={{ opacity: 0, position: "fixed", top: "-100%", left: "-100%" }}
@@ -47,6 +48,7 @@ function File({ labelText, onChange, disabled, className, showName, as }) {
 File.propTypes = {
   labelText: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  accept: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   className: PropTypes.string,
   showName: PropTypes.bool,

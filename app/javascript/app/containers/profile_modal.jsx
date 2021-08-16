@@ -196,6 +196,7 @@ function ProfileModal(props) {
                           labelText="Change profile picture"
                           className="w-full"
                           onChange={(file) => setDp(file)}
+                          accept="image/*"
                           showName={true}
                         />
                       </div>
