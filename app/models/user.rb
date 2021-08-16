@@ -14,7 +14,9 @@ class User < ApplicationRecord
   has_many :poker_board_participants, class_name: "Poker::Participant", as: :participant 
   has_many :poker_boards, through: :poker_board_participants,  source: :board
   
-  has_one_attached :avatar
+  has_one_attached :avatar do |attachable|
+    attachable.variant :thumb, resize_to_limit: [180, 180]
+  end
   
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
@@ -25,7 +27,7 @@ class User < ApplicationRecord
 
   def avatar_url
     return unless avatar.attached?
-    ENV['HOST'].chop + Rails.application.routes.url_helpers.rails_blob_path(avatar, host: ENV['HOST'], only_path: true)
+    ENV['HOST'].chop + Rails.application.routes.url_helpers.rails_representation_url(avatar.variant(resize_to_limit: [180, 180]).processed, host: ENV['HOST'], only_path: true)
   end
 
   def self.from_omniauth(access_token, create_if_not_found=false)
