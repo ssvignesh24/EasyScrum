@@ -15,4 +15,8 @@ export default class User extends Network{
     return this.delete("/profile.json")
   }
 
+  submitFeedback(rating, comment){
+    return this.post("/feedbacks.json", { rating, comment })
+  }
+
 }

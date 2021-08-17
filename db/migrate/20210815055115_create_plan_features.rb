@@ -5,6 +5,8 @@ class CreatePlanFeatures < ActiveRecord::Migration[6.1]
       t.references :feature, null: false, foreign_key: { to_table: :features, name: :plan_features_feature_id_fkey }
       t.jsonb :config
 
+      t.index [:plan_id, :feature_id], unique: true
+
       t.timestamps
     end
   end

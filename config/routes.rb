@@ -24,6 +24,8 @@ Rails.application.routes.draw do
     put "profile" => "users#update"
     delete "profile" => "users#destroy"
 
+    resources :feedbacks, only: :create
+
     namespace :poker do
       resources :boards, only: [:index, :show, :create, :update, :destroy], param: :board_id do
         member do
