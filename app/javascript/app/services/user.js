@@ -16,7 +16,7 @@ export default class User extends Network{
   }
 
   submitFeedback(rating, comment){
-    return this.post("/feedbacks.json", { rating, comment })
+    return this.post("/feedbacks.json", {feedback: { rating, comment }})
   }
 
 }

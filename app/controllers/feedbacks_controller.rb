@@ -1,4 +1,11 @@
-class FeedbacksController < ApiController
+class FeedbacksController < PowerController
+  skip_before_action :authenticate_user!, only: :create
+  skip_before_action :authenticate_power_user!, only: :create
+
+  def index
+    @feedbacks = Feedback.includes(:feedback_by).order(created_at: :desc).all
+  end
+
   def create
     rating = feedback_params[:rating].to_i
     raise ApiError::InvalidParameters.new("No rating", { rating: "Please provide a rating"}) if rating.zero?

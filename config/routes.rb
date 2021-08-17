@@ -77,6 +77,10 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    scope :power do
+      resources :feedbacks, only: :index
+    end
   end
 
   constraints lambda { |req| req.format == :html && !req.path.starts_with?("/rails/active_storage") && !req.path.starts_with?("/power")} do

@@ -80,7 +80,7 @@ export default function ({ children }) {
                     width="36"
                     height="36"
                     fill="#fff"
-                    class="bi bi-hdd-stack-fill"
+                    className="bi bi-hdd-stack-fill"
                     viewBox="0 0 16 16">
                     <path d="M2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2H2zm.5 3a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm2 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm.5 3a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm2 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z" />
                   </svg>
@@ -100,6 +100,33 @@ export default function ({ children }) {
             </a>
           </div>
           <div className="flex mt-5">
+            <Link className="block w-4/12" to="/power/feedbacks">
+              <div className="w-full flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
+                <div className="w-24 h-24 bg-blue-500 rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="36"
+                    height="36"
+                    fill="#fff"
+                    className="bi bi-chat-dots-fill"
+                    viewBox="0 0 16 16">
+                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                  </svg>
+                </div>
+                <div className="pl-3">
+                  <div className="font-medium">
+                    <div className="inline-block align-middle text-lg">Feedbacks</div>
+                    <div className="inline-block align-middle ml-1">
+                      <ArrowNarrowRightIcon className="w-5 h-5"></ArrowNarrowRightIcon>
+                    </div>
+                  </div>
+                  <p className="text-gray-500">
+                    Laborum repudiandae cum repellendus sed nihil veniam eaque quos ea rerum ipsa reprehenderit non!
+                  </p>
+                </div>
+              </div>
+            </Link>
+
             <div className="w-4/12 flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
               <div className="w-24 h-24 bg-yellow-500 rounded-lg flex-shrink-0 flex items-center justify-center">
                 <svg
