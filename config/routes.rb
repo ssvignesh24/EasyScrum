@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     post ":invite_for/:token" => "guests#send_email_otp", as: :new_guest
     get ":invite_for/verify_email/:token" => "guests#get_otp"
     post ":invite_for/verify_email/:token" => "guests#verify_email", as: :create_guest
+    get ':invite_for/continue/:token/' => "guests#continue_as_existing_guest", as: :continue_as_existing_guest
   end
   delete "guests/exit" => "guests#exit"
 

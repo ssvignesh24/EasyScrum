@@ -22,7 +22,7 @@
           button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Next
     - if current_resource.present? && current_resource.class == Guest
       .w-full.mt-5.border-t.border-gray-300.pt-2.5.text-center
-        = link_to guest_target_link(@board) do
+        = link_to continue_as_existing_guest_path(invite_for: @invite_for, token: @token) do
           .w-full.h-full.hover:bg-green-50.py-2.5.rounded.cursor-pointer.mt-2.transition-colors
             p.m-0.text-green-500.font-medium = "Continue as #{current_resource.name} to #{@board.name}"
             p.m-0.text-gray-500.text-sm = current_resource.email
