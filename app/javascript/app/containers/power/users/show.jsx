@@ -7,6 +7,7 @@ import { ChevronRightIcon } from "@heroicons/react/solid";
 import UserClient from "../../../services/power/users";
 import pluralize from "pluralize";
 
+import DefaultDp from "images/default_dp.jpg";
 export default function ({ userId }) {
   const userClient = new UserClient();
 
@@ -53,7 +54,7 @@ export default function ({ userId }) {
           {state == "loaded" && (
             <div className="w-full flex mt-4">
               <div className="w-14 h-14 rounded-full flex-shrink-0 overflow-hidden">
-                <img className="w-full min-h-full" src={user.avatarUrl} />
+                <img className="w-full min-h-full" src={user.avatarUrl || DefaultDp} />
               </div>
               <div className="w-full pl-3">
                 <p className="font-medium text-xl">{user.name}</p>
@@ -85,6 +86,12 @@ export default function ({ userId }) {
                 <div className="inline-block">
                   <p className="font-medium text-3xl">{user.pokerCount}</p>
                   <h3 className="text-lg text-gray-500">Planning poker boards</h3>
+                </div>
+              </div>
+              <div className="bg-white rounded shadow p-10 flex items-center justify-center mr-5">
+                <div className="inline-block">
+                  <p className="font-medium text-3xl">{user.feedbacksCount}</p>
+                  <h3 className="text-lg text-gray-500">Feedabacks</h3>
                 </div>
               </div>
             </div>

@@ -554,7 +554,12 @@ export default function ({ children, boardId }) {
               </PrimaryButton>
             </div>
             <div className="flex-shrink-0">
-              <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
+              <PrimaryButton
+                className="mr-3"
+                onClick={() => {
+                  mixpanel?.track("Retro: Open invite user modal", { boardId: board.id });
+                  setShowInviteUsersModal(true);
+                }}>
                 Invite users
               </PrimaryButton>
             </div>

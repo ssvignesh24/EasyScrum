@@ -4,4 +4,5 @@ json.user do
   json.guestsCount @user.guests.size
   json.retroCount @user.created_retro_boards.size
   json.pokerCount @user.created_poker_boards.size
+  json.feedbacksCount @user.feedbacks.size
 end

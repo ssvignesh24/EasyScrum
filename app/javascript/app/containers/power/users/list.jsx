@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import { Link } from "@reach/router";
 import { ChevronRightIcon } from "@heroicons/react/solid";
 
+import DefaultDp from "images/default_dp.jpg";
 import UserClient from "../../../services/power/users";
 import pluralize from "pluralize";
 
@@ -56,7 +57,15 @@ export default function () {
           <div className="flex items-center">
             {userData.state == "loading" && <div className="text-gray-500">Loading users...</div>}
             {userData.state == "loaded" && (
-              <div className="text-gray-500">{pluralize("user", userData.users.length, true)}</div>
+              <>
+                <div className="text-gray-500">
+                  {pluralize("Active user", userData.users.filter((u) => !u.pendingInvitation).length, true)}
+                </div>
+                <div className="h-1 w-1 bg-gray-500 rounded-full mx-2 5"></div>
+                <div className="text-gray-500">
+                  {pluralize("Pending user", userData.users.filter((u) => u.pendingInvitation).length, true)}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -70,11 +79,17 @@ export default function () {
                     <Link to={`/power/users/${user.id}`} key={user.id}>
                       <div className="w-full rounded bg-white shadow p-5 flex mb-3 hover:bg-green-50 transition-colors">
                         <div className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden">
-                          <img className="w-full min-h-full" src={user.avatarUrl} alt={user.name} />
+                          <img className="w-full min-h-full" src={user.avatarUrl || DefaultDp} alt={user.name} />
                         </div>
                         <div className="w-full pl-3">
                           <p className="font-medium">{user.name}</p>
                           <div className="flex items-center text-sm">
+                            {user.pendingInvitation && (
+                              <>
+                                <div className="text-red-500">Invitation pending: Sent at {user.invitationSentAt}</div>
+                                <div className="h-1 w-1 bg-gray-500 rounded-full mx-2 5"></div>
+                              </>
+                            )}
                             <div className="text-gray-500">{user.email}</div>
                             <div className="h-1 w-1 bg-gray-500 rounded-full mx-2 5"></div>
                             <div className="text-gray-500">Created on {user.addedOn}</div>

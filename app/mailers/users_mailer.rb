@@ -10,7 +10,7 @@ class UsersMailer < ApplicationMailer
     return unless @user.present?
     @token = token
     @user.update verification_email_sent_at: Time.zone.now
-    mail to: @user.email
+    mail subject: "Email verification | EasyScrum", to: @user.email
   end
 
   # Subject can be set in your I18n file at config/locales/en.yml

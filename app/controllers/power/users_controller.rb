@@ -1,6 +1,6 @@
 class Power::UsersController < PowerController
   def index
-    @users = User.all.order(:active)
+    @users = User.all.order(active: :desc, created_at: :desc)
   end
 
   def show
