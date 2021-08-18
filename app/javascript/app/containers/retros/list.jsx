@@ -29,6 +29,7 @@ export default function ({ children }) {
         if (!data.status) return;
         data.state = "loaded";
         setData(data);
+        mixpanel?.track("Retro: Board list");
       })
       .catch((r) =>
         retroClient.handleError(r, () => {
@@ -82,7 +83,7 @@ export default function ({ children }) {
                 {data.boards.length == 0 && (
                   <>
                     <div className="p-10 mt-10 w-4/12 mx-auto text-center">
-                      <img src={EmptyData} alt="No poker board found" className="w-f" />
+                      <img src={EmptyData} alt="No retro board found" className="w-f" />
                       <div className="mt-5">
                         {currentResource.type == "User" && (
                           <>

@@ -26,4 +26,5 @@ json.participants board.target_participants do |t_participant|
 end
 if full_board
   json.issues board.issues.order(created_at: :desc), partial: 'poker/issues/issue', as: :issue
+  json.showInviteModal @show_invite_modal
 end

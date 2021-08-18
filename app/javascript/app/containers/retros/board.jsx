@@ -43,6 +43,8 @@ export default function ({ children, boardId }) {
         if (!data.status) return;
         setBoard(data.board);
         setState("loaded");
+        if (data.board.showInviteModal) setShowInviteUsersModal(true);
+        mixpanel?.track("Retro: Board visit", { boardId: data.board.id });
       })
       .catch((r) =>
         retroClient.handleError(r, () => {
@@ -60,6 +62,7 @@ export default function ({ children, boardId }) {
 
   const deleteBoard = () => {
     setDeleteState("deleting");
+    mixpanel?.track("Retro: Delete board", { boardId: board.id });
     retroClient
       .deleteBoard()
       .then(({ data }) => {

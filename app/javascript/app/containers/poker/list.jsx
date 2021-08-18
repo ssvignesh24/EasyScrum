@@ -30,6 +30,7 @@ export default function ({ children }) {
         if (!data.status) return;
         data.state = "loaded";
         setData(data);
+        mixpanel?.track("Poker: Board list");
       })
       .catch((r) =>
         pokerClient.handleError(r, () => {
@@ -42,6 +43,7 @@ export default function ({ children }) {
   const prependBoard = ({ board }) => {
     if (!board) return;
     const boards = [board].concat(data.boards);
+    mixpanel?.track("Poker: Board created", { boardId: board.id });
     setData((data_) => {
       return {
         ...data_,

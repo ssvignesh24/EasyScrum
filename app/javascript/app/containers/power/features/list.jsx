@@ -80,7 +80,7 @@ export default function () {
                 featureData.features.map((feature) => {
                   return (
                     <div
-                      className="w-full py-4 px-6 bg-white rounded shadow flex hover:bg-green-50 transition-colors"
+                      className="w-full py-4 px-6 bg-white rounded shadow flex hover:bg-green-50 transition-colors mb-2"
                       key={feature.key}>
                       <div className="w-9/12">
                         <p className="font-medium">{feature.name}</p>

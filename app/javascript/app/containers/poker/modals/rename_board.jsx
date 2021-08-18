@@ -36,6 +36,7 @@ function RenameBoard(props) {
         if (!data.status) return;
         props.afterRename(data.board.name);
         setName(data.board.name);
+        mixpanel?.track("Poker: Rename board", { boardId: data.board.id });
         closeModal();
       })
       .catch((r) =>

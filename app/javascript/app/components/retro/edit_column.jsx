@@ -37,6 +37,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         closeModal();
+        mixpanel?.track("Retro: Update column", { boardId: props.boardId, columnId: data.column.id });
         props.afterUpdate(data.column);
       })
       .catch((r) =>

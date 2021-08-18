@@ -37,12 +37,14 @@ export default function Example({
   const addActionItem = () => {
     if (!newActionItem) return;
     setState("creating");
+
     retroClient
       .createActionItem(newActionItem)
       .then(({ data }) => {
         if (!data.status) return;
         setState("ready");
         afterCreate(data.actionItem);
+        mixpanel?.track("Retro: Create action item", { boardId: board.id, actionItemId: data.actionItem.id });
         setNewActionItem("");
       })
       .catch((r) => retroClient.handleError(r));
@@ -56,6 +58,7 @@ export default function Example({
       .then(({ data }) => {
         if (!data.status) return;
         afterUpdate(data.actionItem);
+        mixpanel?.track("Retro: Toggle action item", { boardId: board.id, actionItemId: data.actionItem.id });
       })
       .catch((r) => retroClient.handleError(r));
   };
@@ -66,6 +69,7 @@ export default function Example({
       retroClient.deleteActionItem(item.id).then(({ data }) => {
         if (!data.status) return;
         afterDelete(data.actionItem);
+        mixpanel?.track("Retro: Delete action item", { boardId: board.id, actionItemId: data.actionItem.id });
       });
     }
   };

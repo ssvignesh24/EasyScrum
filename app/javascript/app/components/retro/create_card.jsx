@@ -34,6 +34,7 @@ export default function ({ children, addCard, boardId, columnId }) {
       .then(({ data }) => {
         if (!data.status) return;
         addCard(columnId, data.card);
+        mixpanel?.track("Retro: Create card", { boardId: boardId, cardId: data.card.id });
         setShowForm(false);
         setMessage("");
         setState("ready");

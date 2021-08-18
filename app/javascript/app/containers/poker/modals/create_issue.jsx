@@ -35,6 +35,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         props.afterCreate(data.issue);
+        mixpanel?.track("Poker: Create issue", { boardId: props.board.id, issueId: data.issue.id });
         closeModal();
       })
       .catch((r) =>

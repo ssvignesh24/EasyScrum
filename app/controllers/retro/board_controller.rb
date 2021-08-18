@@ -33,6 +33,7 @@ class Retro::BoardController < ApiController
         end
       end
       @retro_board.target_participants.create!(participant: current_user)
+      session["invite_user_r_#{@retro_board.id}".to_sym] = true
     end
   rescue => e
     ErrorReporter.send(e)
@@ -40,6 +41,10 @@ class Retro::BoardController < ApiController
   end
 
   def show
+    if @board.created_by == current_resource
+      @show_invite_modal = session["invite_user_r_#{@board.id}".to_sym]
+      session.delete("invite_user_r_#{@board.id}".to_sym)
+    end
   end
 
   def destroy

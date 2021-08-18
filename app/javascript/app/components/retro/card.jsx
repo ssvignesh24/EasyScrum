@@ -48,6 +48,7 @@ export default function ({
       .addComment(card.id, columnId, value)
       .then(({ data }) => {
         if (!data.status) return;
+        mixpanel?.track("Retro: Add comment", { boardId: board.id });
         addNewComment(columnId, card.id, data.comment, tmpCommentId);
       })
       .catch((r) => retroClient.handleError(r));
@@ -73,6 +74,7 @@ export default function ({
         .then(({ data }) => {
           if (!data.status) return;
           setState("ready");
+          mixpanel?.track("Retro: Update card", { boardId: board.id });
           afterUpdate(columnId, data.card);
         })
         .catch((r) => retroClient.handleError(r));
@@ -92,6 +94,7 @@ export default function ({
       .deleteCard(columnId, card.id)
       .then(({ data }) => {
         if (!data.status) return;
+        mixpanel?.track("Retro: Delete card", { boardId: board.id, cardId: card.id });
         afterDelete(columnId, card);
       })
       .catch((r) => retroClient.handleError(r));
@@ -104,6 +107,7 @@ export default function ({
       .then(({ data }) => {
         if (!data.status) return;
         const comments_ = comments.filter((c) => c.id != comment.id);
+        mixpanel?.track("Retro: Delete comment", { boardId: board.id });
         setComments(comments_);
       })
       .catch((r) => retroClient.handleError(r));

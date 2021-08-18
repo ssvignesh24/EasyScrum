@@ -8,6 +8,10 @@ class Poker::BoardsController < ApiController
 
   def show
     @current_participant = @board.target_participants.where(participant: current_resource).take
+    if @board.created_by == current_resource
+      @show_invite_modal = session["invite_user_p_#{@board.id}".to_sym]
+      session.delete("invite_user_p_#{@board.id}".to_sym)
+    end
   end
 
   def create
@@ -39,6 +43,7 @@ class Poker::BoardsController < ApiController
       @board.save!
       Poker::Participant.create!(board: @board, participant: current_user, is_spectator: board_params[:is_spectator])
       @board.issues.create!(summary: 'ghost', is_ghost: true, status: Poker::Issue::STATUS.ADDED)
+      session["invite_user_p_#{@board.id}".to_sym] = true
     end
   end
 

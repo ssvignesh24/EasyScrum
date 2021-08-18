@@ -46,6 +46,7 @@ function ParticipantsModal(props) {
       .then(({ data }) => {
         if (!data.status) return;
         setDeleteState("init");
+        mixpanel?.track("Retro: Remove participant", { boardId: props.board.id });
         setShowConfirmRemove(false);
         props.setOpen(true);
         props.afterRemove(data.participant.id);

@@ -33,6 +33,7 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
       .then(({ data }) => {
         if (!data.status) return;
         afterDelete(column);
+        mixpanel?.track("Retro: Delete column", { boardId: boardId });
       })
       .catch((r) => retroClient.handleError(r));
   };

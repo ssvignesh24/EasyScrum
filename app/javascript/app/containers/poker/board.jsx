@@ -67,6 +67,8 @@ export default function ({ boardId }) {
         const si = data.board.issues.find((i) => i.isSelected);
         if (si) setSelectedIssueId(si.id);
         setState("loaded");
+        if (data.board.showInviteModal) setShowInviteUsersModal(true);
+        mixpanel?.track("Poker: Board visit", { boardId: data.board.id });
       })
       .catch((r) =>
         pokerClient.handleError(r, () => {
@@ -103,6 +105,7 @@ export default function ({ boardId }) {
       .then(({ data }) => {
         if (!data.status) return;
         setShowConfirmRemoveParticipant(false);
+        mixpanel?.track("Poker: Remove participant", { boardId: board.id });
         setTimeout(() => {
           setSelectedParticipant(false);
           setRemoveParticipantState("init");
@@ -112,6 +115,7 @@ export default function ({ boardId }) {
   };
   const deleteBoard = () => {
     setDeleteState("deleting");
+    mixpanel?.track("Poker: Delete board", { boardId: board.id });
     pokerClient
       .deleteBoard()
       .then(({ data }) => {
@@ -225,6 +229,7 @@ export default function ({ boardId }) {
         return i;
       })
     );
+    mixpanel?.track("Poker: Start voting", { boardId: board.id, issueId: selectedIssueId });
     pokerClient
       .updateIssueStatus(selectedIssueId, STATUS.VOTING)
       .then(({ data }) => {
@@ -277,7 +282,7 @@ export default function ({ boardId }) {
   };
 
   const finishVoting = () => {
-    // stopCounter();
+    mixpanel?.track("Poker: Finish voting", { boardId: board.id, issueId: selectedIssueId });
     setIssues((issues_) =>
       issues_.map((i) => {
         if (i.id == selectedIssueId) i.status = STATUS.VOTED;
@@ -313,6 +318,7 @@ export default function ({ boardId }) {
   const selectIssue = (issue) => {
     if (!board?.canManageBoard) return;
     setSelectedIssueId(issue.id);
+    mixpanel?.track("Poker: Select issue", { boardId: data.board.id });
     pokerClient
       .updateIssueStatus(issue.id, "selected")
       .then(({ data }) => {
@@ -568,7 +574,12 @@ export default function ({ boardId }) {
               )}
             </>
           )}
-          <PrimaryButton className="mr-3" onClick={() => setShowInviteUsersModal(true)}>
+          <PrimaryButton
+            className="mr-3"
+            onClick={() => {
+              mixpanel?.track("Poker: Open invite user modal", { boardId: board.id });
+              setShowInviteUsersModal(true);
+            }}>
             Invite users
           </PrimaryButton>
         </div>

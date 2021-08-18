@@ -29,6 +29,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         props.afterUpdate(data.issue);
+        mixpanel?.track("Poker: Assign Story points", { boardId: props.board.id, issueId: data.issue.id });
         closeModal();
       })
       .catch((r) =>

@@ -40,6 +40,8 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         closeModal();
+        mixpanel?.track("Retro: Create board", { boardId: data.board.id });
+        mixpanel?.people.increment("Retro: Board Count");
         props.afterCreate(data);
       })
       .catch((r) => retroClient.handleError(r));
