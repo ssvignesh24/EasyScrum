@@ -318,7 +318,7 @@ export default function ({ boardId }) {
   const selectIssue = (issue) => {
     if (!board?.canManageBoard) return;
     setSelectedIssueId(issue.id);
-    mixpanel?.track("Poker: Select issue", { boardId: data.board.id });
+    mixpanel?.track("Poker: Select issue", { boardId: board.id });
     pokerClient
       .updateIssueStatus(issue.id, "selected")
       .then(({ data }) => {
