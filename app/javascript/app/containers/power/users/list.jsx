@@ -93,7 +93,7 @@ export default function () {
 
                             <div className="text-gray-500">{user.email}</div>
                             <div className="h-1 w-1 bg-gray-500 rounded-full mx-2 5"></div>
-                            {!user.pendingInvitation && (
+                            {!user.pendingInvitation && user.lastLoginInHours && (
                               <>
                                 <div className="text-gray-500">Last login: {user.lastLoginInHours}</div>
                                 <div className="h-1 w-1 bg-gray-500 rounded-full mx-2 5"></div>
