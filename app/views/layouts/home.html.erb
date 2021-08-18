@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html style="height: 100%" lang="en">
   <head>
-    <title>EasyScrum</title>
+    <title>EasyScrum | Free retrospective and planning poker tool</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="One tool for all your scrum master needs like retrospectives, planning poker, check-ins, and more. Get insightful reports from your scrum activities and improve your team's work."/>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= favicon_link_tag 'logo/v1/logo-32.png' %>
+    <%= favicon_link_tag 'logo/v1/logo-180.png', rel: 'apple-touch-icon' %>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
     <%= stylesheet_link_tag 'home', media: 'all', 'data-turbolinks-track': 'reload' %>
     <% if Rails.env.production? %>
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-X0P7FQCXRQ"></script>
