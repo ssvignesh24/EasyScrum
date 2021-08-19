@@ -84,12 +84,20 @@ Rails.application.routes.draw do
     end
   end
 
+  scope :blog do
+    get '/'  => "blog_posts#home"
+    get '/article/:slug'  => "blog_posts#article"
+  end
+
   constraints lambda { |req| req.format == :html && !req.path.starts_with?("/rails/active_storage") && !req.path.starts_with?("/power")} do
     get '*path' => 'main#index'
   end
 
   authenticate :user, lambda { |u| u.power_user? } do
     mount Sidekiq::Web => '/power/jobs'
+    scope :power do
+      resources :blog_posts, only: [:index, :show, :new, :create, :update, :destroy]
+    end
     constraints lambda { |req| req.format == :html && req.path.starts_with?("/power") } do
       get '*path' => 'power#index'
     end

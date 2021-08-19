@@ -35,6 +35,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def authenticate_power_user!
+    redirect_to "/dashboard" unless current_user.power_user?
+  end
+
   def set_board
     @board = current_resource.retro_boards.where(id: params[:board_id]).take
     raise ApiError::NotFound.new("Invalid retrospective board") unless @board.present?

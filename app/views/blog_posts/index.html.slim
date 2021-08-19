@@ -1,0 +1,9 @@
+.container.mx-auto
+  .w-10/12.mx-auto.py-3.flex
+    .w-6/12
+      h1.text-xl Blog posts
+      p.text-gray-500 = pluralize(@posts.size, "articles")
+    .w-6/12.flex.flex-row-reverse
+      div
+      = link_to new_blog_post_path do
+        button.py-2.px-6.text-white.bg-green-500.rounded Create blog

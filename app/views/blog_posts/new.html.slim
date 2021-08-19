@@ -1,0 +1,20 @@
+css:
+  #blog_post_content { background: white }
+.container.mx-auto
+  .w-10/12.mx-auto.py-3.flex
+    h1.text-xl.font-medium New article
+  .w-10/12.mx-auto.py-3
+    = form_with model: BlogPost.new do |form|
+      p Article title
+      = form.text_field :title, class: "mt-1 px-3 py-3 border border-gray-300 w-full rounded", placeholder: "Article title"
+
+      .w-full.mt-5
+        p Article title
+        = form.file_field :cover
+      .w-full.mt-5
+        p.mb-2 Content
+        = form.rich_text_area :content
+
+  .w-10/12.mx-auto.py-3.flex.flex-row-reverse
+    button.py-2.px-6.text-white.bg-green-500.rounded name="publish" Publish
+    button.py-2.px-6.text-white.bg-green-500.rounded.mr-3 name="draft" Save as draft

@@ -176,6 +176,35 @@ export default function ({ children }) {
               </div>
             </div>
           </div>
+
+          <div className="flex mt-5">
+            <a className="block w-4/12" href="/power/blog_posts">
+              <div className="w-full flex p-3 rounded cursor-pointer hover:bg-green-500 hover:bg-opacity-10 transition-colors">
+                <div className="w-24 h-24 bg-blue-500 rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="36"
+                    height="36"
+                    fill="#fff"
+                    className="bi bi-hdd-stack-fill"
+                    viewBox="0 0 16 16">
+                    <path d="M2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2H2zm.5 3a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm2 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm.5 3a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm2 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z" />
+                  </svg>
+                </div>
+                <div className="pl-3">
+                  <div className="font-medium">
+                    <div className="inline-block align-middle text-lg">Blogs</div>
+                    <div className="inline-block align-middle ml-1">
+                      <ArrowNarrowRightIcon className="w-5 h-5"></ArrowNarrowRightIcon>
+                    </div>
+                  </div>
+                  <p className="text-gray-500">
+                    Laborum repudiandae cum repellendus sed nihil veniam eaque quos ea rerum ipsa reprehenderit non!
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </div>

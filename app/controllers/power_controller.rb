@@ -6,9 +6,5 @@ class PowerController < ApiController
   def index
   end
 
-  protected
 
-  def authenticate_power_user!
-    redirect_to "/dashboard" unless current_user.power_user?
-  end
 end
