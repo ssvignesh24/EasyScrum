@@ -15,6 +15,7 @@ Plan.where.not(key: plans.map{ |x| x[:key] }).update_all(active: false)
 features = [
   {name: "Google sign-in", key: :google_oauth, description: "Signup and login with google account", default_state: false },
   {name: "Mixpanel Tracking", key: :mixpanel, description: "Track user behavious in the application using Mixpanel", default_state: true },
+  {name: "Checkin", key: :checkin, description: "Daily Checkins", default_state: true },
 ]
 features.each do |data|
   feature = Feature.where(key: data[:key]).first_or_initialize
@@ -24,16 +25,13 @@ features.each do |data|
   feature.default_state = data[:default_state]
   feature.globally_enabled = feature.globally_enabled.nil? ? feature.default_state : feature.globally_enabled
   feature.save!
-  Plan.where(key: data[:plans]).each do |plan|
-    PlanFeature.where(plan: plan, )
-  end
 end
 Feature.where.not(key: features.map{ |x| x[:key] }).update_all(active: false)
 
 {
-  basic: { google_oauth: {} },
-  advanced: { google_oauth: {} },
-  pro: { google_oauth: {} }
+  basic: { google_oauth: {}, checkin: { max: 1, custom_questions: true } },
+  advanced: { google_oauth: {}, checkin: { max: 99999, custom_questions: true } },
+  pro: { google_oauth: {}, checkin: { max: 99999, custom_questions: true } }
 }.transform_values(&:with_indifferent_access).each do |plan_key, features|
   plan = Plan.where(key: plan_key).take
   next unless plan.present?
