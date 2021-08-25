@@ -70,6 +70,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :checkins, only: [:index, :show, :update, :destroy], controller: 'checkin/checkins', param: :checkin_id
+
     namespace :power do
       resources :users
       resources :features, param: :feature_id do

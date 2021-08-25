@@ -6,4 +6,6 @@ class Guest < ApplicationRecord
   has_many :poker_boards, through: :poker_board_participants,  source: :board
   has_many :feedbacks, as: :feedback_by 
 
+  delegate :can_access?, to: :parent_user
+
 end

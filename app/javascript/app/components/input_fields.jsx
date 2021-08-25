@@ -98,7 +98,7 @@ const TextArea = React.forwardRef((props, ref) => {
         ref={ref}
         disabled={disabled}
         onChange={handleChange}></textarea>
-      {!!error && <p className="text-sm text-red-500">{error}</p>}
+      {!!error && <p className="text-sm text-red-500 mt-1">{error}</p>}
     </>
   );
 });
@@ -142,7 +142,7 @@ const Text = React.forwardRef((props, ref) => {
         onChange={handleChange}
         autoComplete={type == "password" ? "new-password" : "on"}
       />
-      {!!error && <p className="text-sm text-red-500">{error}</p>}
+      {!!error && <p className="text-sm text-red-500 mt-1">{error}</p>}
     </>
   );
 });
