@@ -378,6 +378,7 @@ export default function ({ boardId }) {
   };
 
   const highestVote = () => {
+    if (currentIssue().votes.participant_votes.length == 0) return "-";
     for (const { value } of board.availableVotes.concat([]).reverse()) {
       const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
       if (firstVote) return firstVote;
@@ -386,6 +387,7 @@ export default function ({ boardId }) {
   };
 
   const lowestVote = () => {
+    if (currentIssue().votes.participant_votes.length == 0) return "-";
     for (const { value } of board.availableVotes) {
       const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
       if (firstVote) return firstVote;
@@ -394,6 +396,7 @@ export default function ({ boardId }) {
   };
 
   const avgVote = () => {
+    if (currentIssue().votes.participant_votes.length == 0) return "-";
     const allVotes = currentIssue()
       .votes.participant_votes.filter((v) => {
         return v.vote.type == "number";
@@ -404,6 +407,7 @@ export default function ({ boardId }) {
   };
 
   const mostVoted = () => {
+    if (currentIssue().votes.participant_votes.length == 0) return ["-"];
     let mostVote = [],
       mostVoteCount = 0;
     for (const { value } of board.availableVotes) {
@@ -625,7 +629,11 @@ export default function ({ boardId }) {
                             </>
                           )}
                           {!issue.isGhost && issue.link && (
-                            <a href={currentIssue().link} target="_blank" className="text-sm mb-2 text-green-500 mr-4">
+                            <a
+                              href={issue.link}
+                              target="_blank"
+                              className="text-sm mb-2 text-green-500 mr-4"
+                              onClick={(e) => e.stopPropagation()}>
                               View issue
                             </a>
                           )}
