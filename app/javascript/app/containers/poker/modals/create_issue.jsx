@@ -5,10 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 import Poker from "../../../services/poker";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
+import Tracking from "../../../services/tracking";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
 
 function CreateColumn(props) {
@@ -35,7 +32,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         props.afterCreate(data.issue);
-        mixpanel?.track("Poker: Create issue", { boardId: props.board.id, issueId: data.issue.id });
+        Tracking.logEvent("Poker: Create issue", { boardId: props.board.id, issueId: data.issue.id });
         closeModal();
       })
       .catch((r) =>

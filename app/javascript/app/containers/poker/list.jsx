@@ -6,6 +6,7 @@ import pluralize from "pluralize";
 import { Link } from "@reach/router";
 import truncate from "../../lib/truncate";
 
+import Tracking from "../../services/tracking";
 import { Primary as PrimaryButton } from "../../components/button";
 import CreateBoard from "./modals/create_board";
 import EmptyData from "images/empty.png";
@@ -30,7 +31,7 @@ export default function ({ children }) {
         if (!data.status) return;
         data.state = "loaded";
         setData(data);
-        mixpanel?.track("Poker: Board list");
+        Tracking.logEvent("Poker: Board list");
       })
       .catch((r) =>
         pokerClient.handleError(r, () => {
@@ -43,7 +44,7 @@ export default function ({ children }) {
   const prependBoard = ({ board }) => {
     if (!board) return;
     const boards = [board].concat(data.boards);
-    mixpanel?.track("Poker: Board created", { boardId: board.id });
+    Tracking.logEvent("Poker: Board created", { boardId: board.id });
     setData((data_) => {
       return {
         ...data_,

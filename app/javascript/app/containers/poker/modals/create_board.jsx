@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
-import Toggle from "../../../components/toggle";
+import Tracking from "../../../services/tracking";
 import Poker from "../../../services/poker";
 
 function classNames(...classes) {
@@ -43,8 +43,8 @@ function CreateColumn(props) {
         if (!data.status) return;
         closeModal();
         props.afterCreate(data);
-        mixpanel?.track("Poker: Create board", { boardId: data.board.id });
-        mixpanel?.people.increment("Poker: Board Count");
+        Tracking.logEvent("Poker: Create board", { boardId: data.board.id });
+        // mixpanel?.people.increment("Poker: Board Count");
       })
       .catch((r) =>
         pokerClient.handleError(r, ({ response }) => {

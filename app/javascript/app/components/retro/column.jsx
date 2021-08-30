@@ -7,6 +7,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { Scrollbars } from "react-custom-scrollbars";
 import pluralize from "pluralize";
 
+import Tracking from "../../services/tracking";
 import CreateCard from "./create_card";
 import EditColumnModal from "./edit_column";
 import ConfirmDialog from "../confirmdialog";
@@ -33,7 +34,7 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
       .then(({ data }) => {
         if (!data.status) return;
         afterDelete(column);
-        mixpanel?.track("Retro: Delete column", { boardId: boardId });
+        Tracking.logEvent("Retro: Delete column", { boardId: boardId });
       })
       .catch((r) => retroClient.handleError(r));
   };

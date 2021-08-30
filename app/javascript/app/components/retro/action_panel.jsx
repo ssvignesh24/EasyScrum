@@ -8,6 +8,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import Scrollbars from "react-custom-scrollbars";
 
+import Tracking from "../../services/tracking";
 import InputField from "../input_fields";
 import { Primary as PrimaryButton } from "../button";
 import { CheckCircleIcon } from "@heroicons/react/solid";
@@ -44,7 +45,7 @@ export default function Example({
         if (!data.status) return;
         setState("ready");
         afterCreate(data.actionItem);
-        mixpanel?.track("Retro: Create action item", { boardId: board.id, actionItemId: data.actionItem.id });
+        Tracking.logEvent("Retro: Create action item", { boardId: board.id, actionItemId: data.actionItem.id });
         setNewActionItem("");
       })
       .catch((r) => retroClient.handleError(r));
@@ -58,7 +59,7 @@ export default function Example({
       .then(({ data }) => {
         if (!data.status) return;
         afterUpdate(data.actionItem);
-        mixpanel?.track("Retro: Toggle action item", { boardId: board.id, actionItemId: data.actionItem.id });
+        Tracking.logEvent("Retro: Toggle action item", { boardId: board.id, actionItemId: data.actionItem.id });
       })
       .catch((r) => retroClient.handleError(r));
   };
@@ -69,7 +70,7 @@ export default function Example({
       retroClient.deleteActionItem(item.id).then(({ data }) => {
         if (!data.status) return;
         afterDelete(data.actionItem);
-        mixpanel?.track("Retro: Delete action item", { boardId: board.id, actionItemId: data.actionItem.id });
+        Tracking.logEvent("Retro: Delete action item", { boardId: board.id, actionItemId: data.actionItem.id });
       });
     }
   };

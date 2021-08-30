@@ -10,6 +10,7 @@ import CreateBoard from "./modals/create_board";
 import EmptyData from "images/empty.png";
 import Retro from "../../services/retro";
 import CurrentResourceContext from "../../contexts/current_resource";
+import Tracking from "../../services/tracking";
 
 export default function ({ children }) {
   const retroClient = new Retro();
@@ -29,7 +30,7 @@ export default function ({ children }) {
         if (!data.status) return;
         data.state = "loaded";
         setData(data);
-        mixpanel?.track("Retro: Board list");
+        Tracking.logEvent("Retro: Board list");
       })
       .catch((r) =>
         retroClient.handleError(r, () => {

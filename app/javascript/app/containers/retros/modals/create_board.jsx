@@ -7,6 +7,7 @@ import { Listbox } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import Retro from "../../../services/retro";
+import Tracking from "../../../services/tracking";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -40,8 +41,8 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         closeModal();
-        mixpanel?.track("Retro: Create board", { boardId: data.board.id });
-        mixpanel?.people.increment("Retro: Board Count");
+        Tracking.logEvent("Retro: Create board", { boardId: data.board.id });
+        // mixpanel?.people.increment("Retro: Board Count");
         props.afterCreate(data);
       })
       .catch((r) => retroClient.handleError(r));

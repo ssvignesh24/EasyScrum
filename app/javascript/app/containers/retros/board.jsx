@@ -17,6 +17,7 @@ import InviteUsersModal from "../../components/invite_users";
 import consumer from "../../lib/action_cable_consumer";
 import ConfirmDialog from "../../components/confirmdialog";
 import ActionPanel from "../../components/retro/action_panel";
+import Tracking from "../../services/tracking";
 
 import Retro from "../../services/retro";
 
@@ -44,7 +45,7 @@ export default function ({ children, boardId }) {
         setBoard(data.board);
         setState("loaded");
         if (data.board.showInviteModal) setShowInviteUsersModal(true);
-        mixpanel?.track("Retro: Board visit", { boardId: data.board.id });
+        Tracking.logEvent("Retro: Board visit", { boardId: data.board.id });
       })
       .catch((r) =>
         retroClient.handleError(r, () => {
@@ -62,7 +63,7 @@ export default function ({ children, boardId }) {
 
   const deleteBoard = () => {
     setDeleteState("deleting");
-    mixpanel?.track("Retro: Delete board", { boardId: board.id });
+    Tracking.logEvent("Retro: Delete board", { boardId: board.id });
     retroClient
       .deleteBoard()
       .then(({ data }) => {
@@ -557,7 +558,7 @@ export default function ({ children, boardId }) {
               <PrimaryButton
                 className="mr-3"
                 onClick={() => {
-                  mixpanel?.track("Retro: Open invite user modal", { boardId: board.id });
+                  Tracking.logEvent("Retro: Open invite user modal", { boardId: board.id });
                   setShowInviteUsersModal(true);
                 }}>
                 Invite users

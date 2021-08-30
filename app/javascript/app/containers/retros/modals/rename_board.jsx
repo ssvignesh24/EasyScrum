@@ -8,6 +8,7 @@ import { Primary as PrimaryButton, Muted as MutedButton } from "../../../compone
 
 import Retro from "../../../services/retro";
 import InputFields from "../../../components/input_fields";
+import Tracking from "../../../services/tracking";
 
 function RenameBoard(props) {
   const nameField = useRef();
@@ -35,7 +36,7 @@ function RenameBoard(props) {
       .then(({ data }) => {
         if (!data.status) return;
         props.afterRename(data.board.name);
-        mixpanel?.track("Retro: Rename board", { boardId: data.board.id });
+        Tracking.logEvent("Retro: Rename board", { boardId: data.board.id });
         setName(data.board.name);
         closeModal();
       })
