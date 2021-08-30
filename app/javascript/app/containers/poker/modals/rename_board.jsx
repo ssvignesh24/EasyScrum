@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
 
+import Tracking from "../../../services/tracking";
 import Poker from "../../../services/poker";
 import InputFields from "../../../components/input_fields";
 
@@ -36,7 +37,7 @@ function RenameBoard(props) {
         if (!data.status) return;
         props.afterRename(data.board.name);
         setName(data.board.name);
-        mixpanel?.track("Poker: Rename board", { boardId: data.board.id });
+        Tracking.logEvent("Poker: Rename board", { boardId: data.board.id });
         closeModal();
       })
       .catch((r) =>

@@ -5,6 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
 import Poker from "../../../services/poker";
+import Tracking from "../../../services/tracking";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -29,7 +30,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         props.afterUpdate(data.issue);
-        mixpanel?.track("Poker: Assign Story points", { boardId: props.board.id, issueId: data.issue.id });
+        Tracking.logEvent("Poker: Assign Story points", { boardId: props.board.id, issueId: data.issue.id });
         closeModal();
       })
       .catch((r) =>

@@ -9,6 +9,7 @@ import { Muted as MutedButton } from "../../../components/button";
 import DefaultDp from "images/default_dp.jpg";
 import Retro from "../../../services/retro";
 import ConfirmDialog from "../../../components/confirmdialog";
+import Tracking from "../../../services/tracking";
 
 function ParticipantsModal(props) {
   const closeButton = useRef();
@@ -46,7 +47,7 @@ function ParticipantsModal(props) {
       .then(({ data }) => {
         if (!data.status) return;
         setDeleteState("init");
-        mixpanel?.track("Retro: Remove participant", { boardId: props.board.id });
+        Tracking.logEvent("Retro: Remove participant", { boardId: props.board.id });
         setShowConfirmRemove(false);
         props.setOpen(true);
         props.afterRemove(data.participant.id);

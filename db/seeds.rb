@@ -14,7 +14,7 @@ Plan.where.not(key: plans.map{ |x| x[:key] }).update_all(active: false)
 
 features = [
   {name: "Google sign-in", key: :google_oauth, description: "Signup and login with google account", default_state: false },
-  {name: "Mixpanel Tracking", key: :mixpanel, description: "Track user behavious in the application using Mixpanel", default_state: true },
+  {name: "User Tracking", key: :user_tracking, description: "Track user behavious in the application", default_state: true }
 ]
 features.each do |data|
   feature = Feature.where(key: data[:key]).first_or_initialize

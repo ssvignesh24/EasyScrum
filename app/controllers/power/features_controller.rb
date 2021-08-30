@@ -1,6 +1,6 @@
 class Power::FeaturesController < PowerController
   def index
-    @features = Feature.all
+    @features = Feature.active
   end
 
   def toggle

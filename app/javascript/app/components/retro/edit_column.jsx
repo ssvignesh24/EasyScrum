@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../components/button";
 
+import Tracking from "../../services/tracking";
 import Retro from "../../services/retro";
 
 function CreateColumn(props) {
@@ -37,7 +38,7 @@ function CreateColumn(props) {
       .then(({ data }) => {
         if (!data.status) return;
         closeModal();
-        mixpanel?.track("Retro: Update column", { boardId: props.boardId, columnId: data.column.id });
+        Tracking.logEvent("Retro: Update column", { boardId: props.boardId, columnId: data.column.id });
         props.afterUpdate(data.column);
       })
       .catch((r) =>
