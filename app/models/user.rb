@@ -14,6 +14,9 @@ class User < ApplicationRecord
   has_many :poker_board_participants, class_name: "Poker::Participant", as: :participant
   has_many :poker_boards, through: :poker_board_participants,  source: :board
   has_many :feedbacks, as: :feedback_by
+  has_many :checkin_participants, class_name: "Checkin::Participant", as: :participant
+  has_many :checkins, through: :checkin_participants,  source: :checkin
+  has_many :created_checkins, class_name: "Checkin::Checkin", foreign_key: :created_by_id
   
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [180, 180]

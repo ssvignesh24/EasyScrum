@@ -73,6 +73,7 @@ function CreateQuestion({ open, setOpen, onCreate, question }) {
       isCritical,
     };
     question.options = options.split(",").map((op) => op.trim());
+    console.log(question);
     onCreate(question);
   };
 

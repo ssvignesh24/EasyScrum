@@ -2,9 +2,10 @@
 
 import { ArrowLeftIcon } from "@heroicons/react/solid";
 import { Link } from "@reach/router";
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import ReactDOM from "react-dom";
 
+import CheckinClient from "../../../services/checkin";
 import Progress from "./progress";
 import StepOne from "./step_one";
 import StepTwo from "./step_two";
@@ -18,11 +19,10 @@ const checkinReducer = (state, action) => {
         ...state,
         emails: action.emails,
         title: action.title,
-        desscription: action.desscription,
+        description: action.description,
         emailStr: action.emailStr,
       };
     case "step_two":
-      console.log(action);
       return { ...state, questions: action.questions };
     case "step_three":
       return {
@@ -37,10 +37,39 @@ const checkinReducer = (state, action) => {
 };
 
 export default function () {
+  const checkinCLient = new CheckinClient();
+
+  const [state, setState] = useState("ready");
   const [currentStep, setCurrentStep] = useState(1);
   const [checkin, checkinDispatch] = useReducer(checkinReducer, {});
 
-  const createCheckin = () => {};
+  useEffect(() => () => checkinCLient.cancel(), []);
+
+  const createCheckin = () => {
+    const payload = {
+      title: checkin.title,
+      description: checkin.description,
+      emails: checkin.emails,
+      questions: checkin.questions,
+      days: checkin.days,
+      time: checkin.time.key,
+      send_report_at: checkin.sendReportAt.key,
+      report_emails: checkin.reportEmails,
+    };
+    console.log(payload);
+    setState("creating");
+    checkinCLient
+      .create(payload)
+      .then(({ data }) => {
+        if (!data.status) return;
+        setState("created");
+      })
+      .catch((r) =>
+        checkinCLient.handleError(r, ({ response }) => {
+          setState("error");
+        })
+      );
+  };
 
   return (
     <div className="container mx-auto">

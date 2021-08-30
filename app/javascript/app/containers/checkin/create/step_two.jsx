@@ -62,8 +62,8 @@ export default function ({ dispatch, checkin, nextStep, prevStep }) {
           {questions.length > 0 &&
             questions.map((q, index) => {
               return (
-                <Fragment key={q.id_}>
-                  <QuestionInfo key={q.id} question={q} confirmDeletion={() => confirmDeletion(q)}></QuestionInfo>
+                <Fragment key={index}>
+                  <QuestionInfo question={q} confirmDeletion={() => confirmDeletion(q)}></QuestionInfo>
                 </Fragment>
               );
             })}

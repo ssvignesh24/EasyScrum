@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useState } from "react";
 import ReactDOM from "react-dom";
 import CurrentResourceContext from "../../../contexts/current_resource";
 import to_sentence from "../../../lib/to_sentence";
@@ -8,7 +8,8 @@ import QuestionInfo from "../../../components/question_info";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
 
 export default function ({ nextStep, prevStep, checkin }) {
-  console.log(checkin);
+  const [state, setState] = useState("ready");
+
   return (
     <div className="w-full bg-white rounded shadow overflow-hidden">
       <div className="p-6">
@@ -42,9 +43,9 @@ export default function ({ nextStep, prevStep, checkin }) {
           <hr className="mb-4" />
           <p className="mb-1 font-medium">Questions</p>
           {checkin.questions.length > 0 &&
-            checkin.questions.map((q) => {
+            checkin.questions.map((q, index) => {
               return (
-                <Fragment key={q.id_}>
+                <Fragment key={index}>
                   <QuestionInfo question={q}></QuestionInfo>
                 </Fragment>
               );
@@ -83,8 +84,16 @@ export default function ({ nextStep, prevStep, checkin }) {
         </div>
       </div>
       <div className="p-6 bg-gray-50 flex flex-row-reverse py-3">
-        <PrimaryButton onClick={nextStep}>Create checkin</PrimaryButton>
-        <MutedButton className="mr-2" onClick={prevStep}>
+        <PrimaryButton
+          disabled={state == "creating"}
+          onClick={() => {
+            setState("creating");
+            nextStep();
+          }}>
+          {state == "ready" && "Create checkin"}
+          {state == "creating" && "Creating checkin..."}
+        </PrimaryButton>
+        <MutedButton className="mr-2" disabled={state == "creating"} onClick={prevStep}>
           Previous step
         </MutedButton>
       </div>

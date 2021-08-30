@@ -1,19 +1,39 @@
 /** @format */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import CurrentResourceContext from "../../contexts/current_resource";
 import { Primary as PrimaryButton } from "../../components/button";
 import { Link } from "@reach/router";
+import pluralize from "pluralize";
+import to_sentence from "../../lib/to_sentence";
+
+import CheckinClient from "../../services/checkin";
 
 export default function () {
+  const checkinClient = new CheckinClient();
   const currentResource = useContext(CurrentResourceContext);
 
-  const [data, seData] = useState({
+  const [data, setData] = useState({
     checkins: [],
     state: "loading",
     totalCount: 0,
   });
+
+  useEffect(() => {
+    checkinClient
+      .list()
+      .then(({ data }) => {
+        if (!data.status) return;
+        setData({ state: "loaded", checkins: data.checkins, totalCount: data.totalCount });
+      })
+      .catch((r) =>
+        checkinClient.handleError(r, () => {
+          setData({ checkins: [], state: "error", totalCount: 0 });
+        })
+      );
+    return () => checkinClient.cancel();
+  }, []);
 
   return (
     <div className="container mx-auto">
@@ -33,6 +53,27 @@ export default function () {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="py-3 px-3">
+          {data.state == "loaded" &&
+            data.checkins.length > 0 &&
+            data.checkins.map((checkin) => {
+              return (
+                <div key={checkin.id} className="w-full p-4 bg-white shadow rounded">
+                  <Link to={`/checkin/${checkin.id}`}>
+                    <p className="font-medium text-green-500">{checkin.title}</p>
+                  </Link>
+                  <div className="w-full flex text-sm text-gray-500 items-center">
+                    <div>{pluralize("Participant", checkin.participantCount, true)}</div>
+                    <div className="mx-2 w-1 h-1 rounded-full bg-gray-500"> </div>
+                    <div>
+                      Every {to_sentence(checkin.days)} at {checkin.time}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
