@@ -27,6 +27,8 @@ json.questions response.issue.questions do |question|
   answer = answers.find { |a| a.checkin_question_id == question.id }
   
   json.(question, :id, :prompt)
+  json.isMandatory question.is_mandatory
+  json.isBlocker question.is_blocker_question
   json.answer do
     if answer.present?
       json.(answer, :id, :value)

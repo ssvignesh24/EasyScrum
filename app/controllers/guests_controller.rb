@@ -1,5 +1,6 @@
 class GuestsController < ApplicationController
   def new
+    
     @invite_for = params[:invite_for]
     @token = params[:token]
     case @invite_for
@@ -8,6 +9,22 @@ class GuestsController < ApplicationController
     else
       @invalid = true
       flash[:alert] = "Invalid invite link"
+    end
+
+    # TODO: DRY
+    if current_resource.present? && @board.present?
+      case @board.class.to_s
+      when "Poker::Board"
+        participant = Poker::Participant.where(board: @board, participant: current_resource, is_spectator: false).first_or_create!
+        PokerBoardChannel.broadcast_to(@board,  {status: true, type: 'new_participant', participant: { id: participant.id, email: participant.participant.email, name: participant.participant.name } })
+        redirect_to "/poker/board/#{@board.id}"
+      when "Retro::Board"
+        participant = Retro::Participant.where(board: @board, participant: current_resource).first_or_create!
+        RetroBoardChannel.broadcast_to(@board,  {status: true, type: "new_participant", name: current_resource.name, id: current_resource.id, participant_id: participant.id })
+        redirect_to retro_board_path(@board.id)
+      else
+        show_invitation_error("Invalid invitation link") and return
+      end
     end
   end
 

@@ -344,9 +344,16 @@ export default function ({ checkinId, issueId }) {
                     <Scrollbars>
                       {currentResponse.questions.map((question) => {
                         return (
-                          <div className="mb-5" key={question.id}>
-                            <p className="font-medium mb-1">{question.prompt}</p>
-                            {question.answer && <p className="">{question.answer.value}</p>}
+                          <div className="mb-5 border border-gray-300 rounded p-4 shadow" key={question.id}>
+                            <p className="font-medium mb-1">
+                              {question.prompt}
+                              {question.isMandatory && <span className="text-red-500">*</span>}
+                            </p>
+                            {question.answer && (
+                              <p className={question.isBlocker ? "text-red-500" : "text-black"}>
+                                {question.answer.value}
+                              </p>
+                            )}
                             {!question.answer && <i className="text-gray-500">No answer</i>}
                           </div>
                         );
