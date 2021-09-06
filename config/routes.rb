@@ -75,6 +75,7 @@ Rails.application.routes.draw do
 
     resources :checkins, only: [:index, :create, :show, :update, :destroy], controller: 'checkin/checkins', param: :checkin_id do
       member do
+        post 'toggle_pause'
         post 'respond' => 'checkin/responses#set_answers'
         resources :issues, only: [:show], param: :issue_id, controller: 'checkin/issues'
       end

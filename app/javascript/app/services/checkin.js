@@ -14,6 +14,14 @@ export default class Checkin extends Network{
     return this.get(`/checkins/${checkinId}.json`)
   }
 
+  destroy(checkinId){
+    return this.delete(`/checkins/${checkinId}.json`)
+  }
+
+  togglePause(checkinId){
+    return this.post(`/checkins/${checkinId}/toggle_pause.json`)
+  }
+
   getIssue(checkinId, issueId){
     return this.get(`/checkins/${checkinId}/issues/${issueId}.json`)
   }

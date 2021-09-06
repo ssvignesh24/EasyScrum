@@ -12,6 +12,7 @@ json.report checkin.needs_report
 json.reportAfter checkin.send_report_after_in_hours
 json.participantCount checkin.participants.size
 json.lastIssueId checkin.issues.order(issue_time: :desc).take&.id
+json.canManage checkin.created_by == current_resource
 
 if full_checkin
   json.participants checkin.participants do |participant|

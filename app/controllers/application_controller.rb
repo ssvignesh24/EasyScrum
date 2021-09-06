@@ -50,6 +50,10 @@ class ApplicationController < ActionController::Base
     raise ApiError::NotFound.new("Invalid checkin") unless @checkin.present?
   end
 
+  def can_manage_checkin!
+    raise ApiError::Forbidden.new("Action now allowed") if !@checkin.present? || @checkin.created_by != current_resource
+  end
+
   def current_retro_participant(board)
     board.target_participants.where(participant: current_resource).take
   end

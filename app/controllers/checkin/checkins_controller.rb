@@ -1,6 +1,7 @@
 class Checkin::CheckinsController < ApiController
-  before_action :set_checkin, only: [:show, :update, :destroy]
-  before_action :authenticate_user!, only: [:create, :update, :destroy]
+  before_action :set_checkin, only: [:show, :update, :destroy, :toggle_pause]
+  before_action :authenticate_user!, only: [:create, :update, :destroy, :toggle_pause]
+  before_action :can_manage_checkin!, only: [:update, :destroy, :toggle_pause]
 
   def index
     @checkins = current_resource.class == User ? current_user.created_checkins.active : current_resource.checkins.active
@@ -35,11 +36,15 @@ class Checkin::CheckinsController < ApiController
 
   def update
     Checkin::Checkin.transaction do
-
     end
   end
 
   def destroy
+    @checkin.destroy!
+  end
+
+  def toggle_pause
+    @checkin.update!(is_paused: !@checkin.is_paused)
   end
 
   def respond

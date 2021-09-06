@@ -7,7 +7,7 @@ import { Primary as PrimaryButton, Muted as MutedButton, Danger as DangerButton 
 
 function ConfirmDialog(props) {
   const focusButton = useRef();
-  const { okText, cancelText, onOk, onCancel, title, body, open, disabled } = props;
+  const { okText, cancelText, onOk, onCancel, title, body, open, disabled, okButton } = props;
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -57,9 +57,13 @@ function ConfirmDialog(props) {
 
               {props.cancelText && (
                 <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <DangerButton type="button" className="ml-3" onClick={() => onOk()} disabled={disabled}>
-                    {okText}
-                  </DangerButton>
+                  {React.createElement(okButton, {
+                    className: "ml-3",
+                    type: "button",
+                    onClick: () => onOk(),
+                    disabled: disabled,
+                    children: okText,
+                  })}
                   <MutedButton type="button" innerRef={focusButton} onClick={() => onCancel()}>
                     {cancelText}
                   </MutedButton>
@@ -67,14 +71,14 @@ function ConfirmDialog(props) {
               )}
               {!props.cancelText && (
                 <div className="px-4 py-5 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <DangerButton
-                    type="button"
-                    innerRef={focusButton}
-                    className="ml-3"
-                    onClick={() => onOk()}
-                    disabled={disabled}>
-                    {okText}
-                  </DangerButton>
+                  {React.createElement(okButton, {
+                    className: "ml-3",
+                    type: "button",
+                    innerRef: focusButton,
+                    onClick: () => onOk(),
+                    disabled: disabled,
+                    children: okText,
+                  })}
                 </div>
               )}
             </div>
@@ -94,6 +98,11 @@ ConfirmDialog.propTypes = {
   onOk: PropTypes.func.isRequired,
   cancelText: PropTypes.string,
   disabled: PropTypes.bool,
+  okButton: PropTypes.func,
+};
+
+ConfirmDialog.defaultProps = {
+  okButton: DangerButton,
 };
 
 export default ConfirmDialog;
