@@ -31,4 +31,8 @@ class Checkin::Checkin < ApplicationRecord
         }) 
     questions.create!(q_hash)
   end
+
+  def question_as_on(time)
+    questions.where("deleted = false OR (deleted = true AND deleted_at > ?)", time)
+  end
 end

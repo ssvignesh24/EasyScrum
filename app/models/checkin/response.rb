@@ -4,4 +4,14 @@ class Checkin::Response < ApplicationRecord
   has_many :answers, class_name: "Checkin::Answer", foreign_key: :checkin_response_id
 
   validates :medium, :token, presence: true
+
+  def self.from_token(token)
+    return unless token.present?
+    computed_token = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, token)
+    Checkin::Response.where(token: computed_token).take
+  end
+
+  def can_respond_now?
+    Time.zone.now < issue.issue_time + 1.day
+  end
 end

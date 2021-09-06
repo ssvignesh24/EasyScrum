@@ -1,0 +1,8 @@
+div style="width: 100%; max-width: 640px;position: relative; top: 20px; margin-bottom: 60px;background-color: white; border-radius: 5px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); overflow: hidden;margin-left: auto; margin-right: auto; "
+  div style="padding: 30px"
+    p style="font-weight: bold; margin-top: 10px; margin-bottom: 2px; font-size: 20px;" = "Hi #{@participant.name.blank? ? @participant.email : @participant.name}, its time for #{@checkin.title}!"
+    p style="margin-top: 10px; font-size: 16px;" = "Please click the below botton to respond to #{@checkin.title} for #{@date}. Not that you can only respond to this checkin before #{@expiry_time}"
+    = link_to ENV['HOST'] + "checkin/respond?token=#{@token}&email=#{@participant.email}", style: "text-decoration: none" do
+      button style="color: white; border-radius: 5px; background-color: rgba(16, 185, 129, 1); width: 100%; border: 0; padding: 12px 0; font-weight: 500; font-size: 16px; cursor: pointer"
+        span Complete checkin
+

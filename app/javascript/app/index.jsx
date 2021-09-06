@@ -20,6 +20,8 @@ import PokerList from "./containers/poker/list";
 import CheckinContainer from "./containers/checkin/container";
 import CheckinList from "./containers/checkin/list";
 import CheckinCreate from "./containers/checkin/create/container";
+import CheckinShow from "./containers/checkin/show";
+import CheckinEmpty from "./containers/checkin/empty";
 
 export default function () {
   const [currentResource, setCurrentResource] = useState(window._currentResource);
@@ -42,6 +44,8 @@ export default function () {
               <CheckinContainer path="/checkin">
                 <CheckinList path="/" default></CheckinList>
                 <CheckinCreate path="/create"></CheckinCreate>
+                <CheckinEmpty path="/:checkinId"></CheckinEmpty>
+                <CheckinShow path="/:checkinId/issue/:issueId"></CheckinShow>
               </CheckinContainer>
             )}
             <NotFound default />

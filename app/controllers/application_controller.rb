@@ -45,6 +45,11 @@ class ApplicationController < ActionController::Base
     raise ApiError::NotFound.new("Invalid retrospective column") unless @column.present?
   end
 
+  def set_checkin
+    @checkin = current_resource.checkins.where(id: params[:checkin_id]).take
+    raise ApiError::NotFound.new("Invalid checkin") unless @checkin.present?
+  end
+
   def current_retro_participant(board)
     board.target_participants.where(participant: current_resource).take
   end

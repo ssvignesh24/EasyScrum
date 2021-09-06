@@ -2,8 +2,8 @@ class CreateCheckinAnswers < ActiveRecord::Migration[6.1]
 
   def up
     create_table :checkin_answers do |t|
-      t.references :checkin_response, null: false, foreign_key: { to_table: :checkin_responses, name: :checkin_answers_response_id_fkey}
-      t.references :checkin_question, null: false, foreign_key: { to_table: :checkin_questions, name: :checkin_answers_question_id_fkey}
+      t.references :checkin_response, null: false, foreign_key: { to_table: :checkin_responses, name: :checkin_answers_response_id_fkey, on_delete: :cascade}
+      t.references :checkin_question, null: false, foreign_key: { to_table: :checkin_questions, name: :checkin_answers_question_id_fkey, on_delete: :cascade}
       t.text :answer_text
       t.bigint :answer_number
       t.string :answer_select

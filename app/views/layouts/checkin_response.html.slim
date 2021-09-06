@@ -1,0 +1,39 @@
+doctype html
+html lang='en'
+  head
+    title = content_for?(:title) ? yield(:title) : 'EasyScrum'
+    = csrf_meta_tags
+    = csp_meta_tag
+    meta content="width=device-width, initial-scale=1.0" name="viewport" /
+    = yield :meta_data
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    = stylesheet_pack_tag "application", "data-turbo-track": "reload"
+    = javascript_pack_tag 'checkin_response'
+    = yield :head_scripts
+  
+  body
+    - timezone = @resource.class == User ? @resource.user_timezone : @checkin.created_by.user_timezone
+    script
+      | window._currentResource = {};
+      | window._checkin = {};
+      | window._issue = {};
+      
+      = "window._currentResource.id = #{@resource.id};".html_safe
+      = "window._currentResource.type = '#{@resource.class.to_s}';".html_safe
+      = "window._currentResource.name = '#{sanitize(@resource.name)}';".html_safe
+      = "window._currentResource.email = '#{sanitize(@resource.email)}';".html_safe
+      = "window._questions = #{@questions.to_json};".html_safe
+      = "window._checkin.id = #{@checkin.id};".html_safe
+      = "window._checkin.title = '#{@checkin.title}';".html_safe
+      = "window._issue.date = '#{@issue.issue_time.to_date.to_formatted_s(:long)}';".html_safe
+      
+      - if @resource.class.to_s == User
+        = "window._currentResource.avatarUrl = '#{@resource.avatar_url}';".html_safe
+      - if @response.responded_at.present?
+        = "window._status = 'completed';".html_safe
+      - elsif !@response.can_respond_now?
+        = "window._errorMessage = 'This checkin has expired at #{readable_datetime(@issue.issue_time + 1.day, timezone)}. You cannot respond to this checkin now.';".html_safe
+        = "window._status = 'expired';".html_safe
+      - else
+        = "window._status = 'init';".html_safe

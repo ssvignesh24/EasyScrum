@@ -48,7 +48,7 @@ gem 'aes'
 # Catch unsafe migrations 
 gem 'strong_migrations'
 # Cronjob
-gem 'sidekiq-cron', '~> 1.2'
+gem 'whenever', require: false
 # Google oauth
 gem 'omniauth-oauth2'
 gem "omniauth-rails_csrf_protection"

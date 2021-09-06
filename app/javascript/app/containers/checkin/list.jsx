@@ -60,8 +60,13 @@ export default function () {
             data.checkins.length > 0 &&
             data.checkins.map((checkin) => {
               return (
-                <div key={checkin.id} className="w-full p-4 bg-white shadow rounded">
-                  <Link to={`/checkin/${checkin.id}`}>
+                <div key={checkin.id} className="w-full p-4 bg-white shadow rounded mb-3">
+                  <Link
+                    to={
+                      checkin.lastIssueId
+                        ? `/checkin/${checkin.id}/issue/${checkin.lastIssueId}`
+                        : `/checkin/${checkin.id}`
+                    }>
                     <p className="font-medium text-green-500">{checkin.title}</p>
                   </Link>
                   <div className="w-full flex text-sm text-gray-500 items-center">

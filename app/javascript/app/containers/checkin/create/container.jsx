@@ -56,7 +56,6 @@ export default function () {
       send_report_at: checkin.sendReportAt.key,
       report_emails: checkin.reportEmails,
     };
-    console.log(payload);
     setState("creating");
     checkinCLient
       .create(payload)

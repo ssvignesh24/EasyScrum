@@ -1,0 +1,16 @@
+.container.mx-auto.flex.justify-center.items-center.h-full.flex-col style="top: 10vh"
+  .text-2xl.font-bold.inline-blockComplete Complete your profile
+  .session-container.shadow.p-7.mt-5
+    - if flash[:alert].present?
+      .w-full.rounded.bg-red-100.p-3.mb-2.border.border-red-400
+        p.m-0 = flash[:alert]
+    = form_tag complete_path do
+      = hidden_field_tag "signature", @signature
+      .w-full.mt-2
+        p.font-medium.mb-1 Your name
+        input type="text" name="name" class='bg-white border border-gray-400 w-full rounded p-3 outline-none' placeholder="Eg. Monica"
+        p.font-medium.mb-1.mt-4 Email
+        input type="text" style="cursor: not-allowed" disabled="disabled" class='bg-gray-100 border border-gray-400 w-full rounded p-3 outline-none' value=@resource.email
+      .w-full.mt-5
+        button.w-full.bg-green-500.text-white.rounded.font-medium.py-3 Update
+      

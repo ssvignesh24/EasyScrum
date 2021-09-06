@@ -11,6 +11,7 @@ json.time checkin.send_at_time
 json.report checkin.needs_report
 json.reportAfter checkin.send_report_after_in_hours
 json.participantCount checkin.participants.size
+json.lastIssueId checkin.issues.order(issue_time: :desc).take&.id
 
 if full_checkin
   json.participants checkin.participants do |participant|
@@ -20,4 +21,5 @@ if full_checkin
     json.emaik participant.participant.email
   end
   json.questions checkin.questions.not_deleted, partial: 'checkin/checkins/question', as: :question
+  json.issues checkin.issues.order(issue_time: :desc), partial: 'checkin/issues/issue', as: :issue
 end

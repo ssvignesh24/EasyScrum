@@ -11,6 +11,39 @@ class GuestsController < ApplicationController
     end
   end
 
+  def get_profile
+    @signature = params[:signature]
+    parsed_sig = JSON.parse(Base64.decode64(@signature)) rescue nil
+    show_complete_profile_error("Error") and return unless parsed_sig.present?
+    if parsed_sig['origin'] == 'checkin'
+      @response = Checkin::Response.from_token(parsed_sig['token'])
+      show_complete_profile_error("Error") and return unless @response.present?
+      @resource = @response.participant.participant
+      if @resource.present?
+      else
+        show_complete_profile_error("Error") and return
+      end
+    end
+
+  end
+
+  def complete_profile
+    @signature = params[:signature]
+    parsed_sig = JSON.parse(Base64.decode64(@signature)) rescue nil
+    show_complete_profile_error("Error") and return unless parsed_sig.present?
+    if parsed_sig['origin'] == 'checkin'
+      @response = Checkin::Response.from_token(parsed_sig['token'])
+      show_complete_profile_error("Error") and return unless @response.present?
+      @resource = @response.participant.participant
+      if @resource.present?
+        @resource.update!(name: params[:name].strip)
+        redirect_to checkin_respond_path(email: @resource.email, token: parsed_sig['token'])
+      else
+        show_complete_profile_error("Error") and return
+      end
+    end
+  end
+
   def send_email_otp
     @invite_for = params[:invite_for]
     @token = params[:token]
@@ -156,6 +189,11 @@ class GuestsController < ApplicationController
     signature_token = Base64.encode64("#{name}:#{email}:#{timestamp}:#{token}:#{otp}")
     computed_token = OpenSSL::HMAC.hexdigest('sha1', Rails.application.credentials.SALT, "#{token}:#{otp}")
     computed_token == signature_token
+  end
+
+  def show_complete_profile_error(error, redirect_to_complete_profile=false)
+    flash[:alert] = error
+    redirect_to redirect_to_complete_profile ? complete_path(signature: params[:signature]) : "/"
   end
   
 end

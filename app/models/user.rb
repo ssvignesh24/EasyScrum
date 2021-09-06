@@ -1,6 +1,8 @@
 require 'open-uri'
 
 class User < ApplicationRecord
+  DEFAULT_TIMEZONE = "Asia/Kolkata".freeze
+  DEFAULT_LOCALE = "en".freeze
   # Include default devise modules. Others available are:
   # :confirmable
   devise :database_authenticatable, :registerable, :lockable, :timeoutable, :trackable,
@@ -15,7 +17,7 @@ class User < ApplicationRecord
   has_many :poker_boards, through: :poker_board_participants,  source: :board
   has_many :feedbacks, as: :feedback_by
   has_many :checkin_participants, class_name: "Checkin::Participant", as: :participant
-  has_many :checkins, through: :checkin_participants,  source: :checkin
+  has_many :participated_checkins, through: :checkin_participants,  source: :checkin
   has_many :created_checkins, class_name: "Checkin::Checkin", foreign_key: :created_by_id
   
   has_one_attached :avatar do |attachable|
@@ -32,6 +34,10 @@ class User < ApplicationRecord
   def avatar_url
     return unless avatar.attached?
     ENV['HOST'].chop + Rails.application.routes.url_helpers.rails_representation_url(avatar.variant(resize_to_limit: [180, 180]).processed, host: ENV['HOST'], only_path: true)
+  end
+
+  def checkins
+    Checkin::Checkin.where(id: participated_checkins.map(&:id) + created_checkins.map(&:id))
   end
 
   def self.from_omniauth(access_token, create_if_not_found=false)

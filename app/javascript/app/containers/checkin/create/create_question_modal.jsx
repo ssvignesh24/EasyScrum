@@ -33,7 +33,7 @@ function CreateQuestion({ open, setOpen, onCreate, question }) {
   const [isCritical, setIsCritical] = useState(false);
   const [options, setOptions] = useState("");
 
-  // TODO: Used for editing questiom
+  // TODO: Used for editing question
   // useEffect(() => {
   //   if (Object.keys(currentQuestion).length == 0) {
   //     setPrompt("");
@@ -73,7 +73,6 @@ function CreateQuestion({ open, setOpen, onCreate, question }) {
       isCritical,
     };
     question.options = options.split(",").map((op) => op.trim());
-    console.log(question);
     onCreate(question);
   };
 
@@ -89,6 +88,7 @@ function CreateQuestion({ open, setOpen, onCreate, question }) {
     }
     return placeholder;
   };
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
