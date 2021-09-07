@@ -9,6 +9,7 @@ import pluralize from "pluralize";
 import to_sentence from "../../lib/to_sentence";
 
 import CheckinClient from "../../services/checkin";
+import _ from "lodash";
 
 export default function () {
   const checkinClient = new CheckinClient();
@@ -48,7 +49,7 @@ export default function () {
             {currentResource.type == "User" && (
               <div>
                 <Link to="/checkin/create">
-                  <PrimaryButton onClick={() => {}}>Create a checkin</PrimaryButton>
+                  <PrimaryButton>Create a checkin</PrimaryButton>
                 </Link>
               </div>
             )}
@@ -70,6 +71,12 @@ export default function () {
                     <p className="font-medium text-green-500">{checkin.title}</p>
                   </Link>
                   <div className="w-full flex text-sm text-gray-500 items-center">
+                    {checkin.paused && (
+                      <>
+                        <div className="text-red-500">Paused</div>
+                        <div className="mx-2 w-1 h-1 rounded-full bg-gray-500"> </div>
+                      </>
+                    )}
                     <div>{pluralize("Participant", checkin.participantCount, true)}</div>
                     <div className="mx-2 w-1 h-1 rounded-full bg-gray-500"> </div>
                     <div>
@@ -79,6 +86,22 @@ export default function () {
                 </div>
               );
             })}
+          {data.state == "loading" && (
+            <>
+              {_.times(5, (n) => {
+                return (
+                  <div className="w-full p-4 bg-white shadow rounded mb-3 " key={n}>
+                    <div className="w-80 h-3 bg-gray-200 rounded-lg mb-5 animate-pulse"></div>
+                    <div className="flex items-center animate-pulse">
+                      <div className="w-32 h-2 bg-gray-200 rounded"></div>
+                      <div className="mx-2 w-1 h-1 rounded-full bg-gray-200"> </div>
+                      <div className="w-56 h-2 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -113,7 +113,7 @@ export default function ({ checkinId, issueId }) {
         )}
         {state == "loaded" && (
           <>
-            {checkin && (
+            {checkin && checkin.canManage && (
               <>
                 <ConfirmDialog
                   open={showConfirmPause}
@@ -165,73 +165,75 @@ export default function ({ checkinId, issueId }) {
             </div>
             <div className="w-6/12 flex flex-row-reverse">
               <div className="flex items-center">
-                <Menu as="div" className="relative z-30">
-                  {({ open }) => (
-                    <>
-                      <Menu.Button className="mr-3">
-                        <PrimaryButton as="div">
-                          Checkin options
-                          <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
-                        </PrimaryButton>
-                      </Menu.Button>
+                {checkin.canManage && (
+                  <Menu as="div" className="relative z-30">
+                    {({ open }) => (
+                      <>
+                        <Menu.Button className="mr-3">
+                          <PrimaryButton as="div">
+                            Checkin options
+                            <ChevronDownIcon className="w-5 h-5 text-white"></ChevronDownIcon>
+                          </PrimaryButton>
+                        </Menu.Button>
 
-                      <Transition
-                        show={open}
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95">
-                        <Menu.Items
-                          static
-                          className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="py-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={classNames(
-                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  Edit
-                                </button>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={() => {
-                                    setShowConfirmPause(true);
-                                  }}
-                                  className={classNames(
-                                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  {checkin.paused ? "Unpause" : "Pause"}
-                                </button>
-                              )}
-                            </Menu.Item>
+                        <Transition
+                          show={open}
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95">
+                          <Menu.Items
+                            static
+                            className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <div className="py-1">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Edit
+                                  </button>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => {
+                                      setShowConfirmPause(true);
+                                    }}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    {checkin.paused ? "Unpause" : "Pause"}
+                                  </button>
+                                )}
+                              </Menu.Item>
 
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={() => setShowConfirmDelete(true)}
-                                  className={classNames(
-                                    active ? "bg-red-100 text-gray-900" : "text-gray-700",
-                                    "block w-full text-left px-4 py-2 text-sm"
-                                  )}>
-                                  Delete
-                                </button>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </>
-                  )}
-                </Menu>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => setShowConfirmDelete(true)}
+                                    className={classNames(
+                                      active ? "bg-red-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Delete
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </>
+                    )}
+                  </Menu>
+                )}
               </div>
             </div>
           </>
@@ -297,7 +299,7 @@ export default function ({ checkinId, issueId }) {
                           }
                           onClick={() => setCurrentResponse(response)}
                           key={response.id}>
-                          <div className="w-12 h-12 rounded-full bg-green-500 flex-shrink-0 overflow-hidden">
+                          <div className="w-12 h-12 rounded-full bg-green-200 flex-shrink-0 overflow-hidden">
                             <img src={response.participant.avatarUrl || DefaultDp} className="w-full min-h-full" />
                           </div>
                           <div className="w-full pl-2">
@@ -328,7 +330,7 @@ export default function ({ checkinId, issueId }) {
               <>
                 <div className="p-4 border-b border-gray-300">
                   <div className="flex">
-                    <div className="w-12 h-12 rounded-full bg-green-500 flex-shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 rounded-full bg-green-200 flex-shrink-0 overflow-hidden">
                       <img src={currentResponse.participant.avatarUrl || DefaultDp} className="w-full min-h-full" />
                     </div>
                     <div className="w-full pl-2">
