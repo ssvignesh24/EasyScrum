@@ -1,7 +1,7 @@
 class Checkin::CheckinsController < ApiController
-  before_action :set_checkin, only: [:show, :update, :destroy, :toggle_pause]
-  before_action :authenticate_user!, only: [:create, :update, :destroy, :toggle_pause]
-  before_action :can_manage_checkin!, only: [:update, :destroy, :toggle_pause]
+  before_action :set_checkin, only: [:show, :edit, :update, :destroy, :toggle_pause]
+  before_action :authenticate_user!, only: [:create, :edit, :update, :destroy, :toggle_pause]
+  before_action :can_manage_checkin!, only: [:edit, :update, :destroy, :toggle_pause]
 
   def index
     @checkins = current_resource.class == User ? current_user.created_checkins.active : current_resource.checkins.active
@@ -12,7 +12,7 @@ class Checkin::CheckinsController < ApiController
 
   def create
     Checkin::Checkin.transaction do
-      @checkin = Checkin::Checkin.new(checkin_params.slice(:title, :description)).tap do |checkin|
+      @checkin = Checkin::Checkin.new(title: checkin_params[:title].strip, description: checkin_params[:description].strip,).tap do |checkin|
         checkin.created_by = current_user
         checkin.account = current_user.account
         checkin.send_days = get_send_days
@@ -20,9 +20,10 @@ class Checkin::CheckinsController < ApiController
         checkin.medium = [Checkin::Checkin::MEDIUM.EMAIL]
         checkin.is_paused = false
         checkin.active = true
-        checkin.send_at_time = checkin_params[:time]
+        checkin.send_at_time = checkin_params[:time].strip
         checkin.needs_report = checkin_params[:send_report_at].present? && checkin_params[:report_emails].size > 0
         checkin.send_report_after_in_hours = checkin_params[:send_report_at]
+        checkin.send_reports_to_emails = validate_emails_array(checkin_params[:report_emails])
       end
       @checkin.save!
       Array.wrap(checkin_params[:emails]).map { |e| e.to_s.strip.presence }.compact.uniq.each do |email|
@@ -34,8 +35,29 @@ class Checkin::CheckinsController < ApiController
     end
   end
 
+  def edit
+  end
+
   def update
     Checkin::Checkin.transaction do
+      @checkin.update!(
+        title: checkin_params[:title].strip,
+        description: checkin_params[:description].strip,
+        send_days: get_send_days,
+        send_at_time: checkin_params[:time].strip,
+        needs_report: checkin_params[:send_report_at].present? && checkin_params[:report_emails].size > 0,
+        send_report_after_in_hours: checkin_params[:send_report_at],
+        send_reports_to_emails: validate_emails_array(checkin_params[:report_emails])
+      )
+      @checkin.participants.update_all(active: false)
+      Array.wrap(checkin_params[:emails]).map { |e| e.to_s.strip.presence }.compact.uniq.each do |email|
+        @checkin.create_participant!(email: email, user: current_user)
+      end
+      @checkin.questions.where.not(id: checkin_params[:questions].map{ |q| q[:id] }).update_all(deleted: true, deleted_at: Time.zone.now)
+      Array.wrap(checkin_params[:questions]).each do |question|
+        next if question[:id].present?
+        @checkin.create_question!(question)
+      end
     end
   end
 
@@ -85,11 +107,9 @@ class Checkin::CheckinsController < ApiController
         emails: [],
         report_emails: [],
         days: [],
-        questions: [:prompt, :description, :isMandatory, :isCritical, options: [], answerType: [:name, :key]]
+        questions: [:prompt, :description, :isMandatory, :isCritical, :id, options: [], answerType: [:name, :key]]
       )
   end
-
-  
 
   def get_send_days
     given_days = checkin_params[:days].map(&:downcase)

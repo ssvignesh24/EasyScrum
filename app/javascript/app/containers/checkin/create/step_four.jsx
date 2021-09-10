@@ -90,8 +90,18 @@ export default function ({ nextStep, prevStep, checkin }) {
             setState("creating");
             nextStep();
           }}>
-          {state == "ready" && "Create checkin"}
-          {state == "creating" && "Creating checkin..."}
+          {!checkin.id && (
+            <>
+              {state == "ready" && "Create checkin"}
+              {state == "creating" && "Creating checkin..."}
+            </>
+          )}
+          {checkin.id && (
+            <>
+              {state == "ready" && "Update checkin"}
+              {state == "creating" && "Updating checkin..."}
+            </>
+          )}
         </PrimaryButton>
         <MutedButton className="mr-2" disabled={state == "creating"} onClick={prevStep}>
           Previous step

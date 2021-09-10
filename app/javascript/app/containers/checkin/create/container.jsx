@@ -1,9 +1,9 @@
 /** @format */
 
-import { ArrowLeftIcon } from "@heroicons/react/solid";
-import { Link } from "@reach/router";
 import React, { useEffect, useReducer, useState } from "react";
 import ReactDOM from "react-dom";
+import { ArrowLeftIcon } from "@heroicons/react/solid";
+import { Link, Redirect } from "@reach/router";
 
 import CheckinClient from "../../../services/checkin";
 import Progress from "./progress";
@@ -72,6 +72,7 @@ export default function () {
 
   return (
     <div className="container mx-auto">
+      {state == "created" && <Redirect to="/checkin" noThrow />}
       <div className="w-10/12 mx-auto mt-4">
         <div className="py-3 px-3 flex">
           <div className="w-3/12x h-1"></div>
@@ -86,7 +87,7 @@ export default function () {
           </div>
         </div>
 
-        <div className="flex px-3 mt-3">
+        <div className="flex px-3 mt-3 mb-10">
           <div className="w-3/12">
             <Progress currentStep={currentStep}></Progress>
           </div>

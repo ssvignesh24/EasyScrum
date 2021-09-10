@@ -20,6 +20,7 @@ export default function ({ dispatch, checkin, nextStep, prevStep }) {
   };
 
   const confirmDeletion = (q) => {
+    if (q.id) q.id_ = q.id;
     setCurrentQuestionId(q.id_);
     setConfirmQuestionDeletion(true);
   };

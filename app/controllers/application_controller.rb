@@ -80,4 +80,12 @@ class ApplicationController < ActionController::Base
   def ensure_board_manage_permission!
     raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
   end
+
+  def validate_emails_from_string(emails)
+    validate_emails_array(emails.split(","))
+  end
+
+  def validate_emails_array(email_array)
+    Array.wrap(email_array).map(&:strip).select { |e| Mail::Address.new(e).domain.present?}
+  end
 end

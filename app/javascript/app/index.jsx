@@ -20,6 +20,7 @@ import PokerList from "./containers/poker/list";
 import CheckinContainer from "./containers/checkin/container";
 import CheckinList from "./containers/checkin/list";
 import CheckinCreate from "./containers/checkin/create/container";
+import CheckinEdit from "./containers/checkin/edit";
 import CheckinShow from "./containers/checkin/show";
 import CheckinEmpty from "./containers/checkin/empty";
 
@@ -45,6 +46,7 @@ export default function () {
                 <CheckinList path="/" default></CheckinList>
                 <CheckinCreate path="/create"></CheckinCreate>
                 <CheckinEmpty path="/:checkinId"></CheckinEmpty>
+                <CheckinEdit path="/:checkinId/edit"></CheckinEdit>
                 <CheckinShow path="/:checkinId/issue/:issueId"></CheckinShow>
               </CheckinContainer>
             )}

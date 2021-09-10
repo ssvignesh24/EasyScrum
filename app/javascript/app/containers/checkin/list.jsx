@@ -6,8 +6,9 @@ import CurrentResourceContext from "../../contexts/current_resource";
 import { Primary as PrimaryButton } from "../../components/button";
 import { Link } from "@reach/router";
 import pluralize from "pluralize";
-import to_sentence from "../../lib/to_sentence";
 
+import EmptyPic from "images/empty.png";
+import to_sentence from "../../lib/to_sentence";
 import CheckinClient from "../../services/checkin";
 import _ from "lodash";
 
@@ -86,6 +87,12 @@ export default function () {
                 </div>
               );
             })}
+          {data.state == "loaded" && data.checkins.length == 0 && (
+            <div className="w-full py-20 flex items-center flex-col">
+              <img src={EmptyPic} style={{ width: "400px" }} />
+              <p className="mt-10 text-lg">No checkins found</p>
+            </div>
+          )}
           {data.state == "loading" && (
             <>
               {_.times(5, (n) => {

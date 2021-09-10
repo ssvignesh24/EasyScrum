@@ -14,6 +14,14 @@ export default class Checkin extends Network{
     return this.get(`/checkins/${checkinId}.json`)
   }
 
+  edit(checkinId){
+    return this.get(`/checkins/${checkinId}/edit.json`)
+  }
+
+  update(checkin){
+    return this.put(`/checkins/${checkin.id}.json`, { checkin })
+  }
+
   destroy(checkinId){
     return this.delete(`/checkins/${checkinId}.json`)
   }

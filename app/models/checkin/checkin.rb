@@ -16,7 +16,9 @@ class Checkin::Checkin < ApplicationRecord
     user = user || created_by
     guest = Guest.where(email: email).take
     guest = Guest.create!(email: email, parent_user: user, name: name) unless guest
-    participants.where(participant: guest).first_or_create!
+    participant = participants.where(participant: guest).first_or_initialize
+    participant.active = true
+    participant.save!
   end
   
   def create_question!(q)
