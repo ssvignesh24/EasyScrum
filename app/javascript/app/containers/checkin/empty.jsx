@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import pluralize from "pluralize";
 
 import NoDataImg from "images/nodata.png";
+import ErrorImage from "images/error.png";
 import CheckinClient from "../../services/checkin";
 import { Redirect } from "@reach/router";
 import CheckinHeader from "./header";
@@ -45,7 +46,10 @@ export default function ({ checkinId }) {
       <CheckinHeader checkin={checkin} onPause={onPause} afterDelete={afterDelete}></CheckinHeader>
       {state == "error" && (
         <div className="w-full flex z-28 relative" style={{ height: "calc(100% - 80px)" }}>
-          <p>Error loading</p>
+          <div className="py-20 w-full">
+            <img src={ErrorImage} className="mx-auto" style={{ width: "350px" }} />
+            <p className="mt-10 text-center">Something went wrong while loading checkin!</p>
+          </div>
         </div>
       )}
       {state == "empty" && (

@@ -9,6 +9,7 @@ import Scrollbars from "react-custom-scrollbars";
 
 import { UserLoading } from "../../components/loading";
 import DefaultDp from "images/default_dp.jpg";
+import ErrorImage from "images/error.png";
 import WaitingPic from "images/waiting.png";
 import CheckinClient from "../../services/checkin";
 import CheckinHeader from "./header";
@@ -69,7 +70,10 @@ export default function ({ checkinId, issueId }) {
       <CheckinHeader checkin={checkin} onPause={onPause} afterDelete={afterDelete}></CheckinHeader>
       {state == "error" && (
         <div className="w-full flex z-28 relative" style={{ height: "calc(100% - 80px)" }}>
-          <p>Error loading</p>
+          <div className="py-20 w-full">
+            <img src={ErrorImage} className="mx-auto" style={{ width: "350px" }} />
+            <p className="mt-10 text-center">Something went wrong while loading checkin!</p>
+          </div>
         </div>
       )}
       {state == "empty" && <Redirect to={`/checkin/${checkin.id}`} noThrow />}
