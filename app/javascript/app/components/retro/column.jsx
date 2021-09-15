@@ -64,11 +64,11 @@ export default function ({ children, boardId, column, afterUpdate, afterDelete, 
           />
         </>
       )}
-      <div className="h-full p-3 pb-0 inline-block whitespace-normal" style={{ width: "400px" }}>
+      <div className="h-full p-2 pb-0 inline-block whitespace-normal" style={{ width: "400px" }}>
         <div className="w-full h-full">
-          <div className="w-full mb-3 flex">
+          <div className="w-full mb-2 flex">
             <div className="w-11/12">
-              <h3 className="font-bold text-lg">{column.name}</h3>
+              <h3 className="font-bold text-lxg">{column.name}</h3>
               <p className="text-gray-500 text-sm">{pluralize("Card", column.cards?.length || 0, true)}</p>
             </div>
             <div className="w-1/12 flex items-center h-full flex-row-reverse">
