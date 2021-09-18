@@ -1,2 +1,2 @@
 <%= "Hi #{@participant.name.blank? ? @participant.email : @participant.name}, its time for #{@checkin.title}!" %>
-<%= "Use the following link to respond to the checkin - #{ENV['HOST'] + "checkin/respond?token=#{@token}&email=#{@participant.email}}" %>
+<%= "Use the following link to respond to the checkin - #{ENV['HOST']}checkin/respond?token=#{@token}&email=#{@participant.email}" %>

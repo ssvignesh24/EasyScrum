@@ -7,4 +7,23 @@ class Checkin::Issue < ApplicationRecord
   def questions
     checkin.question_as_on(issue_time)
   end
+
+  def blocker_count
+    Checkin::Answer
+      .joins("inner join checkin_questions on checkin_answers.checkin_question_id = checkin_questions.id and checkin_questions.is_blocker_question is true")
+      .joins("inner join checkin_responses on checkin_answers.checkin_response_id = checkin_responses.id")
+      .where("checkin_responses.id IN (?)", responses.map(&:id))
+      .where("checkin_questions.id IN (?)", questions.map(&:id))
+      .where(
+        <<-SQL
+        (answer_text is not null
+        or answer_number is not null
+        or answer_checkbox is not null
+        or answer_rating is not null
+        or answer_datetime is not null
+        or answer_date is not null
+        or answer_time is not null)
+        SQL
+        ).size
+  end
 end

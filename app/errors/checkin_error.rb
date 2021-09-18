@@ -6,6 +6,12 @@ module CheckinError
     end
   end
 
+  class ReportError < StandardError
+    def initialize(message)
+      super(message)
+    end
+  end
+
   class ResponseError < StandardError
     def initialize(message)
       super(message)

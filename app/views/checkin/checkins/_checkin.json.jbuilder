@@ -16,7 +16,7 @@ json.lastIssueId checkin.issues.order(issue_time: :desc).take&.id
 json.canManage checkin.created_by == current_resource
 
 if full_checkin
-  json.reportEmails checkin.send_reports_to_emails || []
+  json.reportEmails checkin.send_report_to_emails || []
   json.participants checkin.participants.active do |participant|
     json.id participant.id
     json.target_id participant.participant.id

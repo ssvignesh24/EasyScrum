@@ -14,4 +14,8 @@ class Checkin::Response < ApplicationRecord
   def can_respond_now?
     Time.zone.now < issue.issue_time + 1.day
   end
+
+  def responded?
+    responded_at.present?
+  end
 end

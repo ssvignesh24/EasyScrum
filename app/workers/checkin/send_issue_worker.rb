@@ -32,6 +32,9 @@ class Checkin::SendIssueWorker
         end
       end
       issue.update!(completed_at: Time.zone.now)
+      if checkin.needs_report && checkin.send_report_after_in_hours > 0
+        Checkin::SendReportsWorker.perform_in(checkin.send_report_after_in_hours.hours.from_now, issue.id) 
+      end
     end
     response_map.each do |response_id, token|
       CheckinMailer.send_issue(response_id, token, current_time).deliver_later

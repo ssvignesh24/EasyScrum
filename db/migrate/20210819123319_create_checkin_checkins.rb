@@ -15,7 +15,7 @@ class CreateCheckinCheckins < ActiveRecord::Migration[6.1]
       t.boolean :needs_report, null: false
       t.integer :send_report_after_in_hours
       t.datetime :last_report_sent_at
-      t.text :send_reports_to_emails, array: true
+      t.text :send_report_to_emails, array: true
       t.boolean :active, null: false
 
       t.timestamps

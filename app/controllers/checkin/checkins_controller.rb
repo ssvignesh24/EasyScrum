@@ -23,7 +23,7 @@ class Checkin::CheckinsController < ApiController
         checkin.send_at_time = checkin_params[:time].strip
         checkin.needs_report = checkin_params[:send_report_at].present? && checkin_params[:report_emails].size > 0
         checkin.send_report_after_in_hours = checkin_params[:send_report_at]
-        checkin.send_reports_to_emails = validate_emails_array(checkin_params[:report_emails])
+        checkin.send_report_to_emails = validate_emails_array(checkin_params[:report_emails])
       end
       @checkin.save!
       Array.wrap(checkin_params[:emails]).map { |e| e.to_s.strip.presence }.compact.uniq.each do |email|
@@ -47,7 +47,7 @@ class Checkin::CheckinsController < ApiController
         send_at_time: checkin_params[:time].strip,
         needs_report: checkin_params[:send_report_at].present? && checkin_params[:report_emails].size > 0,
         send_report_after_in_hours: checkin_params[:send_report_at],
-        send_reports_to_emails: validate_emails_array(checkin_params[:report_emails])
+        send_report_to_emails: validate_emails_array(checkin_params[:report_emails])
       )
       @checkin.participants.update_all(active: false)
       Array.wrap(checkin_params[:emails]).map { |e| e.to_s.strip.presence }.compact.uniq.each do |email|

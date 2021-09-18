@@ -8,6 +8,9 @@ class CreateCheckinIssues < ActiveRecord::Migration[6.1]
       t.integer :no_of_participants, null: false
       t.integer :no_of_participants_sent, null: false
       t.integer :no_of_participants_responded, null: false
+      t.datetime :report_started_at
+      t.datetime :report_completed_at
+      t.jsonb :report_details
 
       t.index :issue_time
 

@@ -31,6 +31,10 @@ class User < ApplicationRecord
     (verification_token.present? && verified_at.present?) || (invitation_token.present? && invitation_accepted_at.present?)
   end
 
+  def name_or_email
+    name.blank? ? email : name
+  end
+  
   def avatar_url
     return unless avatar.attached?
     ENV['HOST'].chop + Rails.application.routes.url_helpers.rails_representation_url(avatar.variant(resize_to_limit: [180, 180]).processed, host: ENV['HOST'], only_path: true)

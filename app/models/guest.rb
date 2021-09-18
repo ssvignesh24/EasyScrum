@@ -10,4 +10,13 @@ class Guest < ApplicationRecord
 
   delegate :can_access?, to: :parent_user
 
+  def name_or_email
+    name.blank? ? email : name
+  end
+
+  def avatar_url
+    # return unless avatar.attached?
+    # ENV['HOST'].chop + Rails.application.routes.url_helpers.rails_representation_url(avatar.variant(resize_to_limit: [180, 180]).processed, host: ENV['HOST'], only_path: true)
+    return nil
+  end
 end
