@@ -49,7 +49,7 @@ Muted.defaultProps = {
   as: "button",
 };
 
-function Primary({ children, onClick, size, className, disabled, as }) {
+function Primary({ children, onClick, size, className, disabled, as, title }) {
   const handleClick = () => {
     if (!onClick) return;
     onClick();
@@ -60,6 +60,7 @@ function Primary({ children, onClick, size, className, disabled, as }) {
         <button
           onClick={handleClick}
           disabled={disabled}
+          title={title}
           className={
             commonClasses +
             "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
@@ -74,6 +75,7 @@ function Primary({ children, onClick, size, className, disabled, as }) {
         <div
           onClick={handleClick}
           disabled={disabled}
+          title={title}
           className={
             commonClasses +
             "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
@@ -94,6 +96,7 @@ Primary.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   as: PropTypes.string,
+  title: PropTypes.string,
 };
 
 Primary.defaultProps = {
@@ -103,7 +106,7 @@ Primary.defaultProps = {
   as: "button",
 };
 
-function PrimaryLight({ children, onClick, size, className, disabled, as }) {
+function PrimaryLight({ children, onClick, size, className, disabled, as, title }) {
   const handleClick = () => {
     if (!onClick) return;
     onClick();
@@ -114,6 +117,7 @@ function PrimaryLight({ children, onClick, size, className, disabled, as }) {
         <button
           onClick={handleClick}
           disabled={disabled}
+          title={title}
           className={
             commonClasses +
             "bg-green-500 bg-opacity-30 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-green-600 " +
@@ -128,6 +132,7 @@ function PrimaryLight({ children, onClick, size, className, disabled, as }) {
         <div
           onClick={handleClick}
           disabled={disabled}
+          title={title}
           className={
             commonClasses +
             "bg-green-500 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white " +
@@ -148,6 +153,7 @@ PrimaryLight.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   as: PropTypes.string,
+  title: PropTypes.string,
 };
 
 PrimaryLight.defaultProps = {
