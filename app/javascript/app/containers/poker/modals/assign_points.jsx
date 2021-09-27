@@ -120,7 +120,7 @@ function AssignPointsModal(props) {
                 )}
 
                 <MutedButton className={!props.issue.isGhost ? "mr-3" : ""} onClick={() => closeModal()}>
-                  Cancel
+                  {props.issue.isGhost ? "Close" : "Cancel"}
                 </MutedButton>
               </div>
             </div>

@@ -31,6 +31,7 @@ function VoteResults({ votes, board }) {
         return v.vote.type == "number";
       })
       .map((v) => +v.vote.value);
+    if (allVotes.length == 0) return "-";
     const voteSum = allVotes.reduce((a, value) => a + value, 0);
     return Math.round((voteSum / allVotes.length) * 100) / 100;
   };
