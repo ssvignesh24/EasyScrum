@@ -1,23 +1,41 @@
 /** @format */
 
-import React, { Fragment, useState, useRef } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
-import { Muted as MutedButton } from "./button";
+import { Muted as MutedButton, Primary as PrimaryButton } from "./button";
+import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/solid";
 
 function InviteUsers(props) {
-  const nameField = useRef();
+  const closeButton = useRef();
+  const linkField = useRef();
+  let copyTimer = null;
 
-  const [name, setName] = useState("");
-  const [state, setState] = useState("init");
+  const [copyState, setCopyState] = useState("init");
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimer) clearTimeout(copyTimer);
+    };
+  }, []);
 
   const closeModal = () => {
     props.setOpen(false);
-    setName("");
-    setState("init");
     setError(false);
+  };
+
+  const copyLink = () => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(props.board.inviteURL);
+      setCopyState("copied");
+    } else {
+      linkField.current.select();
+      document.execCommand("copy");
+      setCopyState("copied");
+    }
+    copyTimer = setTimeout(() => setCopyState("init"), 5000);
   };
 
   return (
@@ -26,7 +44,7 @@ function InviteUsers(props) {
         as="div"
         static
         className="fixed z-40 inset-0 overflow-y-auto"
-        initialFocus={nameField}
+        initialFocus={closeButton}
         open={props.open}
         onClose={props.setOpen}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -69,11 +87,18 @@ function InviteUsers(props) {
                       and email before adding themselves to the board
                     </p>
                     <p className="mb-1 mt-3">Invite link</p>
-                    <input
-                      className="w-full bg-gray-100 border border-gray-400 w-full rounded p-3 outline-none "
-                      disabled={true}
-                      value={props.board.inviteURL}
-                    />
+                    <div className="w-full flex">
+                      <input
+                        className="bg-gray-100 border border-gray-400 w-full rounded p-3 outline-none mr-2"
+                        disabled={true}
+                        ref={linkField}
+                        value={props.board.inviteURL}
+                      />
+                      <PrimaryButton title="Copy link" onClick={copyLink}>
+                        {copyState == "init" && <ClipboardCopyIcon className="w-5 h-5 text-white"></ClipboardCopyIcon>}
+                        {copyState == "copied" && <CheckIcon className="w-5 h-5 text-white"></CheckIcon>}
+                      </PrimaryButton>
+                    </div>
                     {/* <p className="mb-1 mt-3">Emails</p>
                     <textarea
                       className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
@@ -86,7 +111,7 @@ function InviteUsers(props) {
               </div>
 
               <div className="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
-                <MutedButton className="" onClick={() => closeModal()}>
+                <MutedButton className="" onClick={() => closeModal()} ref={closeButton}>
                   Close
                 </MutedButton>
               </div>

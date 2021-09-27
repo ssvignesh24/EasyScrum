@@ -12,6 +12,7 @@ import { Menu, Transition } from "@headlessui/react";
 
 import ConfirmDialog from "../../components/confirmdialog";
 import truncate from "../../lib/truncate";
+import consumer from "../../lib/action_cable_consumer";
 
 import Tracking from "../../services/tracking";
 import RenameBoardModal from "./modals/rename_board";
@@ -19,7 +20,6 @@ import Poker from "../../services/poker";
 import InviteUsersModal from "../../components/invite_users";
 import CreateIssueModal from "./modals/create_issue";
 import AssignPointsModal from "./modals/assign_points";
-import consumer from "../../lib/action_cable_consumer";
 
 import { Primary as PrimaryButton } from "../../components/button";
 
@@ -296,6 +296,7 @@ export default function ({ boardId }) {
         if (!data.status) return;
       })
       .catch((r) => pokerClient.handleError(r));
+    setShowAssignPointsModal(true);
   };
 
   const addIssue = (issue) => {
@@ -376,49 +377,6 @@ export default function ({ boardId }) {
     return participant_votes.find((p) => {
       return p.targent_participant_id == participant_id;
     })?.vote;
-  };
-
-  const highestVote = () => {
-    if (currentIssue().votes.participant_votes.length == 0) return "-";
-    for (const { value } of board.availableVotes.concat([]).reverse()) {
-      const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
-      if (firstVote) return firstVote;
-    }
-    return "";
-  };
-
-  const lowestVote = () => {
-    if (currentIssue().votes.participant_votes.length == 0) return "-";
-    for (const { value } of board.availableVotes) {
-      const firstVote = currentIssue().votes.participant_votes.find(({ vote }) => vote.value == value)?.vote?.value;
-      if (firstVote) return firstVote;
-    }
-    return "";
-  };
-
-  const avgVote = () => {
-    if (currentIssue().votes.participant_votes.length == 0) return "-";
-    const allVotes = currentIssue()
-      .votes.participant_votes.filter((v) => {
-        return v.vote.type == "number";
-      })
-      .map((v) => +v.vote.value);
-    const voteSum = allVotes.reduce((a, value) => a + value, 0);
-    return Math.round((voteSum / allVotes.length) * 100) / 100;
-  };
-
-  const mostVoted = () => {
-    if (currentIssue().votes.participant_votes.length == 0) return ["-"];
-    let mostVote = [],
-      mostVoteCount = 0;
-    for (const { value } of board.availableVotes) {
-      const count = currentIssue().votes.participant_votes.filter(({ vote }) => vote.value == value).length || -1;
-      if (count > mostVoteCount) {
-        mostVote = [value];
-        mostVoteCount = count;
-      } else if (count == mostVoteCount) mostVote.push(value);
-    }
-    return mostVote;
   };
 
   const renameBoard = (name) => {
@@ -870,7 +828,7 @@ export default function ({ boardId }) {
             </div>
           </div>
           <div className="w-3/12 h-full bg-white">
-            <div className="w-full h-3/5">
+            <div className="w-full h-full">
               <Scrollbars>
                 <p className="font-medium pt-5 pb-2 px-5 text-lg">Players</p>
                 {currentIssue() && (
@@ -931,56 +889,6 @@ export default function ({ boardId }) {
                   </ul>
                 )}
               </Scrollbars>
-            </div>
-            <div className="w-full h-2/5 border-t border-gray-200">
-              {state == "loaded" && currentIssue() && (
-                <>
-                  <p className="font-medium pt-5 pb-2 px-5 text-lg">Results</p>
-                  {(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
-                    <div className="w-full px-5">
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Total votes</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;{pluralize("vote", currentIssue().votes.participant_votes || 0)}</span>
-                          <span className="text-purple-500">{currentIssue().votes.participant_votes.length || 0}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Highest vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{highestVote()}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Lowest vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{lowestVote()}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Average vote</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{avgVote()}</span>
-                        </div>
-                      </div>
-                      <div className="w-full flex items-center mb-2">
-                        <div className="w-8/12 text-gray-600">Most voted</div>
-                        <div className="w-4/12 flex flex-row-reverse font-medium">
-                          <span>&ensp;points</span>
-                          <span className="text-purple-500">{mostVoted().join(", ")}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {state == "loaded" &&
-                    !(currentIssue().status == STATUS.VOTED || currentIssue().status == STATUS.FINISHED) && (
-                      <p className="mt-2 text-gray-500 px-5">Waiting for voting to be completed</p>
-                    )}
-                </>
-              )}
             </div>
           </div>
         </div>

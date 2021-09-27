@@ -4,16 +4,13 @@ import React, { Fragment, useState, useRef, useContext, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
 
+import VoteResults from "../../../components/poker/vote_results";
 import Poker from "../../../services/poker";
 import Tracking from "../../../services/tracking";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 import { Primary as PrimaryButton, Muted as MutedButton } from "../../../components/button";
 
-function CreateColumn(props) {
+function AssignPointsModal(props) {
   const pointField = useRef();
   const pokerClient = new Poker(props.board.id);
 
@@ -86,30 +83,43 @@ function CreateColumn(props) {
                 <div className="">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      Assign a point
+                      Voting results
                     </Dialog.Title>
-                    {error && (
-                      <div className="w-full rounded border border-red-300 bg-red-100 text-center p-3 mt-3">
-                        <p>{error}</p>
-                      </div>
+
+                    <div className="mt-4 w-full">
+                      <VoteResults votes={props.issue.votes.participant_votes} board={props.board}></VoteResults>
+                    </div>
+                    {!props.issue.isGhost && (
+                      <>
+                        <hr />
+
+                        <p className="mb-1.5 mt-3 font-medium">Assign a point</p>
+                        {error && (
+                          <div className="w-full rounded border border-red-300 bg-red-100 text-center p-3 my-3">
+                            <p>{error}</p>
+                          </div>
+                        )}
+                        <input
+                          className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
+                          placeholder="Eg. 5"
+                          value={points}
+                          ref={pointField}
+                          onChange={(event) => setPoints(event.target.value)}
+                        />
+                      </>
                     )}
-                    <p className="mb-1 mt-3">Points</p>
-                    <input
-                      className="w-full bg-white border border-gray-400 w-full rounded p-3 outline-none"
-                      placeholder="Eg. 5"
-                      value={points}
-                      ref={pointField}
-                      onChange={(event) => setPoints(event.target.value)}
-                    />
                   </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
-                <PrimaryButton onClick={assignPoint} disabled={points.trim() == "" || state == "assigning"}>
-                  {state == "assigning" ? "Assinging..." : "Assign"}
-                </PrimaryButton>
-                <MutedButton className="mr-3" onClick={() => closeModal()}>
+                {!props.issue.isGhost && (
+                  <PrimaryButton onClick={assignPoint} disabled={points.trim() == "" || state == "assigning"}>
+                    {state == "assigning" ? "Assinging..." : "Assign"}
+                  </PrimaryButton>
+                )}
+
+                <MutedButton className={!props.issue.isGhost ? "mr-3" : ""} onClick={() => closeModal()}>
                   Cancel
                 </MutedButton>
               </div>
@@ -121,10 +131,10 @@ function CreateColumn(props) {
   );
 }
 
-CreateColumn.propTypes = {
+AssignPointsModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   afterUpdate: PropTypes.func,
 };
 
-export default CreateColumn;
+export default AssignPointsModal;

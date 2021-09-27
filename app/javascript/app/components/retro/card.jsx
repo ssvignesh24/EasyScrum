@@ -33,6 +33,7 @@ export default function ({
   const [updatedMessage, setUpdatedMessage] = useState(card.message);
   const [state, setState] = useState("ready");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => () => retroClient.cancel(), []);
 
@@ -159,13 +160,13 @@ export default function ({
         )}
         {(state == "ready" || state == "deleting") && (
           <div className="flex mt-3">
-            <div className="w-6/12 flex items-center">
+            <div className="w-8/12 flex items-center">
               {card.voted && (
                 <button
                   className="flex items-center bg-green-50 text-green-700 py-1 px-2 rounded-lg"
                   onClick={() => toggleVote(columnId, card)}>
                   <ThumbUpIcon className="w-4 h-4 mr-1"></ThumbUpIcon>
-                  <span className="text-sm">Voted</span>
+                  <span className="text-sm">{pluralize("vote", card.voteCount, true)}</span>
                 </button>
               )}
 
@@ -174,73 +175,83 @@ export default function ({
                   className="flex items-center hover:bg-green-100 py-1 px-2 rounded-lg"
                   onClick={() => toggleVote(columnId, card)}>
                   <ThumbUpIconOutline className="w-4 h-4 mr-1"></ThumbUpIconOutline>
-                  <span className="text-sm">Vote</span>
+                  <span className="text-sm">{pluralize("vote", card.voteCount, true)}</span>
                 </button>
               )}
-              <div className="text-sm ml-2">{pluralize("vote", card.voteCount, true)}</div>
+              <button
+                className="flex items-center hover:bg-gray-100 py-1 px-2 rounded-lg ml-1.5"
+                onClick={() => setShowComments((value) => !value)}>
+                <span className="text-sm">{pluralize("comments", card.comments.filter((c) => c.id).length, true)}</span>
+              </button>
             </div>
-            <div className="w-6/12 flex flex-row-reverse">
+            <div className="w-4/12 flex flex-row-reverse">
               {card.canManageCard && (
                 <>
                   <button
+                    title="Delete card"
                     className="flex text-red-700 items-center hover:bg-red-100 py-1 px-2 rounded-lg"
                     onClick={() => setConfirmDelete(true)}>
-                    <TrashIcon className="w-3.5 h-3.5 mr-1" />
-                    {state == "deleting" && <span className="text-sm">Deleting</span>}
-                    {state == "ready" && <span className="text-sm">Delete</span>}
+                    <TrashIcon className="w-3.5 h-3.5" />
+                    {/* {state == "deleting" && <span className="text-sm">Deleting</span>} */}
+                    {/* {state == "ready" && <span className="text-sm">Delete</span>} */}
                   </button>
                   <button
+                    title="Edit card"
                     className="flex text-green-500 items-center mr-1 hover:bg-gray-100 py-1 px-2 rounded-lg"
                     onClick={editCard}>
-                    <PencilIcon className="w-3.5 h-3.5 mr-1" />
-                    <span className="text-sm">Edit</span>
+                    <PencilIcon className="w-3.5 h-3.5" />
+                    {/* <span className="text-sm">Edit</span> */}
                   </button>{" "}
                 </>
               )}
             </div>
           </div>
         )}
-        <hr className="mt-3" />
-        <div className="w-full mb-3">
-          {card.comments &&
-            card.comments.length > 0 &&
-            card.comments.map((comment) => {
-              if (!comment.id) return;
-              return (
-                <div
-                  className={"w-full text-sm py-3 border-b border-gray-200 " + (comment.loading && "opacity-50")}
-                  key={comment.id}>
-                  <div className="flex w-full">
-                    <div className="font-medium text-blue-600 mb-1">{comment.author}</div>
-                  </div>
-                  <p className="text-gray-700">{comment.message}</p>
-                  <div className="w-full mt-1">
-                    {!comment.loading && board.canManageBoard && (
-                      <button className="flex text-red-700 items-center" onClick={() => removeCardComment(comment)}>
-                        <TrashIcon className="w-3.5 h-3.5 mr-1" />
-                        <span>Delete comment</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-        <div className="w-full">
-          <input
-            className="bg-gray-100 border-0 w-full rounded p-2 outline-none text-sm"
-            placeholder="Add comment"
-            value={commentText}
-            onKeyDown={handleKeyPress}
-            onChange={(e) => setCommentText(e.target.value)}
-          />
-          {commentText && <p className="text-sm text-gray-500 mt-2">Press enter to add comment</p>}
-          {/* <div className="flex flex-row-reverse">
-            <PrimaryButton size="sm" className="text-sm" disabled={!commentText}>
-              Add comment
-            </PrimaryButton>
-          </div> */}
-        </div>
+        {showComments && (
+          <>
+            <hr className="mt-3" />
+            <div className="w-full mb-3">
+              {card.comments &&
+                card.comments.length > 0 &&
+                card.comments.map((comment) => {
+                  if (!comment.id) return;
+                  return (
+                    <div
+                      className={"w-full text-sm py-3 border-b border-gray-200 " + (comment.loading && "opacity-50")}
+                      key={comment.id}>
+                      <div className="flex w-full">
+                        <div className="font-medium text-blue-600 mb-1">{comment.author}</div>
+                      </div>
+                      <p className="text-gray-700">{comment.message}</p>
+                      <div className="w-full mt-1">
+                        {!comment.loading && board.canManageBoard && (
+                          <button className="flex text-red-700 items-center" onClick={() => removeCardComment(comment)}>
+                            <TrashIcon className="w-3.5 h-3.5 mr-1" />
+                            <span>Delete comment</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+            <div className="w-full">
+              <input
+                className="bg-gray-100 border-0 w-full rounded p-2 outline-none text-sm"
+                placeholder="Add comment"
+                value={commentText}
+                onKeyDown={handleKeyPress}
+                onChange={(e) => setCommentText(e.target.value)}
+              />
+              {commentText && <p className="text-sm text-gray-500 mt-2">Press enter to add comment</p>}
+              {/* <div className="flex flex-row-reverse">
+              <PrimaryButton size="sm" className="text-sm" disabled={!commentText}>
+                Add comment
+              </PrimaryButton>
+            </div> */}
+            </div>
+          </>
+        )}
       </div>
     </>
   );
