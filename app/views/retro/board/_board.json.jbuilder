@@ -9,9 +9,10 @@ json.canManageBoard retro.created_by_id == current_user&.id
 json.currentParticipantId retro.target_participants.where(participant: current_resource).take&.id
 json.currentParticipantName retro.target_participants.where(participant: current_resource).take&.participant&.name
 json.createdAt readable_datetime(retro.created_at)
-json.actionItems retro.action_items.order(created_at: :desc), partial: 'retro/action_items/action_item', as: :item
+json.actionItemsCount retro.action_items.size
 json.previousActionItems (prev_retro.present? ? prev_retro.action_items : []), partial: 'retro/action_items/action_item', as: :item
 json.previousRetroName prev_retro&.name
+json.previousRetroId prev_retro&.id
 if retro.template.present?
   json.template do
     json.id retro.template.id
@@ -33,5 +34,6 @@ json.participants retro.target_participants do |t_participant|
 end
 
 if full_board
+  json.actionItems retro.action_items.order(created_at: :desc), partial: 'retro/action_items/action_item', as: :item
   json.columns retro.columns.order(position: :asc), partial: 'retro/columns/column', as: :column, locals: { full_column: true }
 end

@@ -121,6 +121,13 @@ export default function ({ children }) {
                                 <span className="text-sm ">
                                   {pluralize("participant", board.participantsCount, true)}
                                 </span>
+                                <div className="middot bg-gray-500"></div>
+                                {board.actionItemsCount > 0 && (
+                                  <span className="text-sm ">
+                                    {pluralize("action items", board.actionItemsCount, true)}
+                                  </span>
+                                )}
+                                {board.actionItemsCount <= 0 && <span className="text-sm ">No action items</span>}
                               </div>
                             </div>
                           </Link>

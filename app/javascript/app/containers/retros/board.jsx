@@ -313,19 +313,32 @@ export default function ({ children, boardId }) {
     });
   };
 
-  const updateActionItem = (actionItem) => {
-    setBoard((board_) => {
-      return {
-        ...board_,
-        actionItems: board_.actionItems.map((item) => {
-          if (item.id == actionItem.id) {
-            item.status = actionItem.status;
-            item.actionMessage = actionItem.actionMessage;
-          }
-          return item;
-        }),
-      };
-    });
+  const updateActionItem = (actionItem, boardId) => {
+    if (board.id == boardId)
+      setBoard((board_) => {
+        return {
+          ...board_,
+          actionItems: board_.actionItems.map((item) => {
+            if (item.id == actionItem.id) {
+              item.status = actionItem.status;
+              item.actionMessage = actionItem.actionMessage;
+            }
+            return item;
+          }),
+        };
+      });
+    else
+      setBoard((board_) => {
+        return {
+          ...board_,
+          previousActionItems: board_.previousActionItems.map((item) => {
+            if (item.id == actionItem.id) {
+              item.status = actionItem.status;
+            }
+            return item;
+          }),
+        };
+      });
   };
 
   const deleteActionItem = (actionItem) => {

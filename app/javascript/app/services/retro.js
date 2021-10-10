@@ -67,8 +67,9 @@ export default class Retro extends Network{
     return this.post(`/retro/board/${this.boardId}/action_items.json`, { text })
   }
 
-  toggleComplete(itemId){
-    return this.put(`/retro/board/${this.boardId}/action_items/${itemId}/toggle.json`)
+  toggleComplete(itemId, boardId){
+    boardId ||= this.boardId;
+    return this.put(`/retro/board/${boardId}/action_items/${itemId}/toggle.json`);
   }
 
   deleteActionItem(itemId){

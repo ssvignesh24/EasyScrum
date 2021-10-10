@@ -51,15 +51,20 @@ export default function Example({
       .catch((r) => retroClient.handleError(r));
   };
 
-  const toggleComplete = (item) => {
+  const toggleComplete = (item, boardId) => {
+    boardId ||= board.id;
     if (item.status == "deleting") return;
-    afterUpdate({ ...item, status: "completing", originalState: item.status });
+    afterUpdate({ ...item, status: "completing", originalState: item.status }, boardId);
     retroClient
-      .toggleComplete(item.id)
+      .toggleComplete(item.id, boardId)
       .then(({ data }) => {
         if (!data.status) return;
-        afterUpdate(data.actionItem);
-        Tracking.logEvent("Retro: Toggle action item", { boardId: board.id, actionItemId: data.actionItem.id });
+        afterUpdate(data.actionItem, boardId);
+        Tracking.logEvent("Retro: Toggle action item", {
+          viewingBoardId: board.id,
+          actionItemBoardId: boardId,
+          actionItemId: data.actionItem.id,
+        });
       })
       .catch((r) => retroClient.handleError(r));
   };
@@ -278,6 +283,42 @@ export default function Example({
                                       <p className={item.status == "completed" ? "line-through" : ""}>
                                         {item.actionMessage}
                                       </p>
+                                      {board.canManageBoard && (
+                                        <div className="w-full flex">
+                                          <div className="w-6/12">
+                                            {item.status == "pending" && (
+                                              <button
+                                                className="mt-3 mr-3 text-sm text-green-500 hover:underline"
+                                                onClick={() => toggleComplete(item, board.previousRetroId)}>
+                                                Mark as complete
+                                              </button>
+                                            )}
+                                            {item.status == "completing" && (
+                                              <button className="mt-3 mr-3 text-sm text-green-500 opacity-50">
+                                                Marking as complete...
+                                              </button>
+                                            )}
+                                            {item.status == "completed" && (
+                                              <button
+                                                className="-mt-0.5 mr-3 text-sm text-green-500 item-center"
+                                                onClick={() => toggleComplete(item, board.previousRetroId)}>
+                                                <div className="inline-block align-middle">
+                                                  <CheckCircleIcon className="w-5 h-5 text-green-500"></CheckCircleIcon>
+                                                </div>
+                                                <div className="inline-block align-middle hover:underline">
+                                                  Completed
+                                                </div>
+                                              </button>
+                                            )}
+                                            <button
+                                              className="mt-3 text-sm text-red-500 hover:underline"
+                                              onClick={() => deleteItem(item)}>
+                                              {item.status == "deleting" ? "Deleting item..." : "Delete item"}
+                                            </button>
+                                          </div>
+                                          <div className="w-6/12 flex flex-row-reverse"></div>
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })}
