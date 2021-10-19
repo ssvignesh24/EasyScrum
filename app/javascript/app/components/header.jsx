@@ -7,7 +7,7 @@ import { Menu, Transition } from "@headlessui/react";
 
 import DefaultDp from "images/default_dp.jpg";
 import ProfileModal from "../containers/profile_modal";
-import FeedbackModal from "../containers/feedback_modal";
+
 import CurrentResourceContext from "../contexts/current_resource";
 
 function classNames(...classes) {
@@ -19,7 +19,6 @@ export default function ({ setCurrentResource }) {
   const csrf_token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 
   const [showProfile, setShowProfile] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
 
   const isActive = ({ isCurrent, isPartiallyCurrent }) => {
     let class_name =
@@ -44,7 +43,7 @@ export default function ({ setCurrentResource }) {
           setCurrentResource={setCurrentResource}
         />
       )}
-      <FeedbackModal open={showFeedback} setOpen={setShowFeedback}></FeedbackModal>
+
       <div className="fixed w-full z-40" style={{ top: 0, left: 0, height: "60px", background: "#2e3740" }}>
         <div className="flex h-full">
           <div className="w-8/12 flex">
@@ -130,12 +129,6 @@ export default function ({ setCurrentResource }) {
                 </form>
               </>
             )}
-
-            <button
-              className="h-full text-white flex items-center px-3 hover:bg-black hover:bg-opacity-10 cursor-pointer mr-3"
-              onClick={() => setShowFeedback(true)}>
-              Give feedback
-            </button>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import PropTypes from "prop-types";
+import Tracking from "../services/tracking";
 
 import { Muted as MutedButton, Primary as PrimaryButton } from "./button";
 import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/solid";
@@ -27,6 +28,7 @@ function InviteUsers(props) {
   };
 
   const copyLink = () => {
+    Tracking.logEvent("Copy invite link");
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(props.board.inviteURL);
       setCopyState("copied");
