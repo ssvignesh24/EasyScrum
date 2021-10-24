@@ -5,6 +5,8 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import pluralize from "pluralize";
 
+import { voteValue } from "../../lib/poker";
+
 function VoteResults({ votes, board }) {
   const highestVote = () => {
     if (votes.length == 0) return "-";
@@ -64,28 +66,32 @@ function VoteResults({ votes, board }) {
           <div className="w-8/12 text-gray-600">Highest vote</div>
           <div className="w-4/12 flex flex-row-reverse font-medium">
             <span>&ensp;points</span>
-            <span className="text-purple-500">{highestVote()}</span>
+            <span className="text-purple-500">{voteValue(highestVote())}</span>
           </div>
         </div>
         <div className="w-full flex items-center mb-2">
           <div className="w-8/12 text-gray-600">Lowest vote</div>
           <div className="w-4/12 flex flex-row-reverse font-medium">
             <span>&ensp;points</span>
-            <span className="text-purple-500">{lowestVote()}</span>
+            <span className="text-purple-500">{voteValue(lowestVote())}</span>
           </div>
         </div>
         <div className="w-full flex items-center mb-2">
           <div className="w-8/12 text-gray-600">Average vote</div>
           <div className="w-4/12 flex flex-row-reverse font-medium">
             <span>&ensp;points</span>
-            <span className="text-purple-500">{avgVote()}</span>
+            <span className="text-purple-500">{voteValue(avgVote())}</span>
           </div>
         </div>
         <div className="w-full flex items-center mb-2">
           <div className="w-8/12 text-gray-600">Most voted</div>
           <div className="w-4/12 flex flex-row-reverse font-medium">
             <span>&ensp;points</span>
-            <span className="text-purple-500">{mostVoted().join(", ")}</span>
+            <span className="text-purple-500">
+              {mostVoted()
+                .map((v) => voteValue(v))
+                .join(", ")}
+            </span>
           </div>
         </div>
       </div>
