@@ -1,10 +1,11 @@
 /** @format */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Fragment } from "react";
 import ReactDOM from "react-dom";
-import { TrashIcon, PencilIcon, ThumbUpIcon } from "@heroicons/react/solid";
+import { TrashIcon, PencilIcon, ThumbUpIcon, DotsHorizontalIcon } from "@heroicons/react/solid";
 import { ThumbUpIcon as ThumbUpIconOutline } from "@heroicons/react/outline";
 import { Primary as PrimaryButton, Muted as MutedButton } from "../button";
+import { Menu, Transition } from "@headlessui/react";
 
 import ConfirmDialog from "../confirmdialog";
 
@@ -16,6 +17,10 @@ const randId = () => {
   return Math.random().toString().slice(5) + "-" + Math.random().toString(36).substring(7);
 };
 
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default function ({
   card,
   afterDelete,
@@ -25,6 +30,7 @@ export default function ({
   board,
   columnId,
   toggleVote,
+  afterActionItemAddition,
 }) {
   const retroClient = new Retro(board.id);
   const editCardField = useRef();
@@ -115,6 +121,16 @@ export default function ({
       .catch((r) => retroClient.handleError(r));
   };
 
+  const addAsActionItem = () => {
+    retroClient
+      .createActionItem(card.message)
+      .then(({ data }) => {
+        if (!data.status) return;
+        afterActionItemAddition(data.actionItem);
+      })
+      .catch((r) => retroClient.handleError(r));
+  };
+
   return (
     <>
       <ConfirmDialog
@@ -187,21 +203,69 @@ export default function ({
             <div className="w-4/12 flex flex-row-reverse">
               {card.canManageCard && (
                 <>
-                  <button
-                    title="Delete card"
-                    className="flex text-red-700 items-center hover:bg-red-100 py-1 px-2 rounded-lg"
-                    onClick={() => setConfirmDelete(true)}>
-                    <TrashIcon className="w-3.5 h-3.5" />
-                    {/* {state == "deleting" && <span className="text-sm">Deleting</span>} */}
-                    {/* {state == "ready" && <span className="text-sm">Delete</span>} */}
-                  </button>
-                  <button
-                    title="Edit card"
-                    className="flex text-green-500 items-center mr-1 hover:bg-gray-100 py-1 px-2 rounded-lg"
-                    onClick={editCard}>
-                    <PencilIcon className="w-3.5 h-3.5" />
-                    {/* <span className="text-sm">Edit</span> */}
-                  </button>{" "}
+                  <Menu as="div" className="relative z-30">
+                    {({ open }) => (
+                      <>
+                        <Menu.Button className="h-full">
+                          <DotsHorizontalIcon className="w-3.5 h-3.5 text-gray-700" />
+                        </Menu.Button>
+
+                        <Transition
+                          show={open}
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95">
+                          <Menu.Items
+                            static
+                            className="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <div className="py-1">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={editCard}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Edit card
+                                  </button>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={() => setConfirmDelete(true)}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Delete card
+                                  </button>
+                                )}
+                              </Menu.Item>
+
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    onClick={addAsActionItem}
+                                    className={classNames(
+                                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                                      "block w-full text-left px-4 py-2 text-sm"
+                                    )}>
+                                    Add as action item
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </>
+                    )}
+                  </Menu>
                 </>
               )}
             </div>

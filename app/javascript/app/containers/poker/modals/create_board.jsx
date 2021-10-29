@@ -44,12 +44,12 @@ function CreateColumn(props) {
         closeModal();
         props.afterCreate(data);
         Tracking.logEvent("Poker: Create board", { boardId: data.board.id });
-        // mixpanel?.people.increment("Poker: Board Count");
       })
       .catch((r) =>
         pokerClient.handleError(r, ({ response }) => {
           if (response?.data?.errors?.name) setError(response.data.errors.name);
           else if (response?.data?.error) setError(response.data.error);
+          setState("init");
         })
       );
   };
@@ -194,7 +194,8 @@ function CreateColumn(props) {
                           onChange={(event) => setCardVotes(event.target.value)}
                         />
                         <p className="text-sm text-yellow-600 mt-1 ">
-                          Note: The order of the votes should be from lower value to higher value
+                          Note: The order of the votes should be from lower value to higher value.
+                          <br /> ☕ and ? cards are included by default.
                         </p>
                       </>
                     )}

@@ -78,10 +78,19 @@ Retro::Template.update_all(active: false)
 end
 
 Poker::CardTemplate.update_all(active: false)
+number_cards = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 50, 100].map { |num| { type: 'number', value: num } }
+fibonacci_series_cards = [0.5, 1, 2, 3, 5, 8, 13].map { |num| { type: 'number', value: num }}
+tshirt_cards = %w{XS S M L XL XXL}.map { |size| { type: 'string', value: size }}
+number_cards << { type: 'extra', value: "?" }
+number_cards << { type: 'extra', value: "coffee" }
+fibonacci_series_cards << { type: 'extra', value: "?" }
+fibonacci_series_cards << { type: 'extra', value: "coffee" }
+tshirt_cards << { type: 'extra', value: "?" }
+tshirt_cards << { type: 'extra', value: "coffee" }
 [
-  { name: "Number series(0.5,1,2,3,4,5,6,7,8,9,10,11,12)", cards: [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map { |num| { type: 'number', value: num }}},
-  { name: "Fibonacci series(0.5,1,2,3,5,8,13)", cards: [0.5, 1, 2, 3, 5, 8, 13].map { |num| { type: 'number', value: num }}},
-  { name: "T-Shirt sizes(XS,S,M,L,XL,XXL)", cards: %w{XS S M L XL XXL}.map { |num| { type: 'string', value: num }}},
+  { name: "Fibonacci series(0.5, 1, 2, 3, 5, 8, 13, 50, 100, ?, ☕)", cards: fibonacci_series_cards },
+  { name: "Number series(0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 50, 100, ?, ☕)", cards: number_cards },
+  { name: "T-Shirt sizes(XS, S, M, L, XL, XXL, XXXL, ?, ☕)", cards: tshirt_cards },
 ].each do |card|
   template = Poker::CardTemplate.where(name: card[:name]).first_or_initialize
   template.cards = card[:cards]

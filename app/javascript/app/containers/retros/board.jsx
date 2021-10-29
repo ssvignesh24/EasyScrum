@@ -617,6 +617,7 @@ export default function ({ children, boardId }) {
                             addNewComment={addNewComment}
                             removeComment={removeComment}
                             toggleVote={toggleVote}
+                            afterActionItemAddition={addActionItem}
                           />
                         );
                       })}

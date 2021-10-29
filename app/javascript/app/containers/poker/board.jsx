@@ -13,6 +13,7 @@ import { Menu, Transition } from "@headlessui/react";
 import ConfirmDialog from "../../components/confirmdialog";
 import truncate from "../../lib/truncate";
 import consumer from "../../lib/action_cable_consumer";
+import { voteValue } from "../../lib/poker";
 
 import Tracking from "../../services/tracking";
 import RenameBoardModal from "./modals/rename_board";
@@ -804,7 +805,7 @@ export default function ({ boardId }) {
                                 ? " cursor-not-allowed opacity-60 "
                                 : " cursor-normal hover:bg-green-50")
                             }>
-                            {v.value}
+                            {voteValue(v.value)}
                           </div>
                         </div>
                       );
@@ -863,7 +864,9 @@ export default function ({ boardId }) {
 
                                   {(currentIssue().status == STATUS.VOTED ||
                                     currentIssue().status == STATUS.FINISHED) &&
-                                    participant_vote && <span className="font-medium">{participant_vote.value}</span>}
+                                    participant_vote && (
+                                      <span className="font-medium">{voteValue(participant_vote.value)}</span>
+                                    )}
 
                                   {(currentIssue().status == STATUS.VOTED ||
                                     currentIssue().status == STATUS.FINISHED) &&

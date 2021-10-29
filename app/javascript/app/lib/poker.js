@@ -1,0 +1,1 @@
+export const voteValue = (vote) => (vote == "coffee" ? "☕" : vote);

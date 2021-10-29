@@ -3,7 +3,7 @@ class Poker::BoardsController < ApiController
   before_action :authenticate_user!, only: [:create, :update, :archive, :destroy, :remove_participant, :rename]
 
   def index
-    @boards = current_resource.poker_boards.includes(:target_participants)
+    @boards = current_resource.poker_boards.where.not(available_votes: nil).includes(:target_participants).order(created_at: :desc)
   end
 
   def show
@@ -26,6 +26,7 @@ class Poker::BoardsController < ApiController
         end
       elsif board_params[:custom_votes].present?
         votes = board_params[:custom_votes].split(",").reject(&:blank?).uniq
+        raise ApiError::InvalidParameters.new("", { name: "You've selected custom votes, but you didn't provide any vote values."})
         b.available_votes = votes.map do |vote|
           if vote.to_s.to_s == vote
             { type: 'number', value: vote.to_i }
@@ -35,6 +36,10 @@ class Poker::BoardsController < ApiController
             { type: 'string', value: vote }
           end
         end
+        b.available_votes << { type: 'extra', value: "?" }
+        b.available_votes << { type: 'extra', value: "coffee" }
+      elsif board_params[:template_id].zero? && !board_params[:custom_votes].present?
+        raise ApiError::InvalidParameters.new("", { name: "You've selected custom votes, but you didn't provide any vote values."})
       end
       b.archived = false
       b.active = true
