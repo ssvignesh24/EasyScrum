@@ -45,6 +45,15 @@ class ApplicationController < ActionController::Base
     raise ApiError::NotFound.new("Invalid retrospective column") unless @column.present?
   end
 
+  def set_checkin
+    @checkin = current_resource.checkins.where(id: params[:checkin_id]).take
+    raise ApiError::NotFound.new("Invalid checkin") unless @checkin.present?
+  end
+
+  def can_manage_checkin!
+    raise ApiError::Forbidden.new("Action now allowed") if !@checkin.present? || @checkin.created_by != current_resource
+  end
+
   def current_retro_participant(board)
     board.target_participants.where(participant: current_resource).take
   end
@@ -70,5 +79,13 @@ class ApplicationController < ActionController::Base
 
   def ensure_board_manage_permission!
     raise ApiError::Forbidden.new("Action now allowed") unless can_modify_retro_board?(@board)
+  end
+
+  def validate_emails_from_string(emails)
+    validate_emails_array(emails.split(","))
+  end
+
+  def validate_emails_array(email_array)
+    Array.wrap(email_array).map(&:strip).select { |e| Mail::Address.new(e).domain.present?}
   end
 end

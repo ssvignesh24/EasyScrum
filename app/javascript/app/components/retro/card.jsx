@@ -170,9 +170,14 @@ export default function ({
           </>
         )}
         {(state == "ready" || state == "deleting") && (
-          <pre className="text-sm" style={{ whiteSpace: "break-spaces" }}>
-            {card.message}
-          </pre>
+          <>
+            <pre className="text-sm" style={{ whiteSpace: "break-spaces" }}>
+              {card.message}
+            </pre>
+            {board.anonymousCard === false && card.participant && (
+              <p className="mt-3 text-sm font-medium">- {card.participant.name}</p>
+            )}
+          </>
         )}
         {(state == "ready" || state == "deleting") && (
           <div className="flex mt-3">

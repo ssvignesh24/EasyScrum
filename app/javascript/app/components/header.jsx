@@ -50,6 +50,11 @@ export default function ({ setCurrentResource }) {
             <Link to="/dashboard" getProps={isActive}>
               Dashboard
             </Link>
+            {currentResource.checkinEnabled && (
+              <Link to="/checkin" getProps={isActive}>
+                Checkins
+              </Link>
+            )}
             <Link to="/retro" getProps={isActive}>
               Retrospective
             </Link>

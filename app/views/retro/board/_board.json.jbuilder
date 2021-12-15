@@ -4,6 +4,7 @@ prev_retro = retro.previous_retro
 json.id retro.id
 json.name retro.name
 json.context retro.context
+json.anonymousCard retro.config['anonymous_card']
 json.inviteURL "#{ENV['HOST']}invite/retro/#{retro.get_invitation_token}"
 json.canManageBoard retro.created_by_id == current_user&.id
 json.currentParticipantId retro.target_participants.where(participant: current_resource).take&.id

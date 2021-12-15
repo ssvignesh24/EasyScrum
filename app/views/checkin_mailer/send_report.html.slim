@@ -1,0 +1,59 @@
+- timezone = @checkin.account ? @checkin.account.account_timezone : @checkin.created_by.user_timezone
+div style="width: 100%; max-width: 640px;position: relative; top: 20px; margin-bottom: 30px;background-color: white; border-radius: 5px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); overflow: hidden;margin-left: auto; margin-right: auto; "
+  div style="padding: 20px 30px"
+    p style="text-align: center; font-size: 22px; font-weight: bold; margin: 0" = @checkin.title
+    p style="text-align: center; font-size: 16px; color: #666; margin: 0; margin-bottom: 25px" = "Checkin report for #{@date}"
+    hr style="border-top: 1px solid #ccc"/
+    p style="font-size: 18px; font-weight: bold; margin: 0; margin-top: 20px; margin-bottom: 7px; margin-left: 5px;" Overview
+    div style="width: 100%; padxding: 0 15px 0;"
+      div style="background: #e0f1eb; border: 5px solid white; border-radius: 5px; box-sizing: border-box; width: 33.333%; float: left; padding: 15px; margin-bottom: 20px"
+        p style="font-size: 16px; color: #666; margin: 0; margin-bottom: 5px" Checkin time
+        p style="font-size: 16px; margin: 0; margin-bottom: 5px;" = readable_time(@issue.started_at.to_formatted_s(:short), timezone, true)
+      div style="background: #e0f1eb; border: 5px solid white; border-radius: 5px; box-sizing: border-box; width: 33.333%; float: left; padding: 15px; margin-bottom: 20px"
+        p style="font-size: 16px; color: #666; margin: 0; margin-bottom: 5px" Participants
+        p style="font-size: 16px; margin: 0; margin-bottom: 5px;" = "#{@responses.select(&:responded_at).size} of #{@responses.size} responded"
+      div style="background: #e0f1eb; border: 5px solid white; border-radius: 5px; box-sizing: border-box; width: 33.333%; float: right; padding: 15px; margin-bottom: 20px"
+        p style="text-align: rightx; font-size: 16px; color: #666; margin: 0; margin-bottom: 5px" Blockers
+        - if @blocker_count <= 0
+          p style="text-align: rightx; font-size: 16px; margin: 0; margin-bottom: 5px; color: rgb(16 137 185);" No blocker
+        - else
+          p style="text-align: rightx; font-size: 16px; margin: 0; margin-bottom: 5px; color: red;" = pluralize(@blocker_count, "blocker")
+    = link_to ENV['HOST'] + "checkin/#{@checkin.id}/issue/#{@issue.id}", style: "text-decoration: none" do
+      button style="color: white; border-radius: 5px; background-color: rgba(16, 185, 129, 1); width: 100%; border: 0; padding: 12px 0; font-weight: 500; font-size: 16px; cursor: pointer"
+        span Open checkin
+
+- @responses.each do |response|
+  - participant = response.participant.participant
+  - answers = response.answers
+  div style="width: 100%; max-width: 640px;position: relative; top: 20px; margin-bottom: 30px;background-color: white; border-radius: 5px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); overflow: hidden;margin-left: auto; margin-right: auto; "
+    div style="width: 100%; background: rgba(16, 185, 129, 1); color: white"
+      div style="box-sizing: border-box; display: inline-block; vertical-align: middle; width: 75px; height: 75px;"
+        div style="width: 45px; height: 45px; border-radius: 50%; position: relative; left: 15px; top: 15px; overflow: hidden"
+          - if participant.avatar_url.present?
+          - else
+            = image_tag ENV['HOST'] + image_url("default_dp.jpg"), style: "width: 100%; min-height: 100%;"
+      div style="box-sizing: border-box; padding: 15px 0; display: inline-block; vertical-align: middle; width: 555px; height: 75px;"
+        p style="font-size: 18px; font-weight: bold; margin: 0" = participant.name_or_email
+        div style="width: 100%; margin-top: -3px; font-size: 14px"
+          div style="display: inline-block; vertical-align: middle; " = participant.email
+          - if response.responded?
+            div style="display: inline-block; vertical-align: middle; width: 5px; height: 5px; background: #fff; border-radius: 50%; margin: 3px 10px 0"
+            div style="display: inline-block; vertical-align: middle" = "Responded at #{readable_datetime(response.responded_at, timezone, true)}"
+    div style="width: 100%; padding: 30px; box-sizing: border-box"
+      - if response.responded?
+        - @questions.each do |question|
+          - answer = answers.find { |a| a.checkin_question_id == question.id }
+          div style="margin-bottom: 25px"
+            p style="font-size: 16px; font-weight: bold; margin: 0; margin-bottom: 5px" = question.prompt
+            - if answer.present?
+              - if question.is_blocker_question?
+                p style="font-size: 15px; margin: 0; color: red" = answer.value
+              - else
+                p style="font-size: 15px; margin: 0" = answer.value
+            - else
+              i style="font-size: 15px; margin: 0; color: #999" Not answered
+          
+      - else
+        p style="font-size: 15px; margin: 0; color: #888; text-align: center" Not yet responded
+
+div style="width: 640px; height: 20px;"

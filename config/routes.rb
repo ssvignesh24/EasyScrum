@@ -1,5 +1,4 @@
 require 'sidekiq/web'
-require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
@@ -12,12 +11,16 @@ Rails.application.routes.draw do
   get "/power" => "power#index"
 
   scope :invite do
+    get "complete" => "guests#get_profile"
+    post "complete" => "guests#complete_profile"
     get ":invite_for/:token" => "guests#new"
     post ":invite_for/:token" => "guests#send_email_otp", as: :new_guest
     get ":invite_for/verify_email/:token" => "guests#get_otp"
     post ":invite_for/verify_email/:token" => "guests#verify_email", as: :create_guest
     get ':invite_for/continue/:token/' => "guests#continue_as_existing_guest", as: :continue_as_existing_guest
   end
+  get '/checkin/respond' => "checkin/checkins#respond"
+
   delete "guests/exit" => "guests#exit"
 
   constraints lambda { |req| req.format == :json } do
@@ -67,6 +70,14 @@ Rails.application.routes.draw do
             end
           end
         end
+      end
+    end
+
+    resources :checkins, only: [:index, :create, :show, :edit, :update, :destroy], controller: 'checkin/checkins', param: :checkin_id do
+      member do
+        post 'toggle_pause'
+        post 'respond' => 'checkin/responses#set_answers'
+        resources :issues, only: [:show], param: :issue_id, controller: 'checkin/issues'
       end
     end
 

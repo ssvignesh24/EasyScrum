@@ -14,6 +14,7 @@ class Retro::BoardController < ApiController
       r.status = Retro::Board::STATUS.CREATED
       r.archived = false
       r.context = retro_params[:context].strip
+      r.config = { anonymous_card: retro_params[:anonymous_card] }
       if retro_params[:template_id]
         if retro_params[:template_id].to_i == -1
           last_board = current_user.created_retro_boards.order(created_at: :desc).first
@@ -68,7 +69,7 @@ class Retro::BoardController < ApiController
   private
 
   def retro_params
-    params.require(:retro).permit(:name, :template_id, :context)
+    params.require(:retro).permit(:name, :template_id, :context, :anonymous_card)
   end
 
   def guest_params

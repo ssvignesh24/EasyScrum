@@ -46,12 +46,12 @@ export default function ({ children, addCard, boardId, columnId }) {
   return (
     <>
       {!showForm && (
-        <button onClick={toggleForm} className="w-full p-3 bg-white shadow rounded mb-3 text-center">
+        <button onClick={toggleForm} className="w-full p-3 bg-white shadow rounded mb-2 text-center">
           Add a card
         </button>
       )}
       {showForm && (
-        <div className="w-full p-3 bg-white shadow rounded mb-3">
+        <div className="w-full p-3 bg-white shadow rounded mb-2">
           <textarea
             className="bg-gray-100 border-0 w-full rounded p-2 outline-none text-sm"
             placeholder="Your message"

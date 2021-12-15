@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
+import ToggleSwitch from "../../../components/toggle";
 import Retro from "../../../services/retro";
 import Tracking from "../../../services/tracking";
 
@@ -23,7 +24,7 @@ function CreateColumn(props) {
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
   const [name, setName] = useState("");
   const [context, setContext] = useState("");
-  const [templateId, setTemplateId] = useState("");
+  const [anonymousCard, setAnonymous] = useState(true);
   const [state, setState] = useState("init");
   const [error, setError] = useState(false);
 
@@ -35,6 +36,7 @@ function CreateColumn(props) {
       name,
       context,
       template_id: selectedTemplate?.id,
+      anonymous_card: anonymousCard,
     };
     retroClient
       .createBoard({ retro: payload })
@@ -183,6 +185,18 @@ function CreateColumn(props) {
                           <div className="mt-1 font-medium text-grafy-500">{selectedTemplate?.description}</div>
                         </>
                       )}
+                    </div>
+                    <div className="mt-5 relative z-20">
+                      <ToggleSwitch
+                        onChange={setAnonymous}
+                        state={anonymousCard}
+                        description={
+                          anonymousCard
+                            ? "Turning this OFF will show author's name on the cards"
+                            : "Turning this ON will not show the author's name on the cards"
+                        }
+                        labelText="Don't show author name on card"
+                        toggleFront={true}></ToggleSwitch>
                     </div>
                   </div>
                 </div>

@@ -581,7 +581,7 @@ export default function ({ children, boardId }) {
         )}
       </div>
       <div
-        className="w-full pt-3 pl-3 flex relative z-20"
+        className="w-full pt-2 pl-2 flex relative z-20"
         style={{ height: "calc(100vh - 140px)", overflowX: "hidden", overflowY: "hidden" }}>
         <div className="whitespace-nowrap h-full w-full" style={{ overflowY: "hidden" }}>
           {state == "loaded" &&
@@ -597,7 +597,7 @@ export default function ({ children, boardId }) {
                   afterUpdate={updateColumn}
                   afterDelete={removeColumn}>
                   <ReactSortable
-                    className="pb-5 pt-2.5 rounded"
+                    className="pb-5 pt-1 rounded"
                     style={{ minHeight: "400px" }}
                     id={`col-id:${column.id}`}
                     group="cards"
